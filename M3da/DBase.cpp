@@ -46,7 +46,9 @@ BOOL gDSP_CIRS = TRUE;
 BOOL gDSP_BACK = TRUE;
 int gCUR_RES = 36;
 const double dTol = 0.00000001; // unsed for Surface tolerance
-const double Pi = 3.1415926535;
+// momo
+// momo// const double Pi = 3.1415926535;
+// momo
 #define D2R 0.01745329251994
 #define R2D 57.2957795130931
 PropTable* PropsT = new PropTable();
@@ -473,7 +475,10 @@ DBase::DBase(double WPS) {
 	FILTER.SetAll();
 	// FILTER.SetFilter(4);
 	iSMode = 1; // 0 Gen on mid plain 1 outer
-	iCurElemType = 94;
+	// momo
+	// momo// iCurElemType = 94;
+	iCurElemType = 11;
+	// momo
 	iNoGPs = 0;
 	iCurGp = -1;
 	iMeshCnt = 1;
@@ -484,7 +489,6 @@ DBase::DBase(double WPS) {
 	iEdges = 1;
 	// momo
 	// momo// DspFlags = DSP_ALL;
-	// DisplayAll();
 	// momo
 	dMFullScl = 1;
 	bRevColBar = FALSE;
@@ -790,29 +794,23 @@ void DBase::SetActSol(int iD) {
 }
 
 // momo change Display Flags Method
-void DBase::DisplayAll() {
-	// ButtonPush.WireFrame = true;
-	// DspFlagsMain.DSP_WIREFRAME = true;
-	// ButtonPush.DrawModeCurrent = 1;
-	// ButtonPush.ShadedWithEdges = false;
-	// ButtonPush.ShadedWithoutEdges = false;
-	// DspFlagsMain.DSP_SHADED_WITH_EDGES = false;
-	ButtonPush.FiniteOn = true;
+void DBase::DefaultDisplays() {
+	outtextMultiLine(_T("\r\n\r\n════════════════════ Reset to Default ════════════════════"), 1);
+	outtext1("Reset All Objects Visibility to Default:");
+	outtext1("1-Only Selected Objects Visibility OFF");
+	ButtonPush.OnlySelectedOn = false;
+	outtext1("2-Work Plane Visibility ON");
+	DspFlagsMain.DSP_WORKPLANE = true;
+	outtext1("3-Shell Thicknesses Visibility OFF");
+	DspFlagsMain.DSP_SHELLTHICKNESS = false;
+	outtext1("4-Element Coordinate Systems Visibility OFF");
+	DspFlagsMain.DSP_ELEMENTCOORDSYS = false;
+	outtext1("5-Surface Direction Markers Visibility OFF");
+	DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS = false;
+	outtext1("6-Finite Elements Visibility ON");
+	ButtonPush.AllFiniteOn = true;
 	DspFlagsMain.DSP_NODES = true;
 	DspFlagsMain.DSP_ELEMENTS_ALL = true;
-	DspFlagsMain.DSP_BOUNDARY_CONDITIONS = true;
-	ButtonPush.GeomOn = true;
-	DspFlagsMain.DSP_POINTS = true;
-	DspFlagsMain.DSP_CONTROL_POINTS = false;
-	DspFlagsMain.DSP_CURVES = true;
-	DspFlagsMain.DSP_SURFACES = true;
-	DspFlagsMain.DSP_COORD = true;
-	ButtonPush.OnlySelectedOn = false;
-	DspFlagsMain.DSP_WORK_PLANE = true;
-	DspFlagsMain.DSP_SHELL_THICKNESS = false;
-	DspFlagsMain.DSP_ELEMENT_COORD_SYS = true;
-	DspFlagsMain.DSP_SURFACE_DIRECTION_MARKERS = false;
-	DspFlagsMain.DSP_GRADIENT_BACKGROUND = false;
 	DspFlagsMain.DSP_ELEMENTS_0D = true;
 	DspFlagsMain.DSP_ELEMENTS_MASS = true;
 	DspFlagsMain.DSP_ELEMENTS_1D = true;
@@ -829,28 +827,51 @@ void DBase::DisplayAll() {
 	DspFlagsMain.DSP_ELEMENTS_TET = true;
 	DspFlagsMain.DSP_ELEMENTS_WEDGE = true;
 	DspFlagsMain.DSP_ELEMENTS_BRICK = true;
-
-	DspFlagsMain.DSP_NODES_ASK = true;
-	DspFlagsMain.DSP_OFF = true;
-	DspFlagsMain.DSP_SURC = true;
-	DspFlagsMain.DSP_BLACK = true;
-	DspFlagsMain.DSP_ASSEM = true;
-	DspFlagsMain.DSP_CONT = true;
-	DspFlagsMain.DSP_RESLAB = true;
-	DspFlagsMain.DSP_RESDEF = true;
-	DspFlagsMain.DSP_MATL = true;
-	DspFlagsMain.DSP_ANIMATION = true;
-	DspFlagsMain.DSP_ANIMPOSNEG = true;
-	DspFlagsMain.DSP_VEC = true;
-
+	outtext1("7-Boundary Conditions Visibility ON");
+	DspFlagsMain.DSP_BOUNDARYCONDITIONS = true;
+	outtext1("8-All Geom Elements (Except Control Points) Visibility ON");
+	ButtonPush.AllGeomOn = true;
+	DspFlagsMain.DSP_POINTS = true;
+	DspFlagsMain.DSP_CURVES = true;
+	DspFlagsMain.DSP_SURFACES = true;
+	DspFlagsMain.DSP_COORDINATE_SYSTEMS = true;
+	outtext1("9-Control Points OFF");
+	DspFlagsMain.DSP_CONTROLPOINTS = false;
+	outtext1("10-Surfaces Curves Visibility ON");
+	DspFlagsMain.DSP_SURFACECURVES = true;
+	outtext1("11-Background : Black");
+	DspFlagsMain.DSP_GRADIENT_BACKGROUND = false;
+	DspFlagsMain.DSP_BLACKWHITE = true;
+	outtext1("12-Everything is Pickable");
 	ButtonPush.QfilterNodesOn = false;
 	ButtonPush.QfilterElementsOn = false;
 	ButtonPush.QfilterPointsOn = false;
 	ButtonPush.QfilterCurvesOn = false;
 	ButtonPush.QfilterSurfacesOn = false;
+	outtext1("13-Display Nodes As Square");
+	DspFlagsMain.DSP_NODESSQUAREASTERISK = true;
+	outtext1("14-Assemblies Visibility ON");
+	DspFlagsMain.DSP_ASSEMBLIES = true;
+	outtext1("15-Element Offsets Visibility ON");
+	DspFlagsMain.DSP_ELEMENTOFFSETS = true;
+	outtext1("16-Contour Raw Results Visibility ON");
+	DspFlagsMain.DSP_CONTOURRAWRESULTS = true;
+	outtext1("17-Results Labeles Visibility ON");
+	DspFlagsMain.DSP_RESULTSLABLES = true;
+	outtext1("18-Deformed Results Visibility ON");
+	DspFlagsMain.DSP_DEFORMEDRESULTS = true;
+	outtext1("19-Material Direction Visibility ON");
+	DspFlagsMain.DSP_MATERIALDIRECTION = true;
+	outtext1("20-Stop Animation Results");
+	DspFlagsMain.DSP_ANIMATERESULTS = false;
+	outtext1("21-Positive/Negative Animation is OFF");
+	DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE = true;
+	// outtext1("22-Vectors Visibility is OFF");
+	DspFlagsMain.DSP_VECTORS = true;
 	ButtonPush.FullBody = true;
 	ButtonPush.PartOfBody = false;
 	ButtonPush.CenterOfBody = true;
+	outtextMultiLine(_T("════════════════════\r\n"), 1);
 }
 
 void DBase::ResteFileSettings(bool bMode) {
@@ -1963,7 +1984,9 @@ void DBase::SetWPMode(int iMode) {
 }
 
 C3dVector DBase::CylToCart(C3dVector InPt) {
-	double Pi = 3.1415926535;
+	// momo
+	// momo// double Pi = 3.1415926535;
+	// momo
 
 	C3dVector vCart;
 	vCart.x = InPt.x * cos(InPt.y * (2 * Pi) / 360);
@@ -7019,6 +7042,84 @@ C3dVector DBase::PickPointToGlobal2(CPoint Pt) {
 	return (P0);
 }
 
+// momo
+C3dVector DBase::PickPointToGlobal2Exact(C3dVector Pt) {
+	// REALLY DONT LIKE THIS CODE
+	//  USE BI-LIN INTERPOLATION FOR BETTER SOLUTION
+	// JUST GLAD IT WORKS FOR NOW 09/04/2020
+	WP_Object* pWPlane = (WP_Object*) DB_Obj[iWP];
+	C3dVector P0, PX, PY;
+	C3dVector D0, DX, DY;
+	C3dVector VPT, VDO, VDX, VDY;
+	double LWP;
+	double DOTX, DOTY;
+	double LDX, LDY;
+	double FDX, FDY;
+	C3dVector V;
+	C3dVector R;
+	C3dVector M;
+	VPT.x = Pt.x;
+	VPT.y = Pt.y;
+	VPT.z = 0;
+	P0 = pWPlane->Pt_Point[0];
+
+	D0 = pWPlane->DSP_Point[0];
+	PX = pWPlane->Pt_Point[1];
+
+	DX = pWPlane->DSP_Point[1];
+	PY = pWPlane->Pt_Point[3];
+	DY = pWPlane->DSP_Point[3];
+	LWP = (PX - P0).Mag();
+	VDO = VPT - D0;
+	VDX = DX - D0;
+	VDX.z = 0;
+	VDY = DY - D0;
+	VDY.z = 0;
+	LDX = VDX.Mag();
+	LDY = VDY.Mag();
+	VDX.Normalize();
+	VDY.Normalize();
+	DOTX = VDO.Dot(VDX);
+	DOTY = VDO.Dot(VDY);
+	FDX = DOTX / LDX * LWP + P0.x;
+	FDY = DOTY / LDY * LWP + P0.y;
+	P0.Set(FDX, FDY, 0);
+
+	// Error Check
+	double dErr;
+	int iErrCnt = 0;
+	C3dMatrix WPM = pWPlane->mWPTransform;
+	C3dMatrix AA;
+	AA = pModelMat;
+	do {
+		P0 = this->WPtoGlobal2(P0); // was WPtoGlobal1
+		M = P0;
+		V.x = AA.m_00 * M.x + AA.m_01 * M.y + AA.m_02 * M.z + AA.m_30;
+		V.y = AA.m_10 * M.x + AA.m_11 * M.y + AA.m_12 * M.z + AA.m_31;
+		V.z = AA.m_20 * M.x + AA.m_21 * M.y + AA.m_22 * M.z + AA.m_32;
+		R.x = pScrMat.m_00 * V.x + pScrMat.m_01 * V.y + pScrMat.m_02 * V.z + pScrMat.m_30;
+		R.y = pScrMat.m_10 * V.x + pScrMat.m_11 * V.y + pScrMat.m_12 * V.z + pScrMat.m_31;
+		R.z = pScrMat.m_20 * V.x + pScrMat.m_21 * V.y + pScrMat.m_22 * V.z + pScrMat.m_32;
+		R.z = 0;
+		VDO = VPT - R; // Vector error
+		dErr = VDO.Mag();
+		DOTX = VDO.Dot(VDX);
+		DOTY = VDO.Dot(VDY);
+		FDX = DOTX / LDX * LWP;
+		FDY = DOTY / LDY * LWP;
+		P0 = this->GlobaltoWP(P0);
+		P0.x += FDX;
+		P0.y += FDY;
+		P0.z = 0;
+		iErrCnt++;
+	} while ((dErr > 5) && (iErrCnt < 10000));
+	P0 = this->WPtoGlobal(P0);
+	// s1.Format(_T("Error %g cnt %i"), dErr, iErrCnt);
+	// outtext1(s1);
+	return (P0);
+}
+// momo
+
 G_Object* DBase::AddRHDCyl(C3dVector vNorm, C3dVector vCent, C3dVector vRef, double dR, int ilab, BOOL bRedraw) {
 	// C3dMatrix cTransformMat = DB_pGrpWnd->Get3DMat();
 	NCircle* cCir = new NCircle();
@@ -10229,7 +10330,7 @@ void DBase::SetToScr2(C3dMatrix pM) {
 
 BOOL DBase::isBlackDisp() {
 	BOOL brc = FALSE;
-	if (DspFlagsMain.DSP_BLACK) {
+	if (DspFlagsMain.DSP_BLACKWHITE) {
 		brc = TRUE;
 	}
 	return (brc);
@@ -10273,7 +10374,7 @@ void DBase::Draw(C3dMatrix pM, int iDrawmode) {
 		// int iPen = 6;
 		//// MoMo_End
 		// SetPen(pDC, 6);
-		// if (DspFlags & DSP_BLACK) {
+		// if (DspFlags & DSP_BLACKWHITE) {
 		//	SetPen(pDC, 6);
 		//	// MoMo_Start
 		//	iPen = 6;
@@ -10359,7 +10460,7 @@ void DBase::Draw(C3dMatrix pM, int iDrawmode) {
 		// }
 
 		//// MoMo_Start
-		// if (!m_leftIsDragging) {
+		// if (!leftIsDraggingForSelect) {
 		//	// MoMo_End
 		//	RestorePen(pDC);
 		//	// MoMo_Start
@@ -10419,28 +10520,35 @@ void DBase::Cycle() {
 			iDir = -1;
 		if (i == iOGL_Start)
 			iDir = 1;
-	} while (!DspFlagsMain.DSP_ANIMATION);
+	} while (DspFlagsMain.DSP_ANIMATERESULTS);
 	pTheView->ReleaseDC(pDC);
 	InvalidateOGL();
 	BOOL OglErr;
 	OglErr = wglDeleteContext(hrc);
 }
 
-void DBase::AnimatePosNeg() {
-	DspFlagsMain.DSP_ANIMPOSNEG = !DspFlagsMain.DSP_ANIMPOSNEG;
-	if (DspFlagsMain.DSP_ANIMPOSNEG) {
-		outtext1("Neg/Pos Animation is OFF");
+void DBase::AnimatePositiveNegative() {
+	DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE = !DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE;
+	if (DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE) {
+		outtext1("Positive/Negative Animation is OFF");
 	} else {
-		outtext1("Neg/Pos Animation is ON");
+		outtext1("Positive/Negative Animation is ON");
 	}
 }
 
-void DBase::Animate() {
-	if (DspFlagsMain.DSP_ANIMATION) {
+void DBase::AnimateResults() {
+	if (!DspFlagsMain.DSP_ANIMATERESULTS) {
 		InvalidateOGL();
 		CycleFrames();
 	}
-	DspFlagsMain.DSP_ANIMATION = !DspFlagsMain.DSP_ANIMATION;
+	DspFlagsMain.DSP_ANIMATERESULTS = !DspFlagsMain.DSP_ANIMATERESULTS;
+	// momo
+	if (DspFlagsMain.DSP_ANIMATERESULTS) {
+		outtext1("Start Animation Results");
+	} else {
+		outtext1("Stop Animation Results");
+	}
+	//  momo
 	// bAnimate = FALSE;
 	// InvalidateOGL();
 	// ReGen();
@@ -10451,7 +10559,7 @@ void DBase::GenAnimationW(DisplayFlags DspFlagsIn, int iNoFrames) {
 	double dSF = 0;
 	double dInc;
 
-	if (DspFlagsMain.DSP_ANIMPOSNEG) {
+	if (DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE) {
 		dSF = 0;
 		dInc = 1.0 / (iNoFrames - 1);
 		iOGL_NoOff = iNoFrames;
@@ -10510,7 +10618,7 @@ void DBase::GenAnimationS(DisplayFlags DspFlagsIn, int iNoFrames) {
 	double dSF = 0;
 	double dInc;
 
-	if (DspFlagsMain.DSP_ANIMPOSNEG) {
+	if (DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE) {
 		dSF = 0;
 		dInc = 1.0 / (iNoFrames - 1);
 		iOGL_NoOff = iNoFrames;
@@ -10609,7 +10717,7 @@ void DBase::OglDrawW(DisplayFlags DspFlagsIn) {
 	float R = cols[gBACKGRD_COL][0];
 	float G = cols[gBACKGRD_COL][1];
 	float B = cols[gBACKGRD_COL][2];
-	if (DspFlagsIn.DSP_BLACK) {
+	if (DspFlagsIn.DSP_BLACKWHITE) {
 		glClearColor(R, G, B, 1.0f);
 	} else {
 		glClearColor(255.0f, 255.0f, 255.0f, 1.0f);
@@ -10634,7 +10742,7 @@ void DBase::OglDrawW(DisplayFlags DspFlagsIn) {
 
 	if (iOGLList == -1) {
 		// If animation is on generate multiple frames
-		if (!DspFlagsMain.DSP_ANIMATION) {
+		if (DspFlagsMain.DSP_ANIMATERESULTS) {
 			GenAnimationW(DspFlagsIn, NoResFrame);
 		} else {
 			iOGL_NoOff = 1;
@@ -10653,28 +10761,47 @@ void DBase::OglDrawW(DisplayFlags DspFlagsIn) {
 	if ((pDragObj != nullptr) && (bIsDrag == TRUE))
 		pDragObj->OglDrawW(DspFlagsIn, dMFullScl, 0);
 	if (DspFlagsMain.DSP_GRADIENT_BACKGROUND) {
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		// glBegin(GL_QUADS);
-		//   glColor3f(0.0,0.0,0.0);
-		//   glVertex3f((float) -dW,(float) dH,-100);
-		//   glColor3f((float) 0.0,(float) 0.0,(float) 0.2);
-		//   glVertex3f((float) -dW,(float) -dH,-100);
-		//   glColor3f((float) 0.0,(float) 0.0,(float) 0.5);
-		//   glVertex3f((float) dW,(float) -dH,-100);
-		//   glColor3f((float) 0.0,(float) 0.0,(float) 0.2);
-		//   glVertex3f((float) dW,(float) dH,-100);
-		// glEnd();
-		glBegin(GL_QUADS);
-		glColor3f(0.0, 0.0, 0.0);
-		glVertex3f((float) -dW, (float) dH, -100);
-		glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
-		glVertex3f((float) -dW, (float) -dH, -100);
-		glColor3f((float) 0.5, (float) 0.5, (float) 0.5);
-		glVertex3f((float) dW, (float) -dH, -100);
-		glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
-		glVertex3f((float) dW, (float) dH, -100);
-		glEnd();
+		// momo
+		if (DspFlagsMain.DSP_BLACKWHITE) {
+			// momo
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			// glBegin(GL_QUADS);
+			//   glColor3f(0.0,0.0,0.0);
+			//   glVertex3f((float) -dW,(float) dH,-100);
+			//   glColor3f((float) 0.0,(float) 0.0,(float) 0.2);
+			//   glVertex3f((float) -dW,(float) -dH,-100);
+			//   glColor3f((float) 0.0,(float) 0.0,(float) 0.5);
+			//   glVertex3f((float) dW,(float) -dH,-100);
+			//   glColor3f((float) 0.0,(float) 0.0,(float) 0.2);
+			//   glVertex3f((float) dW,(float) dH,-100);
+			// glEnd();
+			glBegin(GL_QUADS);
+			glColor3f(0.0, 0.0, 0.0);
+			glVertex3f((float) -dW, (float) dH, -100);
+			glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
+			glVertex3f((float) -dW, (float) -dH, -100);
+			glColor3f((float) 0.5, (float) 0.5, (float) 0.5);
+			glVertex3f((float) dW, (float) -dH, -100);
+			glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
+			glVertex3f((float) dW, (float) dH, -100);
+			glEnd();
+			// momo
+		} else {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glBegin(GL_QUADS);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glVertex3f((float) -dW, (float) dH, -100);
+			glColor3f(0.8f, 0.9f, 1.0f);
+			glVertex3f((float) -dW, (float) -dH, -100);
+			glColor3f(0.3f, 0.6f, 1.0f);
+			glVertex3f((float) dW, (float) -dH, -100);
+			glColor3f(0.8f, 0.9f, 1.0f);
+			glVertex3f((float) dW, (float) dH, -100);
+			glEnd();
+		}
+		// momo
 	}
 
 	// momo gdi to og =================================================
@@ -11021,11 +11148,15 @@ void DBase::MakeAxis_DrawAxisLabel(
 
 // momo gdi to og
 void DBase::DrawSelectionRectangle() {
-	if (m_leftIsDragging) {
-		if (m_x2 >= m_x1 || !DeselectCadrMode) {
-			glColor3f(1.0f, 1.0f, 1.0f);
+	if (leftIsDraggingForSelect || leftIsDraggingForZoomBox || rightIsDraggingForZoomBox) {
+		if (leftIsDraggingForZoomBox || rightIsDraggingForZoomBox) {
+			glColor3f(0.839215686f, 0.870588f, 0.1372549f);
 		} else {
-			glColor3f(1.0f, 0.466666f, 0.643137f);
+			if (m_x2 >= m_x1 || !DeselectCadrMode) {
+				glColor3f(1.0f, 1.0f, 1.0f);
+			} else {
+				glColor3f(1.0f, 0.466666f, 0.643137f);
+			}
 		}
 		glLineWidth(1.5f);
 		glBegin(GL_LINE_STRIP);
@@ -11035,6 +11166,24 @@ void DBase::DrawSelectionRectangle() {
 		glVertex2f((float) m_x1, (float) m_y2);
 		glVertex2f((float) m_x1, (float) m_y1);
 		glEnd();
+		if (leftIsDraggingForZoomBox || rightIsDraggingForZoomBox) {
+			long middlePointX = (long) (round((m_x1 + m_x2) / 2.0));
+			if (abs(m_x1 - m_x2) % 2 == 1) {
+				middlePointX--;
+			}
+			long middlePointY = (long) (round((m_y1 + m_y2) / 2.0));
+			if (abs(m_y1 - m_y2) % 2 == 1) {
+				middlePointY--;
+			}
+			glBegin(GL_LINES);
+			glVertex2f(middlePointX - 4.0f, middlePointY - 4.0f);
+			glVertex2f(middlePointX + 5.0f, middlePointY + 4.0f);
+			glEnd();
+			glBegin(GL_LINES);
+			glVertex2f(middlePointX - 4.0f, middlePointY + 4.0f);
+			glVertex2f(middlePointX + 5.0f, middlePointY - 4.0f);
+			glEnd();
+		}
 	}
 	DeSelectAll = false;
 }
@@ -11047,7 +11196,7 @@ double DBase::GetZoomScale(C3dMatrix* pModelMat) {
 
 void DBase::DrawSelectCircles() {
 	if (ShowSelectionCircles && SelectMode != 2) {
-		if (DspFlagsMain.DSP_BLACK) {
+		if (DspFlagsMain.DSP_BLACKWHITE) {
 			glColor3f(1.0f, 1.0f, 0);
 		} else {
 			glColor3f(0, 0, 0);
@@ -11055,20 +11204,12 @@ void DBase::DrawSelectCircles() {
 		int iDB_I;
 		int iHC = 0;
 		C3dVector vPt;
-		double zoomScale = GetZoomScale(&pModelMat);
-		double pixelRadius1 = 0.2;
-		double pixelRadius2 = 0.1;
-		double fixedRadius1 = pixelRadius1 / zoomScale;
-		double fixedRadius2 = pixelRadius2 / zoomScale;
 		if (S_Count > 0) {
 			iHC = S_Count;
 			if ((iHLimit > -1) && (iHLimit < iHC))
 				iHC = iHLimit;
 			for (iDB_I = 0; iDB_I < iHC; iDB_I++) {
-				// if (S_Buff[iDB_I]->Drawn == 0) {
 				S_Buff[iDB_I]->SetToScr(&pModelMat, &pScrMat);
-				//}
-				// DrawCircle(S_Buff[iDB_I]->SelPt, 8.0, 1.5, 96);
 				S_Buff[iDB_I]->HighLight();
 			}
 		}
@@ -11096,7 +11237,6 @@ void DBase::DrawSelectCircles() {
 			if ((iHLimit > -1) && (iHLimit < iHC))
 				iHC = iHLimit;
 			for (iDB_I = 0; iDB_I < iHC; iDB_I++) {
-				// DrawCircle(OTemp->Objs[iDB_I]->SelPt, 8.0, 1.5, 96);
 				OTemp->Objs[iDB_I]->HighLight();
 			}
 		}
@@ -11105,7 +11245,6 @@ void DBase::DrawSelectCircles() {
 			if ((iHLimit > -1) && (iHLimit < iHC))
 				iHC = iHLimit;
 			for (iDB_I = 0; iDB_I < iHC; iDB_I++) {
-				// DrawCircle(OTemp2->Objs[iDB_I]->SelPt, 8.0, 1.5, 96);
 				OTemp2->Objs[iDB_I]->HighLight();
 			}
 		}
@@ -11113,7 +11252,7 @@ void DBase::DrawSelectCircles() {
 }
 
 void DBase::StartGDIToOpenGL() {
-	if (ShowSelectionCircles || m_leftIsDragging) {
+	if (ShowSelectionCircles || leftIsDraggingForSelect || leftIsDraggingForZoomBox || rightIsDraggingForZoomBox) {
 		glDisable(GL_DEPTH_TEST);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -11126,7 +11265,7 @@ void DBase::StartGDIToOpenGL() {
 }
 
 void DBase::EndGDIToOpenGL() {
-	if (ShowSelectionCircles || m_leftIsDragging) {
+	if (ShowSelectionCircles || leftIsDraggingForSelect || leftIsDraggingForZoomBox || rightIsDraggingForZoomBox) {
 		ShowSelectionCircles = false;
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
@@ -11178,7 +11317,7 @@ void DBase::OglDraw(DisplayFlags DspFlagsIn) {
 	float R = cols[gBACKGRD_COL][0];
 	float G = cols[gBACKGRD_COL][1];
 	float B = cols[gBACKGRD_COL][2];
-	if (DspFlagsIn.DSP_BLACK) {
+	if (DspFlagsIn.DSP_BLACKWHITE) {
 		glClearColor(R, G, B, 1.0f);
 	} else {
 		glClearColor(255.0f, 255.0f, 255.0f, 1.0f);
@@ -11218,7 +11357,7 @@ void DBase::OglDraw(DisplayFlags DspFlagsIn) {
 
 	if (iOGLList == -1) {
 		// If animation is on generate multiple frames
-		if (!DspFlagsMain.DSP_ANIMATION) {
+		if (DspFlagsMain.DSP_ANIMATERESULTS) {
 			GenAnimationS(DspFlagsIn, NoResFrame);
 		} else {
 			iOGL_NoOff = 1;
@@ -11243,7 +11382,7 @@ void DBase::OglDraw(DisplayFlags DspFlagsIn) {
 		pDragObj->OglDrawW(DspFlagsIn, dMFullScl, 0);
 	glLoadIdentity();
 	if (pCurrentMesh != NULL) {
-		if (!DspFlagsIn.DSP_CONT) {
+		if (!DspFlagsIn.DSP_CONTOURRAWRESULTS) {
 			DrawColBar(DspFlagsIn, dW, dH);
 			pCurrentMesh->WriteResHead(DspFlagsIn, (float) dW, (float) dH);
 		}
@@ -11251,18 +11390,37 @@ void DBase::OglDraw(DisplayFlags DspFlagsIn) {
 	// Gradient fill background
 
 	if (DspFlagsMain.DSP_GRADIENT_BACKGROUND) {
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glBegin(GL_QUADS);
-		glColor3f(0.0, 0.0, 0.0);
-		glVertex3f((float) -dW, (float) dH, -100);
-		glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
-		glVertex3f((float) -dW, (float) -dH, -100);
-		glColor3f((float) 0.5, (float) 0.5, (float) 0.5);
-		glVertex3f((float) dW, (float) -dH, -100);
-		glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
-		glVertex3f((float) dW, (float) dH, -100);
-		glEnd();
+		// momo
+		if (DspFlagsMain.DSP_BLACKWHITE) {
+			// momo
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glBegin(GL_QUADS);
+			glColor3f(0.0, 0.0, 0.0);
+			glVertex3f((float) -dW, (float) dH, -100);
+			glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
+			glVertex3f((float) -dW, (float) -dH, -100);
+			glColor3f((float) 0.5, (float) 0.5, (float) 0.5);
+			glVertex3f((float) dW, (float) -dH, -100);
+			glColor3f((float) 0.2, (float) 0.2, (float) 0.2);
+			glVertex3f((float) dW, (float) dH, -100);
+			glEnd();
+			// momo
+		} else {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glBegin(GL_QUADS);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glVertex3f((float) -dW, (float) dH, -100);
+			glColor3f(0.8f, 0.9f, 1.0f);
+			glVertex3f((float) -dW, (float) -dH, -100);
+			glColor3f(0.5f, 0.8f, 1.0f);
+			glVertex3f((float) dW, (float) -dH, -100);
+			glColor3f(0.8f, 0.9f, 1.0f);
+			glVertex3f((float) dW, (float) dH, -100);
+			glEnd();
+		}
+		// momo
 	}
 
 	// momo gdi to og =================================================
@@ -11327,6 +11485,9 @@ C3dVector DBase::GetVPt() {
 	C3dVector vRet;
 	C3dVector mPt;
 	G_Object* pO;
+	// momo
+	vRet.Set(0.0, 0.0, 0.0);
+	// momo
 	mPt.x = 0;
 	mPt.y = 0;
 	mPt.z = 0;
@@ -11347,6 +11508,83 @@ C3dVector DBase::GetMeshCentre() {
 	}
 	return (vRet);
 }
+
+// momo zoom to fit
+void DBase::GetObjectsBoxLimits(C3dVector& minValues, C3dVector& maxValues) {
+	double minValue, maxValue;
+	bool firstSet = false;
+	for (int i = 1; i < iDspLstCount; i++) {
+		Dsp_List[i]->BoxPoints(&pModelMat, &pScrMat);
+		if (Dsp_List[i]->isFitable) {
+			if (!firstSet) {
+				firstSet = true;
+				minValues.SetMin(Dsp_List[i]->boxMin, Dsp_List[i]->boxMax);
+				maxValues.SetMax(Dsp_List[i]->boxMin, Dsp_List[i]->boxMax);
+			} else {
+				minValue = min(Dsp_List[i]->boxMin.x, Dsp_List[i]->boxMax.x);
+				if (minValue < minValues.x) {
+					minValues.x = minValue;
+				}
+				maxValue = max(Dsp_List[i]->boxMin.x, Dsp_List[i]->boxMax.x);
+				if (maxValue > maxValues.x) {
+					maxValues.x = maxValue;
+				}
+				minValue = min(Dsp_List[i]->boxMin.y, Dsp_List[i]->boxMax.y);
+				if (minValue < minValues.y) {
+					minValues.y = minValue;
+				}
+				maxValue = max(Dsp_List[i]->boxMin.y, Dsp_List[i]->boxMax.y);
+				if (maxValue > maxValues.y) {
+					maxValues.y = maxValue;
+				}
+			}
+		}
+	}
+	if (!firstSet) {
+		Dsp_List[0]->BoxPoints(&pModelMat, &pScrMat);
+		minValues.SetMin(Dsp_List[0]->boxMin, Dsp_List[0]->boxMax);
+		maxValues.SetMax(Dsp_List[0]->boxMin, Dsp_List[0]->boxMax);
+	}
+}
+
+void DBase::SetAllToScr(const C3dMatrix& pM) {
+	pModelMat = pM;
+	mOGLmat = pModelMat.GetOglMat();
+	for (int i = 0; i < iDspLstCount; ++i) {
+		if (Dsp_List[i]) {
+			Dsp_List[i]->Drawn = 1;
+			Dsp_List[i]->SetToScr(&pModelMat, &pScrMat);
+		}
+	}
+	if (pDragObj)
+		pDragObj->SetToScr(&pModelMat, &pScrMat);
+}
+
+void DBase::MoveScreen(double d1, double d2, double dWidth, double dHeight, CView* pCViewCurrent) {
+	double dX1, dY1, dZ1;
+	dX1 = 2 * (d1 / dWidth) * WPSize;
+	dY1 = -2 * (d2 / dHeight) * WPSize;
+	dZ1 = 0;
+	tOrient.Trans(dX1, dY1, dZ1);
+	SetView(pCViewCurrent);
+}
+
+void DBase::MovePointToScreenCenter(C3dVector fromPointOnScreen) {
+	C3dVector fromPoint;
+	C3dVector moveVector;
+	C3dVector fromPointOnScreen2D;
+	fromPointOnScreen2D.Set(fromPointOnScreen.x, fromPointOnScreen.y, 0.0);
+	fromPoint = PickPointToGlobal2Exact(fromPointOnScreen2D);
+	for (int i = 3; i >= 0; i--) {
+		tOrient.vAxisPts[i] = tOrient.vAxisPts[i] - tOrient.vAxisPts[0];
+	}
+	moveVector.x = fromPoint.x * tOrient.vAxisPts[1].x + fromPoint.y * tOrient.vAxisPts[2].x + fromPoint.z * tOrient.vAxisPts[3].x;
+	moveVector.y = fromPoint.x * tOrient.vAxisPts[1].y + fromPoint.y * tOrient.vAxisPts[2].y + fromPoint.z * tOrient.vAxisPts[3].y;
+	moveVector.z = 0.0;
+	for (int i = 3; i >= 0; i--)
+		tOrient.vAxisPts[i] = tOrient.vAxisPts[i] - moveVector;
+}
+// momo zoom to fit
 
 // This get the maximum y span of the mesh in pixels
 // used by zoom all to find a zoom level
@@ -11385,36 +11623,36 @@ void DBase::SetFilter() {
 void DBase::QFilterNode() {
 	FILTER.Clear();
 	FILTER.SetFilter(1);
-	outtext1("Only Nodes are Pickable. ");
+	outtext1("Only Nodes are Pickable.");
 }
 
 void DBase::QFilterElement() {
 	FILTER.Clear();
 	FILTER.SetFilter(3);
-	outtext1("Only Elements are Pickable. ");
+	outtext1("Only Elements are Pickable.");
 }
 
 void DBase::QFilterPoint() {
 	FILTER.Clear();
 	FILTER.SetFilter(0);
-	outtext1("Only Points are Pickable. ");
+	outtext1("Only Points are Pickable.");
 }
 
 void DBase::QFilterCurve() {
 	FILTER.Clear();
 	FILTER.SetFilter(7);
-	outtext1("Only Curvess are Pickable. ");
+	outtext1("Only Curvess are Pickable.");
 }
 
 void DBase::QFilterSurface() {
 	FILTER.Clear();
 	FILTER.SetFilter(15);
-	outtext1("Only Surfaces are Pickable. ");
+	outtext1("Only Surfaces are Pickable.");
 }
 
 void DBase::QFilterAll() {
 	FILTER.SetAll();
-	outtext1("Everything is Pickable. ");
+	outtext1("Everything is Pickable.");
 }
 
 int DBase::GetGroupID() {
@@ -12481,6 +12719,25 @@ void DBase::DeSelect_Box(CPoint UL, CPoint LR) {
 	delete (pSel);
 	pSel = NULL;
 	// ReDraw();
+}
+
+void DBase::ZoomBox(CPoint startPoint, CPoint endPoint) {
+	C3dVector targetPointOnScreen;
+	targetPointOnScreen.x = 0.5 * (startPoint.x + endPoint.x);
+	targetPointOnScreen.y = 0.5 * (startPoint.y + endPoint.y);
+	MovePointToScreenCenter(targetPointOnScreen);
+
+	double dXmaxValue = abs(startPoint.x - endPoint.x);
+	double dYmaxValue = abs(startPoint.y - endPoint.y);
+	double viewWidth = dWidth;
+	double viewHeight = dHeight;
+	double scaleX = viewWidth / dXmaxValue;
+	double scaleY = viewHeight / dYmaxValue;
+	double finalScale = min(scaleX, scaleY);
+	tOrient.dSclFact = finalScale * tOrient.dSclFact * 1.0;
+	C3dMatrix m = tOrient.RetrieveMat();
+	SetAllToScr(m);
+	Draw(tOrient.RetrieveMat(), 3);
 }
 // momo
 
@@ -14357,7 +14614,7 @@ void DBase::InitOGL(CDC* pDC) {
 
 void DBase::InvalidateOGL() {
 	GLenum aa;
-	if (DspFlagsMain.DSP_ANIMATION) {
+	if (!DspFlagsMain.DSP_ANIMATERESULTS) {
 		if (iOGLList != -1) {
 			glDeleteLists(iOGL_Start, iOGL_NoOff);
 			aa = glGetError();
@@ -21966,7 +22223,7 @@ void DBase::ResSelectDef() {
 }
 
 void DBase::DoDeformedDisp() {
-	if (!DspFlagsMain.DSP_RESDEF) {
+	if (!DspFlagsMain.DSP_DEFORMEDRESULTS) {
 		pCurrentMesh->BuildDeromedVecs();
 	} else {
 		pCurrentMesh->DeleteDeromedVecs();

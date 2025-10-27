@@ -75,6 +75,7 @@ void outtextMSG(CString AAA);
 // momo// void outtextMSG2(CString AAA);
 void outtextMSG2(const CString& AAA);
 void outtextMSG2(const char* AAA);
+CFont* CreatePointFont(int pointSize, LPCTSTR fontName, int weight = FW_NORMAL, BOOL italic = FALSE);
 // momo
 //// momo ModernOpenGL_Start
 ////CString ReadText();
@@ -112,12 +113,19 @@ class InfoDialog: public CDialogEx {
 		afx_msg void OnCloseButtonClick();
 		afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 		afx_msg void OnEditSetFocus();
-
+		afx_msg void OnCheckNeedLeftClick_Clicked();
+		afx_msg void OnComboRightDragAction_SelChange();
+		afx_msg void OnComboMiddleDragAction_SelChange();
 		DECLARE_MESSAGE_MAP()
 
 	private:
 		CEdit editInfo;
 		CButton buttonClose;
 		CBrush m_brWhite;
+		CButton checkNeedLeftClick;
+		CComboBox comboRightDragAction;
+		CStatic labelRightDragAction;
+		CComboBox comboMiddleDragAction;
+		CStatic labelMiddleDragAction;
 };
 // momo add type id form

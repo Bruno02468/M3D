@@ -49,6 +49,10 @@ class C3dVector
 		C3dVector(double x, double y, double z);
 		virtual void Serialize(CArchive& ar, int iV);
 		void Set(double x, double y, double z);
+		// momo zoom to fit
+		void C3dVector::SetMin(C3dVector v1, C3dVector v2);
+		void C3dVector::SetMax(C3dVector v1, C3dVector v2);
+		// momo zoom to fit
 		BOOL operator==(const C3dVector r);
 		C3dVector operator=(const C3dVector r);
 		C3dVector operator=(const C3dVector* r);

@@ -47,6 +47,10 @@ ON_WM_SIZE()
 // ON_UPDATE_COMMAND_UI(ID_INDC_LC, &CMainFrame::OnUpdatePage)
 //  ON_COMMAND(ID_MESH_FREETRIMESH, &CMainFrame::OnMeshFreetrimesh)
 // ON_COMMAND(ID_TOOLS_ELEMENTMASSSUMMATION, &CMainFrame::OnToolsElementmasssummation)
+// momo
+ON_COMMAND(IDR_BOUNDARYCONDITIONS_TOOLBAR_MENU, OnViewToolbarBC)
+ON_UPDATE_COMMAND_UI(IDR_BOUNDARYCONDITIONS_TOOLBAR_MENU, OnUpdateViewToolbarBC)
+// momo
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -81,23 +85,23 @@ CMainFrame::~CMainFrame() {
 // momo
 // int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 //	int iIDR;
-//	iIDR = IDR_DRAW;
+//	iIDR = IDR_DRAW_TOOLBAR;
 //	// momo on off button and menu
-//	iIDR = IDR_SHOWHIDE;
-//	iIDR = IDR_SELECTION_TOOLBAR;
+//	iIDR = IDR_SHOWHIDE_TOOLBAR;
+//	iIDR = IDR_SELECT_TOOLBAR;
 //	// momo on off button and menu
-//	iIDR = IDR_CREATE;
-//	iIDR = IDR_EDIT;
-//	iIDR = IDR_FE;
-//	iIDR = IDR_GROUP;
-//	iIDR = IDR_BC;
-//	iIDR = IDR_ELTYPE;
-//	iIDR = IDR_POST;
-//	iIDR = IDR_PROJ;
-//	iIDR = IDR_UTILITIES;
-//	iIDR = IDR_QFILTER;
+//	iIDR = IDR_CREATE_TOOLBAR;
+//	iIDR = IDR_EDIT_TOOLBAR;
+//	iIDR = IDR_FINITEELEMENS_TOOLBAR;
+//	iIDR = IDR_GROUP_TOOLBAR;
+//	iIDR = IDR_BOUNDARYCONDITIONS_TOOLBAR;
+//	iIDR = IDR_SETELEMENT_TOOLBAR;
+//	iIDR = IDR_POSTPROCESSING_TOOLBAR;
+//	iIDR = IDR_PROJECTION_TOOLBAR;
+//	iIDR = IDR_UTILITIES_TOOLBAR;
+//	iIDR = IDR_SELECTFILTERQUICK_TOOLBAR;
 //	// Esp_Mod_Experimental_Toolbar_4_10_2025_Start: experimental toolbar
-//	iIDR = IDR_EXPERIMENTAL;
+//	iIDR = IDR_EXPERIMENTAL_TOOLBAR;
 //	// Esp_Mod_Experimental_Toolbar_4_10_2025_End
 //	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
 //		return -1;
@@ -126,7 +130,7 @@ CMainFrame::~CMainFrame() {
 //	}
 //
 //	if (!m_MenuCommands.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 17) ||
-//	    !m_MenuCommands.LoadToolBar(IDR_MENU_COMMANDS)) {
+//	    !m_MenuCommands.LoadToolBar(IDR_MENUCOMMANDS_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -137,86 +141,86 @@ CMainFrame::~CMainFrame() {
 //	// each new added tool bar requires a new ID
 //	// specified on the following line
 //	if (!m_Draw.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 2) ||
-//	    !m_Draw.LoadToolBar(IDR_DRAW)) {
+//	    !m_Draw.LoadToolBar(IDR_DRAW_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //
 //	// momo on off button and menu
 //	if (!m_ShowHide.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 3) ||
-//	    !m_ShowHide.LoadToolBar(IDR_SHOWHIDE)) {
+//	    !m_ShowHide.LoadToolBar(IDR_SHOWHIDE_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //
 //	if (!m_Selection.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 4) ||
-//	    !m_Selection.LoadToolBar(IDR_SELECTION_TOOLBAR)) {
+//	    !m_Selection.LoadToolBar(IDR_SELECT_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	// momo on off button and menu
 //
 //	if (!m_Create.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 5) ||
-//	    !m_Create.LoadToolBar(IDR_CREATE)) {
+//	    !m_Create.LoadToolBar(IDR_CREATE_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //
 //	if (!m_Edit.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 6) ||
-//	    !m_Edit.LoadToolBar(IDR_EDIT)) {
+//	    !m_Edit.LoadToolBar(IDR_EDIT_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_FE.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 7) ||
-//	    !m_FE.LoadToolBar(IDR_FE)) {
+//	    !m_FE.LoadToolBar(IDR_FINITEELEMENS_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_Group.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 8) ||
-//	    !m_Group.LoadToolBar(IDR_GROUP)) {
+//	    !m_Group.LoadToolBar(IDR_GROUP_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_BC.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 9) ||
-//	    !m_BC.LoadToolBar(IDR_BC)) {
+//	    !m_BC.LoadToolBar(IDR_BOUNDARYCONDITIONS_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_ELTYPE.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 10) ||
-//	    !m_ELTYPE.LoadToolBar(IDR_ELTYPE)) {
+//	    !m_ELTYPE.LoadToolBar(IDR_SETELEMENT_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_POST.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 11) ||
-//	    !m_POST.LoadToolBar(IDR_POST)) {
+//	    !m_POST.LoadToolBar(IDR_POSTPROCESSING_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_Projection.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 12) ||
-//	    !m_Projection.LoadToolBar(IDR_PROJ)) {
+//	    !m_Projection.LoadToolBar(IDR_PROJECTION_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_Utils.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 13) ||
-//	    !m_Utils.LoadToolBar(IDR_UTILITIES)) {
+//	    !m_Utils.LoadToolBar(IDR_UTILITIES_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //	if (!m_QFilter.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 14) ||
-//	    !m_QFilter.LoadToolBar(IDR_QFILTER)) {
+//	    !m_QFilter.LoadToolBar(IDR_SELECTFILTERQUICK_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //
 //	if (!m_DIMS.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 15) ||
-//	    !m_DIMS.LoadToolBar(IDR_DIMS)) {
+//	    !m_DIMS.LoadToolBar(IDR_DIMENSION_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //
 //	// Esp_Mod_Experimental_Toolbar_4_10_2025_Start: create experimental toolbar
 //	if (!m_EXP.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 16) ||
-//	    !m_EXP.LoadToolBar(IDR_EXPERIMENTAL)) {
+//	    !m_EXP.LoadToolBar(IDR_EXPERIMENTAL_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -232,7 +236,7 @@ CMainFrame::~CMainFrame() {
 //	// momo// m_wndToolBar.SetWindowText(strToolBarName);
 //	m_File.SetWindowText(strToolBarName);
 //	CString strToolBarName13;
-//	bNameValid = strToolBarName13.LoadString(IDR_MENU_COMMANDS); // IDS_DRAW
+//	bNameValid = strToolBarName13.LoadString(IDR_MENUCOMMANDS_TOOLBAR); // IDS_DRAW
 //	m_MenuCommands.SetWindowText(strToolBarName13);
 //	// momo
 //
@@ -308,7 +312,7 @@ CMainFrame::~CMainFrame() {
 //	// momo
 //	// momo// m_wndToolBar.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	m_File.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
-//	m_MenuCommands.EnableCustomizeButton(TRUE, IDR_MENU_COMMANDS, strCustomize);
+//	m_MenuCommands.EnableCustomizeButton(TRUE, IDR_MENUCOMMANDS_TOOLBAR, strCustomize);
 //	// momo
 //	m_Draw.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	// momo on off button and menu
@@ -510,32 +514,37 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	// momo make main buttons
 	p_Input.EnableDocking(CBRS_ALIGN_ANY);
 
-	struct ToolBarInfo {
-			CMFCToolBar* pToolbar;
-			UINT nResourceID;
-			BOOL isVisible;
-			int iAlign; // 0:any 1:right 2:left 3:top 4:bottom
-	};
-	ToolBarInfo toolbars[] = {
-	    {&t_ElementTypes, IDR_ELTYPE, true, 4},
-	    {&t_FE, IDR_FE, true, 4},
-	    {&t_BoundaryConditions, IDR_BC, true, 4},
-	    {&t_PostProcessing, IDR_POST, true, 1},
-	    {&t_Edit, IDR_EDIT, true, 2},
-	    {&t_Create, IDR_CREATE, true, 2},
-	    {&t_Selection, IDR_SELECTION_TOOLBAR, true, 0},
-	    {&t_ShowHide, IDR_SHOWHIDE, true, 0},
-	    {&t_ElementVisibility, IDR_ELVISI, true, 0},
-	    {&t_Projection, IDR_PROJ, true, 0},
-	    {&t_Draw, IDR_DRAW, true, 0},
-	    {&t_Experimental, IDR_EXPERIMENTAL, true, 0},
-	    {&t_QuickFilter, IDR_QFILTER, true, 0},
-	    {&t_File, IDR_FILE, true, 0},
-	    {&t_Dimension, IDR_DIMS, true, 0},
-	    {&t_Groups, IDR_GROUP, true, 0},
-	    {&t_Utils, IDR_UTILITIES, true, 0},
-	    {&t_MenuCommands, IDR_MENU_COMMANDS, false, 0},
-	};
+	// Hidden:
+	toolbars[0] = {&MenuCommandsToolbar, IDR_MENUCOMMANDS_TOOLBAR, false, 0, 0};
+	// Top Row 1:
+	// &m_MenuBar
+	// Top Row 2:
+	toolbars[1] = {&ExperimentalToolbar, IDR_EXPERIMENTAL_TOOLBAR, true, 0, 1};
+	toolbars[2] = {&DimensionToolbar, IDR_DIMENSION_TOOLBAR, true, 0, 2};
+	toolbars[3] = {&UtilitiesToolbar, IDR_UTILITIES_TOOLBAR, true, 0, 2};
+	toolbars[4] = {&GroupToolbar, IDR_GROUP_TOOLBAR, true, 0, 2};
+	toolbars[5] = {&FileToolbar, IDR_FILE_TOOLBAR, true, 0, 2};
+	// Top Row 3:
+	toolbars[6] = {&DrawToolbar, IDR_DRAW_TOOLBAR, true, 0, 1};
+	toolbars[7] = {&ProjectionToolbar, IDR_PROJECTION_TOOLBAR, true, 0, 2};
+	// Top Row 4:
+	toolbars[8] = {&SelectFilterQuickToolbar, IDR_SELECTFILTERQUICK_TOOLBAR, true, 0, 1};
+	toolbars[9] = {&SelectToolbar, IDR_SELECT_TOOLBAR, true, 0, 2};
+	// Top Row 5:
+	toolbars[10] = {&ElementVisibilityToolbar, IDR_ELEMENTVISIBILITY_TOOLBAR, true, 0, 1};
+	toolbars[11] = {&GeomVisibilityToolbar, IDR_GEOMVISIBILITY_TOOLBAR, true, 0, 2};
+	toolbars[12] = {&ShowHideToolbar, IDR_SHOWHIDE_TOOLBAR, true, 0, -2};
+	// Center:
+	// &p_Input
+	// Left:
+	toolbars[13] = {&CreateToolbar, IDR_CREATE_TOOLBAR, true, 2, 1};
+	toolbars[14] = {&EditToolbar, IDR_EDIT_TOOLBAR, true, 2, 1};
+	// Right:
+	toolbars[15] = {&PostProcessingToolbar, IDR_POSTPROCESSING_TOOLBAR, true, 1, 1};
+	// Bottom:
+	toolbars[16] = {&BoundaryConditionsToolbar, IDR_BOUNDARYCONDITIONS_TOOLBAR, true, 4, 1};
+	toolbars[17] = {&FiniteElementsToolbar, IDR_FINITEELEMENS_TOOLBAR, true, 4, 2};
+	toolbars[18] = {&SetElementToolbar, IDR_SETELEMENT_TOOLBAR, true, 4, 2};
 
 	CString strCustomize;
 	BOOL bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
@@ -544,13 +553,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	UINT nID = 0;
 
 	for (auto& tb: toolbars) {
-		// Roy note the new CreateEx calls are not the same as
-		// the first
-		// each new added tool bar requires a new ID
-		// specified on the following line
 		UINT dwDockStyleCreate = CBRS_TOP;
 		UINT dwDockStyleDocking = CBRS_ALIGN_TOP;
-		switch (tb.iAlign) {
+		switch (tb.Align) {
 			case 0: // any
 				dwDockStyleCreate = CBRS_TOP;
 				dwDockStyleDocking = CBRS_ALIGN_ANY;
@@ -573,14 +578,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 				break;
 		}
 		if (!tb.pToolbar->CreateEx(this, TBSTYLE_FLAT,
-		                           WS_CHILD | WS_VISIBLE | dwDockStyleCreate | CBRS_GRIPPER |
+		                           WS_CHILD | dwDockStyleCreate | // CBRS_GRIPPER | WS_VISIBLE |
 		                               CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC,
 		                           CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + nID) ||
-		    !tb.pToolbar->LoadToolBar(tb.nResourceID)) {
+		    !tb.pToolbar->LoadToolBar(tb.ResourceID)) {
 			TRACE0("Failed to create toolbar\n");
 			return -1;
 		}
-		strToolBarName.LoadString(tb.nResourceID);
+		strToolBarName.LoadString(tb.ResourceID);
 		tb.pToolbar->SetWindowText(strToolBarName);
 		if (tb.isVisible) {
 			tb.pToolbar->EnableDocking(dwDockStyleDocking);
@@ -603,33 +608,19 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 
 	EnableDocking(CBRS_ALIGN_ANY);
 
-	// Top Row 1:
 	DockPane(&m_MenuBar);
-	// Top Row 2:
-	DockPane(&t_Utils);
-	DockPaneLeftOf(&t_Groups, &t_Utils);
-	DockPaneLeftOf(&t_Dimension, &t_Groups);
-	DockPaneLeftOf(&t_File, &t_Dimension);
-	// Top Row 3:
-	DockPane(&t_Experimental);
-	DockPaneLeftOf(&t_QuickFilter, &t_Experimental);
-	DockPaneLeftOf(&t_Draw, &t_QuickFilter);
-	DockPaneLeftOf(&t_Projection, &t_Draw);
-	// Top Row 4:
-	DockPane(&t_ElementVisibility);
-	DockPaneLeftOf(&t_ShowHide, &t_ElementVisibility);
-	DockPaneLeftOf(&t_Selection, &t_ShowHide);
-	// Center:
-	DockPane(&p_Input);
-	// Left:
-	DockPane(&t_Create);
-	DockPane(&t_Edit);
-	// Right:
-	DockPane(&t_PostProcessing);
-	// Bottom:
-	DockPane(&t_BoundaryConditions);
-	DockPaneLeftOf(&t_FE, &t_BoundaryConditions);
-	DockPaneLeftOf(&t_ElementTypes, &t_FE);
+	for (size_t i = 1; i < std::size(toolbars); ++i) {
+		auto& tbCurrent = toolbars[i];
+		auto& tbBefore = toolbars[i - 1];
+		if (abs(tbCurrent.DockCommand) == 1) {
+			DockPane(tbCurrent.pToolbar);
+		} else if (abs(tbCurrent.DockCommand) == 2) {
+			DockPaneLeftOf(tbCurrent.pToolbar, tbBefore.pToolbar);
+		}
+		if (tbCurrent.DockCommand < 0) {
+			DockPane(&p_Input);
+		}
+	}
 
 	for (auto& tb: toolbars) {
 		if (tb.isVisible) {
@@ -642,7 +633,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	// enable Visual Studio 2005 style docking window auto-hide behavior
 	EnableAutoHidePanes(CBRS_ALIGN_ANY);
 	// Enable toolbar and docking window menu replacement
-	EnablePaneMenu(TRUE, ID_VIEW_CUSTOMIZE, strCustomize, ID_VIEW_TOOLBAR);
+	EnablePaneMenu(TRUE, ID_VIEW_CUSTOMIZE, strCustomize, ID_VIEW_TOOLBARS_MENU, 0, 0);
 	// enable quick (Alt+drag) toolbar customization
 	CMFCToolBar::EnableQuickCustomization();
 
@@ -659,7 +650,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	lstBasicCommands.AddTail(ID_EDIT_UNDO);
 	lstBasicCommands.AddTail(ID_APP_ABOUT);
 	lstBasicCommands.AddTail(ID_VIEW_STATUS_BAR);
-	lstBasicCommands.AddTail(ID_VIEW_TOOLBAR);
+	lstBasicCommands.AddTail(ID_VIEW_TOOLBARS_MENU);
 	// CMFCToolBar::SetBasicCommands(lstBasicCommands);
 	// DockControlBar(&AA);
 	// sizeCbar();
@@ -937,6 +928,22 @@ void outtextMSG2(const char* AAA) {
 	outtextMSG2(CString(AAA));
 #endif
 }
+
+CFont* CreatePointFont(int pointSize, LPCTSTR fontName, int weight, BOOL italic) {
+	HDC hdc = ::GetDC(NULL);
+	int logPixelsY = GetDeviceCaps(hdc, LOGPIXELSY);
+	::ReleaseDC(NULL, hdc);
+	int height = -MulDiv(pointSize, logPixelsY, 72);
+	CFont* pFont = new CFont;
+	pFont->CreateFont(
+	    height, 0, 0, 0, weight, italic, FALSE, FALSE,
+	    ANSI_CHARSET, OUT_DEFAULT_PRECIS,
+	    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+	    DEFAULT_PITCH | FF_SWISS,
+	    fontName);
+
+	return pFont;
+}
 // momo
 
 // momo change command box color
@@ -963,33 +970,34 @@ void CheckCommandEditColor(bool bForceToCheck) {
 // momo change command box color
 // momo on off button and menu
 void CheckPushedButtons(const char* sMode) {
-	if (strcmp(sMode, "GeomOn") == 0) {
-		DspFlagsMain.DSP_POINTS = ButtonPush.GeomOn;
-		DspFlagsMain.DSP_CONTROL_POINTS = ButtonPush.GeomOn;
-		DspFlagsMain.DSP_CURVES = ButtonPush.GeomOn;
-		DspFlagsMain.DSP_SURFACES = ButtonPush.GeomOn;
-		DspFlagsMain.DSP_COORD = ButtonPush.GeomOn;
-	} else if (strcmp(sMode, "FiniteOn") == 0) {
-		DspFlagsMain.DSP_NODES = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_ALL = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_BOUNDARY_CONDITIONS = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_0D = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_1D = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_2D = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_3D = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_MASS = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_ROD = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_BEAM = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_RIGID = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_BUSH = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_TRI = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_QUAD = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_TET = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_WEDGE = ButtonPush.FiniteOn;
-		DspFlagsMain.DSP_ELEMENTS_BRICK = ButtonPush.FiniteOn;
-	} else if (strcmp(sMode, "SetAllElements") == 0) {
+	if (strcmp(sMode, "AllGeoms") == 0) {
+		DspFlagsMain.DSP_POINTS = ButtonPush.AllGeomOn;
+		DspFlagsMain.DSP_CONTROLPOINTS = ButtonPush.AllGeomOn;
+		DspFlagsMain.DSP_CURVES = ButtonPush.AllGeomOn;
+		DspFlagsMain.DSP_SURFACES = ButtonPush.AllGeomOn;
+		DspFlagsMain.DSP_COORDINATE_SYSTEMS = ButtonPush.AllGeomOn;
+	} else if (strcmp(sMode, "AllFinites") == 0) {
+		DspFlagsMain.DSP_NODES = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_BOUNDARYCONDITIONS = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_ALL = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_0D = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_1D = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_2D = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_3D = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_MASS = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_ROD = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_BEAM = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_RIGID = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_BUSH = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_TRI = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_QUAD = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_TET = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_WEDGE = ButtonPush.AllFiniteOn;
+		DspFlagsMain.DSP_ELEMENTS_BRICK = ButtonPush.AllFiniteOn;
+	} else if (strcmp(sMode, "AllElements") == 0) {
+		DspFlagsMain.DSP_ELEMENTS_ALL = DspFlagsMain.DSP_ELEMENTS_ALL;
 		DspFlagsMain.DSP_ELEMENTS_0D = DspFlagsMain.DSP_ELEMENTS_ALL;
 		DspFlagsMain.DSP_ELEMENTS_1D = DspFlagsMain.DSP_ELEMENTS_ALL;
 		DspFlagsMain.DSP_ELEMENTS_2D = DspFlagsMain.DSP_ELEMENTS_ALL;
@@ -1006,17 +1014,19 @@ void CheckPushedButtons(const char* sMode) {
 		DspFlagsMain.DSP_ELEMENTS_TET = DspFlagsMain.DSP_ELEMENTS_ALL;
 		DspFlagsMain.DSP_ELEMENTS_WEDGE = DspFlagsMain.DSP_ELEMENTS_ALL;
 		DspFlagsMain.DSP_ELEMENTS_BRICK = DspFlagsMain.DSP_ELEMENTS_ALL;
-	} else if (strcmp(sMode, "SetOneElements") == 0) {
+	} else if (strcmp(sMode, "SetOneElement") == 0) {
 		if (DspFlagsMain.DSP_ELEMENTS_MASS) {
 			DspFlagsMain.DSP_ELEMENTS_0D = true;
 		} else {
 			DspFlagsMain.DSP_ELEMENTS_0D = false;
 		}
-		if (!DspFlagsMain.DSP_ELEMENTS_1D && DspFlagsMain.DSP_ELEMENTS_ROD && DspFlagsMain.DSP_ELEMENTS_BEAM && DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING //
-		    && DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING && DspFlagsMain.DSP_ELEMENTS_RIGID && DspFlagsMain.DSP_ELEMENTS_BUSH) {
+		if (!DspFlagsMain.DSP_ELEMENTS_1D && DspFlagsMain.DSP_ELEMENTS_ROD && DspFlagsMain.DSP_ELEMENTS_BEAM //
+		    && DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING && DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING && DspFlagsMain.DSP_ELEMENTS_RIGID //
+		    && DspFlagsMain.DSP_ELEMENTS_BUSH) {
 			DspFlagsMain.DSP_ELEMENTS_1D = true;
-		} else if (DspFlagsMain.DSP_ELEMENTS_1D && !DspFlagsMain.DSP_ELEMENTS_ROD && !DspFlagsMain.DSP_ELEMENTS_BEAM && !DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING //
-		           && !DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING && !DspFlagsMain.DSP_ELEMENTS_RIGID && !DspFlagsMain.DSP_ELEMENTS_BUSH) {
+		} else if (DspFlagsMain.DSP_ELEMENTS_1D && !DspFlagsMain.DSP_ELEMENTS_ROD && !DspFlagsMain.DSP_ELEMENTS_BEAM //
+		           && !DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING && !DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING && !DspFlagsMain.DSP_ELEMENTS_RIGID //
+		           && !DspFlagsMain.DSP_ELEMENTS_BUSH) {
 			DspFlagsMain.DSP_ELEMENTS_1D = false;
 		}
 		if (!DspFlagsMain.DSP_ELEMENTS_2D && DspFlagsMain.DSP_ELEMENTS_TRI && DspFlagsMain.DSP_ELEMENTS_QUAD) {
@@ -1029,9 +1039,17 @@ void CheckPushedButtons(const char* sMode) {
 		} else if (DspFlagsMain.DSP_ELEMENTS_3D && !DspFlagsMain.DSP_ELEMENTS_TET && !DspFlagsMain.DSP_ELEMENTS_WEDGE && !DspFlagsMain.DSP_ELEMENTS_BRICK) {
 			DspFlagsMain.DSP_ELEMENTS_3D = false;
 		}
-		if (!DspFlagsMain.DSP_ELEMENTS_ALL && DspFlagsMain.DSP_ELEMENTS_0D && DspFlagsMain.DSP_ELEMENTS_1D && DspFlagsMain.DSP_ELEMENTS_2D && DspFlagsMain.DSP_ELEMENTS_3D) {
+		if (!DspFlagsMain.DSP_ELEMENTS_ALL && DspFlagsMain.DSP_ELEMENTS_MASS && DspFlagsMain.DSP_ELEMENTS_ROD //
+		    && DspFlagsMain.DSP_ELEMENTS_BEAM && DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING && DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING //
+		    && DspFlagsMain.DSP_ELEMENTS_RIGID && DspFlagsMain.DSP_ELEMENTS_BUSH && DspFlagsMain.DSP_ELEMENTS_TRI //
+		    && DspFlagsMain.DSP_ELEMENTS_QUAD && DspFlagsMain.DSP_ELEMENTS_TET && DspFlagsMain.DSP_ELEMENTS_WEDGE //
+		    && DspFlagsMain.DSP_ELEMENTS_BRICK) {
 			DspFlagsMain.DSP_ELEMENTS_ALL = true;
-		} else if (DspFlagsMain.DSP_ELEMENTS_ALL && !DspFlagsMain.DSP_ELEMENTS_0D && !DspFlagsMain.DSP_ELEMENTS_1D && !DspFlagsMain.DSP_ELEMENTS_2D && !DspFlagsMain.DSP_ELEMENTS_3D) {
+		} else if (DspFlagsMain.DSP_ELEMENTS_ALL && !DspFlagsMain.DSP_ELEMENTS_MASS && !DspFlagsMain.DSP_ELEMENTS_ROD //
+		           && !DspFlagsMain.DSP_ELEMENTS_BEAM && !DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING && !DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING //
+		           && !DspFlagsMain.DSP_ELEMENTS_RIGID && !DspFlagsMain.DSP_ELEMENTS_BUSH && !DspFlagsMain.DSP_ELEMENTS_TRI //
+		           && !DspFlagsMain.DSP_ELEMENTS_QUAD && !DspFlagsMain.DSP_ELEMENTS_TET && !DspFlagsMain.DSP_ELEMENTS_WEDGE //
+		           && !DspFlagsMain.DSP_ELEMENTS_BRICK) {
 			DspFlagsMain.DSP_ELEMENTS_ALL = false;
 		}
 	} else if (strcmp(sMode, "SetGroupElements0D") == 0) {
@@ -1050,26 +1068,27 @@ void CheckPushedButtons(const char* sMode) {
 		DspFlagsMain.DSP_ELEMENTS_TET = DspFlagsMain.DSP_ELEMENTS_3D;
 		DspFlagsMain.DSP_ELEMENTS_WEDGE = DspFlagsMain.DSP_ELEMENTS_3D;
 		DspFlagsMain.DSP_ELEMENTS_BRICK = DspFlagsMain.DSP_ELEMENTS_3D;
-		// if (DspFlagsMain.DSP_ELEMENTS_0D && DspFlagsMain.DSP_ELEMENTS_1D && DspFlagsMain.DSP_ELEMENTS_2D && DspFlagsMain.DSP_ELEMENTS_3D) {
-		//	DspFlagsMain.DSP_ELEMENTS_ALL = true;
-		// } else {
-		//	DspFlagsMain.DSP_ELEMENTS_ALL = false;
-		// }
-		//  else if (strcmp(sMode, "Check") == 0) {
-		//	if (ButtonPush.GeomOn && !DspFlagsMain.DSP_POINTS && !DspFlagsMain.DSP_CURVES && !DspFlagsMain.DSP_SURFACES && !DspFlagsMain.DSP_COORD) {
-		//		ButtonPush.GeomOn = false;
-		//		outtext1("All Geom Elements Visibility OFF");
-		//	} else if (!ButtonPush.GeomOn && DspFlagsMain.DSP_POINTS && DspFlagsMain.DSP_CURVES && DspFlagsMain.DSP_SURFACES && DspFlagsMain.DSP_COORD) {
-		//		ButtonPush.GeomOn = true;
-		//		outtext1("All Geom Elements Visibility ON");
-		//	}
-		//	if (ButtonPush.FiniteOn && !DspFlagsMain.DSP_NODES && !DspFlagsMain.DSP_ELEMENTS_ALL && !DspFlagsMain.DSP_BOUNDARY_CONDITIONS) {
-		//		ButtonPush.FiniteOn = false;
-		//		outtext1("All Finite Elements Visibility OFF");
-		//	} else if (!ButtonPush.FiniteOn && DspFlagsMain.DSP_NODES && DspFlagsMain.DSP_ELEMENTS_ALL && DspFlagsMain.DSP_BOUNDARY_CONDITIONS) {
-		//		ButtonPush.FiniteOn = true;
-		//		outtext1("All Finite Elements Visibility ON");
-		//	}
+	} else if (strcmp(sMode, "SetOneGeom") == 0) {
+		if (!ButtonPush.AllGeomOn && DspFlagsMain.DSP_POINTS && DspFlagsMain.DSP_CONTROLPOINTS && DspFlagsMain.DSP_CURVES //
+		    && DspFlagsMain.DSP_SURFACES && DspFlagsMain.DSP_COORDINATE_SYSTEMS) {
+			ButtonPush.AllGeomOn = true;
+		} else if (ButtonPush.AllGeomOn && !DspFlagsMain.DSP_POINTS && !DspFlagsMain.DSP_CONTROLPOINTS && !DspFlagsMain.DSP_CURVES //
+		           && !DspFlagsMain.DSP_SURFACES && !DspFlagsMain.DSP_COORDINATE_SYSTEMS) {
+			ButtonPush.AllGeomOn = false;
+		}
+	}
+	if (!ButtonPush.AllFiniteOn && DspFlagsMain.DSP_NODES && DspFlagsMain.DSP_BOUNDARYCONDITIONS //
+	    && DspFlagsMain.DSP_ELEMENTS_MASS && DspFlagsMain.DSP_ELEMENTS_ROD && DspFlagsMain.DSP_ELEMENTS_BEAM //
+	    && DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING && DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING && DspFlagsMain.DSP_ELEMENTS_RIGID //
+	    && DspFlagsMain.DSP_ELEMENTS_BUSH && DspFlagsMain.DSP_ELEMENTS_TRI && DspFlagsMain.DSP_ELEMENTS_QUAD //
+	    && DspFlagsMain.DSP_ELEMENTS_TET && DspFlagsMain.DSP_ELEMENTS_WEDGE && DspFlagsMain.DSP_ELEMENTS_BRICK) {
+		ButtonPush.AllFiniteOn = true;
+	} else if (ButtonPush.AllFiniteOn && !DspFlagsMain.DSP_NODES && !DspFlagsMain.DSP_BOUNDARYCONDITIONS //
+	           && !DspFlagsMain.DSP_ELEMENTS_MASS && !DspFlagsMain.DSP_ELEMENTS_ROD && !DspFlagsMain.DSP_ELEMENTS_BEAM //
+	           && !DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING && !DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING && !DspFlagsMain.DSP_ELEMENTS_RIGID //
+	           && !DspFlagsMain.DSP_ELEMENTS_BUSH && !DspFlagsMain.DSP_ELEMENTS_TRI && !DspFlagsMain.DSP_ELEMENTS_QUAD //
+	           && !DspFlagsMain.DSP_ELEMENTS_TET && !DspFlagsMain.DSP_ELEMENTS_WEDGE && !DspFlagsMain.DSP_ELEMENTS_BRICK) {
+		ButtonPush.AllFiniteOn = false;
 	}
 }
 // momo on off button and menu
@@ -1110,6 +1129,7 @@ void OnCancelClicked() {
 	} else {
 		outtextMSG2("Cancel");
 	}
+	SetFocus();
 }
 
 void OnDoneClicked() {
@@ -1127,6 +1147,7 @@ void OnDoneClicked() {
 		Edit3->SetWindowText(_T(""));
 		outtextMSG2(NewText);
 	}
+	SetFocus();
 }
 // momo make main buttons
 
@@ -1141,3 +1162,44 @@ void OnDoneClicked() {
 ////	EditViewScales->SetWindowText(sIn);
 ////}
 //// momo ModernOpenGL_End
+
+// momo
+void CMainFrame::OnViewToolbarBC() {
+	BOOL bShow = !BoundaryConditionsToolbar.IsWindowVisible();
+	BoundaryConditionsToolbar.ShowPane(bShow, FALSE, TRUE);
+	RecalcLayout();
+}
+
+void CMainFrame::OnUpdateViewToolbarBC(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(BoundaryConditionsToolbar.IsWindowVisible());
+}
+
+void CMainFrame::LockToolbarsDocking(bool lockAll) {
+	if (lockAll) {
+		outtext1("Lock toolbars.");
+	} else {
+		outtext1("Unlock toolbars.");
+	}
+	for (size_t i = 1; i < std::size(toolbars); ++i) {
+		auto& tb = toolbars[i];
+		tb.pToolbar->ShowPane(TRUE, FALSE, FALSE);
+		LONG style = tb.pToolbar->GetPaneStyle();
+		if (lockAll) {
+			// Lock toolbars
+			tb.pToolbar->SetBorders(0, 0, 0, 0);
+			tb.pToolbar->EnableDocking(0);
+			style &= ~(CBRS_GRIPPER | CBRS_FLOATING | CBRS_SIZE_DYNAMIC |
+			           CBRS_BORDER_3D | CBRS_BORDER_LEFT | CBRS_BORDER_TOP | CBRS_BORDER_RIGHT | CBRS_BORDER_BOTTOM);
+			tb.pToolbar->SetPaneStyle(style);
+		} else {
+			// Unlock toolbars
+			tb.pToolbar->SetBorders(1, 1, 1, 1);
+			tb.pToolbar->EnableDocking(CBRS_ALIGN_ANY);
+			style |= (CBRS_GRIPPER | CBRS_FLOATING | CBRS_SIZE_DYNAMIC |
+			          CBRS_BORDER_3D | CBRS_BORDER_LEFT | CBRS_BORDER_TOP | CBRS_BORDER_RIGHT | CBRS_BORDER_BOTTOM);
+			tb.pToolbar->SetPaneStyle(style);
+		}
+	}
+	RecalcLayout();
+}
+// momo

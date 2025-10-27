@@ -70,6 +70,36 @@ class CAppSettings {
 			return returnValue;
 		}
 
+		int ReadNeedLeftClick() {
+			int returnValue = ReadInt(_T("NeedLeftClick"), 0);
+			return returnValue;
+		}
+
+		void WriteNeedLeftClick() {
+			WriteInt(_T("NeedLeftClick"), NeedLeftClick);
+			return;
+		}
+
+		int ReadRightDragAction() {
+			int returnValue = ReadInt(_T("RightDragAction"), 3);
+			return returnValue;
+		}
+
+		void WriteRightDragAction() {
+			WriteInt(_T("RightDragAction"), RightDragAction);
+			return;
+		}
+
+		int ReadMiddleDragAction() {
+			int returnValue = ReadInt(_T("MiddleDragAction"), 1);
+			return returnValue;
+		}
+
+		void WriteMiddleDragAction() {
+			WriteInt(_T("MiddleDragAction"), MiddleDragAction);
+			return;
+		}
+
 		bool ReadWindowState() {
 			int windowState = ReadInt(_T("WindowState"), 1); // 0:Restore 1:Maximize
 			return windowState;

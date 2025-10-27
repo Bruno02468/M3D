@@ -121,3 +121,19 @@ In the two newly added commands for adding and using mesh seeds (which are still
 118-In the "Element Types" toolbar, a pressed (toggled) state was added for the active element.
 119-In the "Element Types" toolbar, the active element is made visible if it is hidden.
 120-Graphics rendering speed has been slightly improved.
+121-Modified the "Element Visibility" and "Show/Hide" toolbars.
+122-Added the "Geom Visibility" toolbar.
+123-From now on, executable files uploaded in this fork are digitally signed to gradually gain trust from antivirus programs.
+124-Added "Gradient Filled White" mode to the background.
+125-Added the ability to zoom into a selected area using "Ctrl+Shift", "F4", or by dragging both mouse buttons (right and left) simultaneously.
+126-Fixed the issue where "Ctrl" and "Shift" keys didn’t work for rotation and other actions while text boxes were active.
+127-Added mouse cursors for Rotate, Pan, Zoom, and Zoom Box modes.
+128-Fixed the issue where object labels were not displayed.
+129-Removed extra blank space at the end of the "View" menu.
+130-Renamed the "All Visible" button to "All Visibility to Default" and improved its behavior.
+131-Added a report display for the changes made when executing "All Visibility to Default".
+132-Fixed the initial background color changing from white to black during program startup.
+133-Minor changes in the About form and added a website link.
+134-Completed the code for the "[Draw] Fit All" and "[Draw] Reset View" buttons.
+135-Fixed the issue where the view was not centered when pressing the "[Draw] Set Eye" button with no objects selected.
+136-Fixed the bug where the previous workplane position was displayed when executing the "WP to Global" command.

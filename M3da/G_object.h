@@ -252,7 +252,7 @@ class Lamina;
 // const int DSP_ALL = 0xFFFFFFF;
 // const int DSP_LINE = 0x00000001;
 // const int DSP_NODES = 0x00000002;
-// const int DSP_NODES_ASK = 0x00000004;
+// const int DSP_NODESSQUAREASTERISK = 0x00000004;
 //// momo
 //// momo// const int DSP_SHADED_EDGES = 0x00000008;
 //// momo
@@ -260,24 +260,24 @@ class Lamina;
 // const int DSP_CURVES = 0x00000020;
 // const int DSP_SURFACES = 0x00000040;
 // const int DSP_THK = 0x00000080;
-// const int DSP_OFF = 0x00000100;
-// const int DSP_SURC = 0x00000200;
+// const int DSP_ELEMENTOFFSETS = 0x00000100;
+// const int DSP_SURFACECURVES = 0x00000200;
 // const int DSP_POINTS = 0x00000400;
-// const int DSP_BLACK = 0x00000800;
+// const int DSP_BLACKWHITE = 0x00000800;
 // const int DSP_ASSEM = 0x00001000;
-// const int DSP_CONT = 0x00002000;
-// const int DSP_RESLAB = 0x00004000;
-// const int DSP_RESDEF = 0x00008000;
+// const int DSP_CONTOURRAWRESULTS = 0x00002000;
+// const int DSP_RESULTSLABLES = 0x00004000;
+// const int DSP_DEFORMEDRESULTS = 0x00008000;
 // const int DSP_ELSYS = 0x00010000;
 // const int DSP_BC = 0x00020000;
 // const int DSP_GRADIENT_BACKGROUND = 0x00040000;
-// const int DSP_MATL = 0x00080000;
-// const int DSP_COORD = 0x00100000;
+// const int DSP_MATERIALDIRECTION = 0x00080000;
+// const int DSP_COORDINATE_SYSTEMS = 0x00100000;
 // const int DSP_WP = 0x00200000;
 // const int DSP_SURFU = 0x00400000;
-// const int DSP_ANIMATION = 0x00800000;
-// const int DSP_ANIMPOSNEG = 0x01000000;
-// const int DSP_VEC = 0x20000000;
+// const int DSP_ANIMATERESULTS = 0x00800000;
+// const int DSP_ANIMATEPOSITIVENEGATIVE = 0x01000000;
+// const int DSP_VECTORS = 0x20000000;
 //  momo change Display Flags Method
 
 // DOF FLAGS
@@ -1644,15 +1644,20 @@ class G_Object: public CCmdTarget {
 		int Visable; // Object Visability
 		BOOL bDrawLab;
 		// MoMo_Start
-		int nSeeds = 0;
-		int nTempSeeds = 0;
-		bool seedChanged = false;
-		int tempSeedId = 0;
+		int nSeeds;
+		int nTempSeeds;
+		bool seedChanged;
+		int tempSeedId;
 		double realdL;
 		double realdLBefore;
 		double realdLNext;
-		bool Selected = false;
+		bool Selected;
 		// MoMo_End
+		// momo zoom to fit
+		bool isFitable;
+		C3dVector boxMin;
+		C3dVector boxMax;
+		// momo zoom to fit
 		// momo
 		bool IsInCadr(double Px, double Py, CPoint P1, CPoint P2);
 		// momo
@@ -1684,6 +1689,9 @@ class G_Object: public CCmdTarget {
 		// momo gdi to og
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		virtual void Transform(C3dMatrix TMat);
 		virtual void Translate(C3dVector vIn);
 		// Curve specific
@@ -1916,6 +1924,9 @@ class WP_Object: public G_Object {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		// momo gdi to og
 		// momo// virtual void HighLight(CDC* pDC);
 		// momo gdi to og
@@ -2036,6 +2047,9 @@ class CvPt_Object: public G_Object {
 		// momo gdi to og2
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		C3dVector GetCoords();
 		virtual void SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran);
 		// virtual G_ObjectD SelDist(CPoint InPT,Filter FIL);
@@ -2556,6 +2570,9 @@ class NCurve: public G_Object {
 		// virtual void Draw(CDC* pDC,int iDrawmode);
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		virtual void OglDrawCtrlPts();
 		virtual void SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran);
 		// momo gdi to og
@@ -2696,6 +2713,9 @@ class NSurf: public G_Object {
 		// virtual void Draw(CDC* pDC,int iDrawmode);
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		virtual void RelTo(G_Object* pThis, ObjList* pList, int iType);
 		virtual void SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran);
 		// momo gdi to og
@@ -2810,6 +2830,10 @@ class NLine: public NCurve {
 		virtual void Create(C3dVector vP1, C3dVector vP2, int iLab, G_Object* Parrent);
 		virtual void DragUpdate(C3dVector inPt, C3dMatrix mWP);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		// momo gdi to og
 		// momo// virtual void HighLight(CDC* pDC);
 		// virtual void HighLight();
@@ -3181,10 +3205,16 @@ class CoordSys: public G_Object {
 		int CysType; // 1 rec,2 cyl,3sph
 		int RID;
 		double dScl;
+		// momo zoom to fit
+		double dMFullScl;
+		// momo zoom to fit
 		virtual void Create(C3dVector Orig, C3dMatrix RMat, int inRID, int inTp, int iLab, int iC, G_Object* Parrent);
 		// virtual void Draw(CDC* pDC,int iDrawmode);
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		virtual void Serialize(CArchive& ar, int iV);
 		virtual C3dVector Get_Centroid();
 		virtual void Translate(C3dVector vIn);
@@ -3274,6 +3304,9 @@ class E_Object: public G_Object {
 		virtual double GetPHI_SQ();
 		virtual void GetPinFlags(Vec<int>& PDOFS, int& iNoPINs);
 		virtual void PinFlgsToKE(Mat& KEL); // release DOF
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 };
 
 class E_Object38: public E_Object {
@@ -3294,6 +3327,9 @@ class E_Object38: public E_Object {
 		// momo gdi to og2
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		virtual C3dMatrix GetElSys();
 		virtual void ExportUNV(FILE* pFile);
@@ -3337,6 +3373,9 @@ class E_Object36: public E_Object {
 		// momo gdi to og2
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		virtual C3dMatrix GetElSys();
 		virtual void ExportUNV(FILE* pFile);
@@ -3386,6 +3425,9 @@ class E_Object2: public E_Object {
 		// momo gdi to og2
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		void SetUpVec(C3dVector vIn);
 		void SetSec(int iA, int iB, int iC);
@@ -3452,6 +3494,9 @@ class E_Object2R: public E_Object2 {
 		virtual void Info();
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		void SetUpVec(C3dVector vIn);
 		C3dVector GetDir();
@@ -3571,6 +3616,9 @@ class E_Object3: public E_Object {
 		// momo gdi to og2
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual int GetfaceList(eFace* Faces[6]);
 		virtual C3dVector Get_Centroid();
 		virtual void ExportUNV(FILE* pFile);
@@ -3675,6 +3723,9 @@ class E_Object4: public E_Object {
 		// momo gdi to og2
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		// virtual void SetToScr(C3dMatrix* pModMat,C3dMatrix* pScrTran);
 		// virtual void HighLight(CDC* pDC);
 		// virtual G_ObjectD SelDist(CPoint InPT,Filter FIL);
@@ -3777,6 +3828,9 @@ class E_Object34: public E_Object {
 		virtual int GetfaceList(eFace* Faces[6]);
 		virtual int GetLinkList(eEdge* Links[200]);
 		virtual G_Object* GetNode(int i);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual C3dVector GetNodalCoords(int i);
 		virtual void Reverse();
 		virtual double GetCharSize();
@@ -3871,6 +3925,9 @@ class E_ObjectR: public E_Object {
 		// momo gdi to og2
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		virtual void ExportUNV(FILE* pFile);
 		virtual CString ToString();
@@ -3902,7 +3959,6 @@ class E_ObjectR: public E_Object {
 class E_ObjectR2: public E_ObjectR {
 		DECLARE_DYNAMIC(E_ObjectR2)
 	public:
-		Node* pVertex[2];
 		double dALPHA;
 		int iCNA;
 		int iCNB;
@@ -4197,6 +4253,9 @@ class ME_Object: public G_Object {
 		// momo gdi to og
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
+		// momo zoom to fit
+		virtual void BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat);
+		// momo zoom to fit
 		virtual void RelTo(G_Object* pThis, ObjList* pList, int iType);
 		virtual void SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran);
 		virtual void Transform(C3dMatrix TMat);

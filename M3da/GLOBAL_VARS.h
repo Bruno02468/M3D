@@ -43,7 +43,10 @@ struct SeedValues {
 extern SeedValues SeedVals;
 extern CString LastRequest;
 extern BOOL CurrentBufferResult;
-extern BOOL m_leftIsDragging;
+extern BOOL leftIsDraggingForSelect;
+extern BOOL leftIsDraggingForZoomBox;
+extern BOOL rightIsDraggingForZoomBox;
+extern BOOL rightIsDraggingForZoomBoxCanceled;
 extern int m_x1;
 extern int m_y1;
 extern int m_x2;
@@ -60,6 +63,13 @@ extern int SelectMode;
 extern int MainDrawState;
 extern bool AxisOrigin;
 extern bool AxisCorner;
+extern int m_iFuncKey;
+extern bool NeedLeftClick;
+extern int RightDragAction;
+extern int MiddleDragAction;
+extern bool MouseLeftDown;
+extern bool MouseRightDown;
+extern bool MouseMiddleDown;
 // momo
 // momo change command box color
 struct CommandIsActive {
@@ -76,8 +86,8 @@ struct ButtonPushed {
 		bool ShadedWithoutEdges;
 		int DrawModeCurrent;
 		int DrawModeOut;
-		bool FiniteOn;
-		bool GeomOn;
+		bool AllFiniteOn;
+		bool AllGeomOn;
 		bool OnlySelectedOn;
 		bool QfilterNodesOn;
 		bool QfilterElementsOn;
@@ -104,16 +114,16 @@ struct DisplayFlags {
 		bool DSP_SHADED_WITH_EDGES;
 		bool DSP_NODES;
 		bool DSP_ELEMENTS_ALL;
-		bool DSP_BOUNDARY_CONDITIONS;
+		bool DSP_BOUNDARYCONDITIONS;
 		bool DSP_POINTS;
-		bool DSP_CONTROL_POINTS;
+		bool DSP_CONTROLPOINTS;
 		bool DSP_CURVES;
 		bool DSP_SURFACES;
-		bool DSP_COORD;
-		bool DSP_WORK_PLANE;
-		bool DSP_SHELL_THICKNESS;
-		bool DSP_ELEMENT_COORD_SYS;
-		bool DSP_SURFACE_DIRECTION_MARKERS;
+		bool DSP_COORDINATE_SYSTEMS;
+		bool DSP_WORKPLANE;
+		bool DSP_SHELLTHICKNESS;
+		bool DSP_ELEMENTCOORDSYS;
+		bool DSP_SURFACEDIRECTIONMARKERS;
 		bool DSP_GRADIENT_BACKGROUND;
 		bool DSP_ELEMENTS_0D;
 		bool DSP_ELEMENTS_MASS;
@@ -132,18 +142,18 @@ struct DisplayFlags {
 		bool DSP_ELEMENTS_WEDGE;
 		bool DSP_ELEMENTS_BRICK;
 
-		bool DSP_NODES_ASK;
-		bool DSP_OFF;
-		bool DSP_SURC;
-		bool DSP_BLACK;
-		bool DSP_ASSEM;
-		bool DSP_CONT;
-		bool DSP_RESLAB;
-		bool DSP_RESDEF;
-		bool DSP_MATL;
-		bool DSP_ANIMATION;
-		bool DSP_ANIMPOSNEG;
-		bool DSP_VEC;
+		bool DSP_NODESSQUAREASTERISK;
+		bool DSP_ELEMENTOFFSETS;
+		bool DSP_SURFACECURVES;
+		bool DSP_BLACKWHITE;
+		bool DSP_ASSEMBLIES;
+		bool DSP_CONTOURRAWRESULTS;
+		bool DSP_RESULTSLABLES;
+		bool DSP_DEFORMEDRESULTS;
+		bool DSP_MATERIALDIRECTION;
+		bool DSP_ANIMATERESULTS;
+		bool DSP_ANIMATEPOSITIVENEGATIVE;
+		bool DSP_VECTORS;
 };
 extern DisplayFlags DspFlagsMain;
 // momo change Display Flags Method
@@ -158,6 +168,9 @@ extern CPoint m_PointNew; // new move point
 // momo random color change bug
 extern bool bUseDoubleBuffer;
 // momo random color change bug
+// momo
+extern double Pi;
+// momo
 extern BOOL gDSP_BACK;
 extern BOOL gORTHO;
 extern DSP_Triad tOrient;

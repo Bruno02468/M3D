@@ -4,7 +4,9 @@
 #include <cmath>
 #define D2R 0.01745329251994
 #define R2D 57.2957795130931
-double Pi = 3.1415926535;
+// momo
+// momo// double Pi = 3.1415926535;
+// momo
 
 IMPLEMENT_DYNAMIC(C3dObject, CObject)
 
@@ -178,6 +180,20 @@ void C3dVector::Set(double _x, double _y, double _z) {
 	y = _y;
 	z = _z;
 }
+
+// momo zoom to fit
+void C3dVector::SetMin(C3dVector v1, C3dVector v2) {
+	x = min(v1.x, v2.x);
+	y = min(v1.y, v2.y);
+	z = min(v1.z, v2.z);
+}
+
+void C3dVector::SetMax(C3dVector v1, C3dVector v2) {
+	x = max(v1.x, v2.x);
+	y = max(v1.y, v2.y);
+	z = max(v1.z, v2.z);
+}
+// momo zoom to fit
 
 C3dVector C3dVector::operator=(const C3dVector r) {
 	x = r.x;

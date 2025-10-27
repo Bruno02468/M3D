@@ -129,11 +129,13 @@ ON_COMMAND(ID_CHECKS_COINCIDENTNODES, &CM3daDoc::OnChecksCoincidentnodes)
 ON_COMMAND(ID_MESH_SWEEPELEMENTS, &CM3daDoc::OnMeshSweepelements)
 ON_COMMAND(ID_VIEW_SHADEDEDGES_ONOFF, &CM3daDoc::OnViewShadededges)
 //  ON_COMMAND(ID_VIEW_WIREFRAME, &CM3daDoc::OnViewWireframe)
-ON_COMMAND(ID_VISABILITY_NODEON, &CM3daDoc::OnVisabilityNodeon)
-ON_COMMAND(ID_VISABILITY_ELEMENTON, &CM3daDoc::OnVisabilityElementOn)
-ON_COMMAND(ID_VIEW_NODESASK, &CM3daDoc::OnViewNodesask)
-ON_COMMAND(ID_VISABILITY_SURFACESON, &CM3daDoc::OnVisabilitySurfaceson)
-ON_COMMAND(ID_VISABILITY_CURVESON, &CM3daDoc::OnVisabilityCurveson)
+ON_COMMAND(ID_VISABILITY_NODEON, &CM3daDoc::OnVisabilityNodeOn)
+ON_COMMAND(ID_VISABILITY_ELEMENTON, &CM3daDoc::OnVisabilityAllElementOn)
+ON_COMMAND(ID_VIEW_NODESASK, &CM3daDoc::OnViewNodesAsk)
+// momo
+// momo// ON_COMMAND(ID_VISABILITY_SURFACESON, &CM3daDoc::OnVisabilitySurfacesOn)
+// momo
+ON_COMMAND(ID_VISABILITY_CURVESON, &CM3daDoc::OnVisabilityCurvesOn)
 ON_COMMAND(ID_VISABILITY_ALLVISABLE, &CM3daDoc::OnVisabilityAllvisable)
 ON_COMMAND(ID_VIEW_LABELENTITIES, &CM3daDoc::OnViewLabelEntities)
 ON_COMMAND(ID_QWANTA_IMPORTCATALOGUE, &CM3daDoc::OnQwantaImportcatalogue)
@@ -161,7 +163,7 @@ ON_COMMAND(ID_FILE_SAVE_AS, &CM3daDoc::OnFileSaveAsButton)
 // momo save by old versions
 // ON_COMMAND(ID_FILE_SAVE_AS, &CM3daDoc::OnFileSaveAs)
 // ON_COMMAND(ID_FILE_OPEN, &CM3daDoc::OnFileOpen)
-ON_COMMAND(ID_VIEW_WHITE, &CM3daDoc::OnViewWhite)
+ON_COMMAND(ID_VIEW_WHITE, &CM3daDoc::OnViewBlackWhiteBackground)
 ON_COMMAND(ID_TOOLS_ALIGN, &CM3daDoc::OnToolsAlign)
 ON_COMMAND(ID_TOOLS_WPSIZE, &CM3daDoc::OnToolsWpsize)
 ON_COMMAND(ID_TOOLS_ROTATEBYANGLES, &CM3daDoc::OnToolsRotatebyangles)
@@ -180,7 +182,7 @@ ON_COMMAND(ID_LIST_ALLPROPERTIES, &CM3daDoc::OnListAllproperties)
 ON_COMMAND(ID_LIST_MATERIAL, &CM3daDoc::OnListMaterial)
 ON_COMMAND(ID_LIST_PROPERTY, &CM3daDoc::OnListProperty)
 ON_COMMAND(ID_VIEW_DISPLAYSHELLTHICKNESS, &CM3daDoc::OnViewDisplayshellthickness)
-ON_COMMAND(ID_VIEW_DISPLAYELEMENTOFFSETS, &CM3daDoc::OnViewDisplayelementoffsets)
+ON_COMMAND(ID_VIEW_DISPLAYELEMENTOFFSETS, &CM3daDoc::OnViewDisplayElementOffsets)
 ON_COMMAND(ID_ELEMENTTYPE_BEAM, &CM3daDoc::OnElementtypeBeam)
 ON_COMMAND(ID_ELEMENTMODIFIY_BEAMOFFSET, &CM3daDoc::OnElementmodifiyBeamoffset)
 ON_COMMAND(ID_ELEMENTMODIFIY_BEAMUPVECTORS, &CM3daDoc::OnElementmodifiyBeamupvectors)
@@ -200,12 +202,24 @@ ON_COMMAND(ID_SURFACE_SWEEP, &CM3daDoc::OnSurfaceSweep)
 ON_COMMAND(ID_SOLVER_SOLVE, &CM3daDoc::OnSolverSolve)
 ON_COMMAND(ID_SOLVER_CREATERESTRAINT, &CM3daDoc::OnSolverCreaterestraint)
 ON_COMMAND(ID_SOLVER_CREATEFORCE, &CM3daDoc::OnSolverCreateforce)
-ON_COMMAND(ID_SURFACESON_SURFACECURVES, &CM3daDoc::OnSurfacesonSurfacecurves)
-ON_COMMAND(ID_SURFACES_SURFACESON, &CM3daDoc::OnSurfacesSurfaceson)
-ON_COMMAND(ID_VISABILITY_POINTSON, &CM3daDoc::OnVisabilityPointson)
+ON_COMMAND(ID_VISABILITY_SURFACECURVESON, &CM3daDoc::OnVisabilitySurfaceCurvesOn)
+ON_COMMAND(ID_VISABILITY_SURFACESON, &CM3daDoc::OnVisabilitySurfacesOn)
+ON_COMMAND(ID_VISABILITY_POINTSON, &CM3daDoc::OnVisabilityPointsOn)
 // momo on off button and menu
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_SURFACECURVESON, &CM3daDoc::OnUpdateVisabilitySurfaceCurvesOn)
+ON_UPDATE_COMMAND_UI(ID_VIEW_NODESASK, &CM3daDoc::OnUpdateViewNodesAsk)
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_ASSEMBLIES, &CM3daDoc::OnUpdateVisabilityAssemblies)
+ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYELEMENTOFFSETS, &CM3daDoc::OnUpdateViewDisplayElementOffsets)
+ON_UPDATE_COMMAND_UI(ID_VIEW_GFRADIENTFILLEDBACKGROUND, &CM3daDoc::OnUpdateViewGradientFilledBackground)
+ON_UPDATE_COMMAND_UI(ID_VIEW_WHITE, &CM3daDoc::OnUpdateViewBlackWhiteBackground)
+ON_UPDATE_COMMAND_UI(ID_POST_CONTOURRAWRESULTS, &CM3daDoc::OnUpdatePostContourRawResults)
+ON_UPDATE_COMMAND_UI(ID_POST_TOGGLERESULTSLABELS, &CM3daDoc::OnUpdatePostToggleResultsLabels)
+ON_UPDATE_COMMAND_UI(ID_POST_DEFORMEDRESULTS, &CM3daDoc::OnUpdatePostDeformedResults)
+ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYMATERIALDURECTION, &CM3daDoc::OnUpdateViewDisplayMaterialDirection)
+ON_UPDATE_COMMAND_UI(ID_POST_ANIMATERESULTS, &CM3daDoc::OnUpdatePostAnimateResults)
+ON_UPDATE_COMMAND_UI(ID_POST_ANIMATEPOSITIVENEGATIVE, &CM3daDoc::OnUpdatePostAnimatePositiveNegative)
 ON_UPDATE_COMMAND_UI(ID_VISABILITY_POINTSON, &CM3daDoc::OnUpdateVisabilityPointson)
-ON_UPDATE_COMMAND_UI(ID_VIEW_TOGGLECONTROLPOINTVISABILITY, &CM3daDoc::OnUpdateTogglecontrolpointvisability)
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_CONTROLPOINTON, &CM3daDoc::OnUpdateToggleControlPointVisability)
 // momo
 // momo// ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYALL, &CM3daDoc::OnUpdateDisplayall)
 ON_COMMAND(ID_EDIT_DESELECTALL, &CM3daDoc::OnEditDes)
@@ -225,7 +239,7 @@ ON_COMMAND(ID_DECKMODS_BULKDATA_ASIS, &CM3daDoc::OnDeckModsBulkDataAsIs)
 ON_COMMAND(ID_DECKMODS_BULKDATA_ADDTXT, &CM3daDoc::OnDeckModsBulkDataAddTxt)
 ON_COMMAND(ID_DECKMODS_BULKDATA_ADDCONFIG, &CM3daDoc::OnDeckModsBulkDataAddConfig)
 ON_COMMAND(ID_DECKMODS_BULKDATA_SHOWCURRENT, &CM3daDoc::OnDeckModsBulkDataShowCurrent)
-ON_COMMAND(ID_ELEMENTVISIBILITY_ALL, &CM3daDoc::OnVisabilityElementOn)
+ON_COMMAND(ID_ELEMENTVISIBILITY_ALL, &CM3daDoc::OnVisabilityAllElementOn)
 ON_COMMAND(ID_ELEMENTVISIBILITY_0D, &CM3daDoc::OnElementsVisibility0D)
 ON_COMMAND(ID_ELEMENTVISIBILITY_MASS, &CM3daDoc::OnElementsVisibilityMass)
 ON_COMMAND(ID_ELEMENTVISIBILITY_1D, &CM3daDoc::OnElementsVisibility1D)
@@ -244,21 +258,21 @@ ON_COMMAND(ID_ELEMENTVISIBILITY_WEDGE, &CM3daDoc::OnElementsVisibilityWedge)
 ON_COMMAND(ID_ELEMENTVISIBILITY_BRICK, &CM3daDoc::OnElementsVisibilityBrick)
 // momo
 ON_UPDATE_COMMAND_UI(ID_VISABILITY_CURVESON, &CM3daDoc::OnUpdateVisabilityCurveson)
-ON_UPDATE_COMMAND_UI(ID_SURFACES_SURFACESON, &CM3daDoc::OnUpdateSurfacesSurfaceson)
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_SURFACESON, &CM3daDoc::OnUpdateVisabilitySurfacesOn)
 ON_UPDATE_COMMAND_UI(ID_VISABILITY_COORDSON, &CM3daDoc::OnUpdateVisabilityCoordson)
 ON_UPDATE_COMMAND_UI(ID_VISABILITY_NODEON, &CM3daDoc::OnUpdateVisabilityNodeon)
 ON_UPDATE_COMMAND_UI(ID_VISABILITY_ELEMENTON, &CM3daDoc::OnUpdateVisabilityElementon)
-ON_UPDATE_COMMAND_UI(ID_VISABILITY_BOUNDARYCONDITIONS, &CM3daDoc::OnUpdateVisabilityBoundaryconditions)
-ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYSHELLTHICKNESS, &CM3daDoc::OnUpdateDisplayshellthickness)
-ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYELEMENTCOORDSYS, &CM3daDoc::OnUpdateDisplayelementcoordsys)
-ON_UPDATE_COMMAND_UI(ID_VIEW_SURFACEDIRECTIONMARKERS, &CM3daDoc::OnUpdateSurfacedirectionmarkers)
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_BOUNDARYCONDITIONS, &CM3daDoc::OnUpdateVisabilityBoundaryConditions)
+ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYSHELLTHICKNESS, &CM3daDoc::OnUpdateDisplayShellThickness)
+ON_UPDATE_COMMAND_UI(ID_VIEW_DISPLAYELEMENTCOORDSYS, &CM3daDoc::OnUpdateDisplayElementCoordSys)
+ON_UPDATE_COMMAND_UI(ID_VIEW_SURFACEDIRECTIONMARKERS, &CM3daDoc::OnUpdateSurfaceDirectionMarkers)
 ON_UPDATE_COMMAND_UI(ID_VISABILITY_WORKPLANE, &CM3daDoc::OnUpdateVisabilityWorkplane)
 ON_COMMAND(ID_VISABILITY_LABELESOFF, &CM3daDoc::OnVisabilityLabelOff)
 // ON_UPDATE_COMMAND_UI(ID_VISABILITY_LABELESOFF, &CM3daDoc::OnUpdateVisabilityLabelOff)
 ON_COMMAND(ID_VISABILITY_GEOMSON, &CM3daDoc::OnVisabilityGeomOn)
-// ON_UPDATE_COMMAND_UI(ID_VISABILITY_GEOMSON, &CM3daDoc::OnUpdateVisabilityGeomOn)
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_GEOMSON, &CM3daDoc::OnUpdateVisabilityGeomOn)
 ON_COMMAND(ID_VISABILITY_FINITESON, &CM3daDoc::OnVisabilityFiniteOn)
-// ON_UPDATE_COMMAND_UI(ID_VISABILITY_FINITESON, &CM3daDoc::OnUpdateVisabilityFiniteOn)
+ON_UPDATE_COMMAND_UI(ID_VISABILITY_FINITESON, &CM3daDoc::OnUpdateVisabilityFiniteOn)
 ON_UPDATE_COMMAND_UI(ID_QFILTER_NODES, &CM3daDoc::OnUpdateQfilterNodes)
 ON_UPDATE_COMMAND_UI(ID_QFILTER_ELEMENTS, &CM3daDoc::OnUpdateQfilterElements)
 ON_UPDATE_COMMAND_UI(ID_QFILTER_POINTS, &CM3daDoc::OnUpdateQfilterPoints)
@@ -287,20 +301,20 @@ ON_COMMAND(ID_IMPORT_OP2, &CM3daDoc::OnImportOp2)
 ON_COMMAND(ID_POST_LISTRESSET, &CM3daDoc::OnPostListresset)
 ON_COMMAND(ID_POST_SELECTRESULTS, &CM3daDoc::OnPostSelectresults)
 ON_COMMAND(ID_POST_LISTSELECTEDRESSET, &CM3daDoc::OnPostListselectedresset)
-ON_COMMAND(ID_POST_CONTOURRAWDATA, &CM3daDoc::OnPostContourrawdata)
+ON_COMMAND(ID_POST_CONTOURRAWRESULTS, &CM3daDoc::OnPostContourRawResults)
 ON_COMMAND(ID_POST_SELECTVARIABLE, &CM3daDoc::OnPostSelectvariable)
-ON_COMMAND(ID_POST_TOGRESULTSLABELS, &CM3daDoc::OnPostTogresultslabels)
-ON_COMMAND(ID_POST_DEFORMEDDISPLAY, &CM3daDoc::OnPostDeformeddisplay)
+ON_COMMAND(ID_POST_TOGGLERESULTSLABELS, &CM3daDoc::OnPostToggleResultsLabels)
+ON_COMMAND(ID_POST_DEFORMEDRESULTS, &CM3daDoc::OnPostDeformedResults)
 ON_COMMAND(ID_POST_SELECTDEFORMEDRESULTS, &CM3daDoc::OnPostSelectdeformedresults)
 ON_COMMAND(ID_PROPERTY_SOLID, &CM3daDoc::OnPropertySolid)
 ON_COMMAND(ID_OPTIONS_DEFORMATIONSCALE, &CM3daDoc::OnOptionsDeformationscale)
 ON_COMMAND(ID_PROPERTY_2DPLAINSTRESS, &CM3daDoc::OnProperty2dplainstress)
 ON_COMMAND(ID_ELEMENTTYPE_ROD, &CM3daDoc::OnElementtypeRod)
 ON_COMMAND(ID_PROPERTY_ROD, &CM3daDoc::OnPropertyRod)
-ON_COMMAND(ID_VIEW_DISPLAYELEMENTCOORDSYS, &CM3daDoc::OnViewDisplayelementcoordsys)
+ON_COMMAND(ID_VIEW_DISPLAYELEMENTCOORDSYS, &CM3daDoc::OnViewDisplayElementCoordSys)
 ON_COMMAND(ID_ANALYSIS_CREATEMOMENT, &CM3daDoc::OnAnalysisCreatemoment)
 ON_COMMAND(ID_ANALYSIS_CREATEPRESSURE, &CM3daDoc::OnAnalysisCreatepressure)
-ON_COMMAND(ID_VISABILITY_BOUNDARYCONDITIONS, &CM3daDoc::OnVisabilityBoundaryconditions)
+ON_COMMAND(ID_VISABILITY_BOUNDARYCONDITIONS, &CM3daDoc::OnVisabilityBoundaryConditions)
 ON_COMMAND(ID_POST_EXPORTRESULTSTOTEXTFILE, &CM3daDoc::OnPostExportresultstotextfile)
 ON_COMMAND(ID_NODEMODIFY_LABEL, &CM3daDoc::OnNodemodifyLabel)
 ON_COMMAND(ID_ELEMENTMODIFIY_LABELBYINC, &CM3daDoc::OnElementmodifiyLabelbyinc)
@@ -308,14 +322,14 @@ ON_COMMAND(ID_NODEMODIFY_LABELBYSTART, &CM3daDoc::OnNodemodifyLabelbystart)
 ON_COMMAND(ID_ELEMENTMODIFIY_LABELBYSTART, &CM3daDoc::OnElementmodifiyLabelbystart)
 ON_COMMAND(ID_MESH_FREETRIMESH, &CM3daDoc::OnMeshFreetrimesh)
 ON_COMMAND(ID_POST_LISTELEMENTRESULT, &CM3daDoc::OnPostListelementresult)
-ON_COMMAND(ID_VIEW_GFRADIENTFILLEDBACKGROUND, &CM3daDoc::OnViewGfradientfilledbackground)
+ON_COMMAND(ID_VIEW_GFRADIENTFILLEDBACKGROUND, &CM3daDoc::OnViewGradientFilledBackground)
 ON_COMMAND(ID_EXPORT_EXPORTTOTEXT, &CM3daDoc::OnExportExporttotext)
 ON_COMMAND(ID_ELEMENTMODIFIY_REVERSE, &CM3daDoc::OnElementmodifiyReverse)
 ON_COMMAND(ID_MESHQND, &CM3daDoc::OnMeshqnd)
 ON_COMMAND(ID_IMPORT_TXTTOGROUPS, &CM3daDoc::OnImportTxttogroups)
-ON_COMMAND(ID_VIEW_DISPLAYMATERIALDURECTION, &CM3daDoc::OnViewDisplaymaterialdurection)
+ON_COMMAND(ID_VIEW_DISPLAYMATERIALDURECTION, &CM3daDoc::OnViewDisplayMaterialDirection)
 ON_COMMAND(ID_OPTIONS_SETCOLOURBAR, &CM3daDoc::OnOptionsSetcolourbar)
-ON_COMMAND(ID_VISABILITY_COORDSON, &CM3daDoc::OnVisabilityCoordson)
+ON_COMMAND(ID_VISABILITY_COORDSON, &CM3daDoc::OnVisabilityCoordinateSystemsOn)
 ON_COMMAND(ID_GROUP_NEXTGROUP, &CM3daDoc::OnGroupNextgroup)
 ON_COMMAND(ID_GROUP_PREVIOUSGRPUP, &CM3daDoc::OnGroupPreviousgrpup)
 ON_COMMAND(ID_GROUP_ELEMENTSBYTYPE, &CM3daDoc::OnGroupElementsbytype)
@@ -374,7 +388,7 @@ ON_COMMAND(ID_CHECKS_CHECKSHELLELEMENTASPECTRATION, &CM3daDoc::OnChecksCheckshel
 ON_COMMAND(ID_CHECKS_CHECKTETCOLLAPSE, &CM3daDoc::OnChecksChecktetcollapse)
 ON_COMMAND(ID_ELEMENTTYPE_MASS, &CM3daDoc::OnElementtypeMass)
 ON_COMMAND(ID_PROPERTY_LUMPEDMASS, &CM3daDoc::OnPropertyLumpedmass)
-ON_COMMAND(ID_VISABILITY_WORKPLANE, &CM3daDoc::OnVisabilityWorkplane)
+ON_COMMAND(ID_VISABILITY_WORKPLANE, &CM3daDoc::OnVisabilityWorkPlane)
 ON_COMMAND(ID_TOOLS_MEASUREANGLE, &CM3daDoc::OnToolsMeasureangle)
 ON_COMMAND(ID_LOADSBC_CREATEROTATIONALBODYLOAD, &CM3daDoc::OnLoadsbcCreaterotationalbodyload)
 ON_COMMAND(ID_IMPORT_LOADBMP, &CM3daDoc::OnImportLoadbmp)
@@ -387,11 +401,11 @@ ON_COMMAND(ID_NODEMODIFY_CHANGEZORDINATE, &CM3daDoc::OnNodemodifyChangezordinate
 ON_COMMAND(ID_PROPERTYMODIFY_EDITPROPERTYVALUES, &CM3daDoc::OnPropertymodifyEditpropertyvalues)
 ON_COMMAND(ID_PROPERTY_EDITMATERIALVALUES, &CM3daDoc::OnPropertyEditmaterialvalues)
 ON_COMMAND(ID_PROPERTY_BEAM_BASIC, &CM3daDoc::OnPropertyBeamBasic)
-ON_COMMAND(ID_VIEW_SURFACEDIRECTIONMARKERS, &CM3daDoc::OnViewSurfacedirectionmarkers)
+ON_COMMAND(ID_VIEW_SURFACEDIRECTIONMARKERS, &CM3daDoc::OnViewSurfaceDirectionMarkers)
 ON_COMMAND(ID_POST_LISTNODALRESULTS, &CM3daDoc::OnPostListnodalresults)
 ON_COMMAND(ID_CURVEMODIFY_INSERTKNOT, &CM3daDoc::OnCurvemodifyInsertknot)
-ON_COMMAND(ID_POST_ANIMATE, &CM3daDoc::OnPostAnimate)
-ON_COMMAND(ID_POST_ANIMATENEG, &CM3daDoc::OnPostAnimateneg)
+ON_COMMAND(ID_POST_ANIMATERESULTS, &CM3daDoc::OnPostAnimateResults)
+ON_COMMAND(ID_POST_ANIMATEPOSITIVENEGATIVE, &CM3daDoc::OnPostAnimatePositiveNegative)
 ON_COMMAND(ID_POST_FRAMEDELAY, &CM3daDoc::OnPostFramedelay)
 ON_COMMAND(ID_POST_ANIMATIONFRAMES, &CM3daDoc::OnPostAnimationframes)
 ON_COMMAND(ID_ELEMENTMODIFIY_BEAMENDARELEASE, &CM3daDoc::OnElementmodifiyBeamendarelease)
@@ -478,7 +492,7 @@ ON_COMMAND(ID_CURVETOOLS_LINETHROUPTANDTANGENTTOCIRCLE, &CM3daDoc::OnCurvetoolsL
 ON_COMMAND(ID_CURVETOOLS_LINETANGENTTO2CIRCLES, &CM3daDoc::OnCurvetoolsLinetangentto2circles)
 ON_COMMAND(ID_CURVETOOLS_POINTSONCIRCLE, &CM3daDoc::OnCurvetoolsPointsoncircle)
 ON_COMMAND(ID_EDIT_POLARTRANSLATEDFROM, &CM3daDoc::OnEditPolartranslatedfrom)
-ON_COMMAND(ID_VIEW_TOGGLECONTROLPOINTVISABILITY, &CM3daDoc::OnViewTogglecontrolpointvisability)
+ON_COMMAND(ID_VISABILITY_CONTROLPOINTON, &CM3daDoc::OnViewToggleControlPointVisability)
 ON_COMMAND(ID_EXPORT_EXPORTDXF, &CM3daDoc::OnExportExportdxf)
 ON_COMMAND(ID_CURVEMODIFY_LAYERNUMBER, &CM3daDoc::OnCurvemodifyLayernumber)
 ON_COMMAND(ID_SELECTION_SELECTCURVE, &CM3daDoc::OnSelectionSelectcurve)
@@ -820,6 +834,24 @@ double CM3daDoc::GetHeight() {
 	return (cDBase->dHeight);
 }
 
+// momo zoom to fit
+double CM3daDoc::GetWidth() {
+	return (cDBase->dWidth);
+}
+
+void CM3daDoc::SetAllToScr(const C3dMatrix& m) {
+	cDBase->SetAllToScr(m);
+}
+
+void CM3daDoc::MoveScreen(double d1, double d2, double dWidth, double dHeight, CView* pCViewIn) {
+	cDBase->MoveScreen(d1, d2, dWidth, dHeight, pCViewIn);
+}
+
+void CM3daDoc::MovePointToScreenCenter(C3dVector fromPointOnScreen) {
+	cDBase->MovePointToScreenCenter(fromPointOnScreen);
+}
+// momo zoom to fit
+
 // momo gdi to og
 // void CM3daDoc::DrawDrag(CDC* pCView, CPoint P1, CPoint P2) {
 //	cDBase->DrawDrag(pCView, P1, P2);
@@ -862,6 +894,12 @@ void CM3daDoc::SelectBox(CPoint P1, CPoint P2) {
 	}
 	// momo deselect cadr
 }
+
+// momo
+void CM3daDoc::ZoomBox(CPoint startPoint, CPoint endPoint) {
+	cDBase->ZoomBox(startPoint, endPoint);
+}
+// momo
 
 void SendMsg(CString AAA) {
 	CString Msg;
@@ -1119,6 +1157,24 @@ C3dVector CM3daDoc::GetViewPt() {
 C3dVector CM3daDoc::GetMeshCentre() {
 	return (cDBase->GetMeshCentre());
 }
+
+// momo zoom to fit
+void CM3daDoc::GetObjectsBoxLimits(C3dVector& minValues, C3dVector& maxValues) {
+	cDBase->GetObjectsBoxLimits(minValues, maxValues);
+}
+
+C3dVector CM3daDoc::SetToScr(C3dVector& pointXYZ) {
+	C3dVector pointXYZNew = pointXYZ;
+	pointXYZNew.SetToScr(&cDBase->pModelMat, &cDBase->pScrMat);
+	return pointXYZNew;
+}
+
+C3dVector CM3daDoc::PickPointToGlobal2(CPoint Pt) {
+	C3dVector returnPt;
+	returnPt = cDBase->PickPointToGlobal2(Pt);
+	return returnPt;
+}
+// momo zoom to fit
 
 int CM3daDoc::GetMeshYExt() {
 	return (cDBase->GetMeshYExt());
@@ -1485,7 +1541,7 @@ void CM3daDoc::OnElementtypeRigid() {
 void CM3daDoc::OnElementsVisibility0D() {
 	DspFlagsMain.DSP_ELEMENTS_0D = !DspFlagsMain.DSP_ELEMENTS_0D;
 	CheckPushedButtons("SetGroupElements0D");
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_0D) {
@@ -1498,7 +1554,7 @@ void CM3daDoc::OnElementsVisibility0D() {
 void CM3daDoc::OnElementsVisibility1D() {
 	DspFlagsMain.DSP_ELEMENTS_1D = !DspFlagsMain.DSP_ELEMENTS_1D;
 	CheckPushedButtons("SetGroupElements1D");
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_1D) {
@@ -1511,7 +1567,7 @@ void CM3daDoc::OnElementsVisibility1D() {
 void CM3daDoc::OnElementsVisibility2D() {
 	DspFlagsMain.DSP_ELEMENTS_2D = !DspFlagsMain.DSP_ELEMENTS_2D;
 	CheckPushedButtons("SetGroupElements2D");
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_2D) {
@@ -1524,7 +1580,7 @@ void CM3daDoc::OnElementsVisibility2D() {
 void CM3daDoc::OnElementsVisibility3D() {
 	DspFlagsMain.DSP_ELEMENTS_3D = !DspFlagsMain.DSP_ELEMENTS_3D;
 	CheckPushedButtons("SetGroupElements3D");
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_3D) {
@@ -1536,7 +1592,7 @@ void CM3daDoc::OnElementsVisibility3D() {
 
 void CM3daDoc::OnElementsVisibilityMass() {
 	DspFlagsMain.DSP_ELEMENTS_MASS = !DspFlagsMain.DSP_ELEMENTS_MASS;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_MASS) {
@@ -1548,7 +1604,7 @@ void CM3daDoc::OnElementsVisibilityMass() {
 
 void CM3daDoc::OnElementsVisibilityRod() {
 	DspFlagsMain.DSP_ELEMENTS_ROD = !DspFlagsMain.DSP_ELEMENTS_ROD;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_ROD) {
@@ -1560,7 +1616,7 @@ void CM3daDoc::OnElementsVisibilityRod() {
 
 void CM3daDoc::OnElementsVisibilityBeam() {
 	DspFlagsMain.DSP_ELEMENTS_BEAM = !DspFlagsMain.DSP_ELEMENTS_BEAM;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_BEAM) {
@@ -1572,7 +1628,7 @@ void CM3daDoc::OnElementsVisibilityBeam() {
 
 void CM3daDoc::OnElementsVisibilityTranslationSpring() {
 	DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING = !DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_TRANSLATIONALSPRING) {
@@ -1584,7 +1640,7 @@ void CM3daDoc::OnElementsVisibilityTranslationSpring() {
 
 void CM3daDoc::OnElementsVisibilityRotationSpring() {
 	DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING = !DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_ROTATIONALSPRING) {
@@ -1596,7 +1652,7 @@ void CM3daDoc::OnElementsVisibilityRotationSpring() {
 
 void CM3daDoc::OnElementsVisibilityRigid() {
 	DspFlagsMain.DSP_ELEMENTS_RIGID = !DspFlagsMain.DSP_ELEMENTS_RIGID;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_RIGID) {
@@ -1608,7 +1664,7 @@ void CM3daDoc::OnElementsVisibilityRigid() {
 
 void CM3daDoc::OnElementsVisibilityBush() {
 	DspFlagsMain.DSP_ELEMENTS_BUSH = !DspFlagsMain.DSP_ELEMENTS_BUSH;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_BUSH) {
@@ -1620,7 +1676,7 @@ void CM3daDoc::OnElementsVisibilityBush() {
 
 void CM3daDoc::OnElementsVisibilityTri() {
 	DspFlagsMain.DSP_ELEMENTS_TRI = !DspFlagsMain.DSP_ELEMENTS_TRI;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_TRI) {
@@ -1632,7 +1688,7 @@ void CM3daDoc::OnElementsVisibilityTri() {
 
 void CM3daDoc::OnElementsVisibilityQuad() {
 	DspFlagsMain.DSP_ELEMENTS_QUAD = !DspFlagsMain.DSP_ELEMENTS_QUAD;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_QUAD) {
@@ -1644,7 +1700,7 @@ void CM3daDoc::OnElementsVisibilityQuad() {
 
 void CM3daDoc::OnElementsVisibilityTet() {
 	DspFlagsMain.DSP_ELEMENTS_TET = !DspFlagsMain.DSP_ELEMENTS_TET;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_TET) {
@@ -1656,7 +1712,7 @@ void CM3daDoc::OnElementsVisibilityTet() {
 
 void CM3daDoc::OnElementsVisibilityWedge() {
 	DspFlagsMain.DSP_ELEMENTS_WEDGE = !DspFlagsMain.DSP_ELEMENTS_WEDGE;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_WEDGE) {
@@ -1668,7 +1724,7 @@ void CM3daDoc::OnElementsVisibilityWedge() {
 
 void CM3daDoc::OnElementsVisibilityBrick() {
 	DspFlagsMain.DSP_ELEMENTS_BRICK = !DspFlagsMain.DSP_ELEMENTS_BRICK;
-	CheckPushedButtons("SetOneElements");
+	CheckPushedButtons("SetOneElement");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	if (DspFlagsMain.DSP_ELEMENTS_BRICK) {
@@ -1937,18 +1993,17 @@ void CM3daDoc::OnViewShadededges() {
 	cDBase->ReDraw();
 }
 
-void CM3daDoc::OnViewDisplayelementcoordsys() {
+void CM3daDoc::OnViewDisplayElementCoordSys() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_ELEMENT_COORD_SYS = !DspFlagsMain.DSP_ELEMENT_COORD_SYS;
+	DspFlagsMain.DSP_ELEMENTCOORDSYS = !DspFlagsMain.DSP_ELEMENTCOORDSYS;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_ELEMENT_COORD_SYS) {
+	if (DspFlagsMain.DSP_ELEMENTCOORDSYS) {
 		outtext1("Element Coordinate Systems Visibility ON");
 	} else {
 		outtext1("Element Coordinate Systems Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -2460,9 +2515,12 @@ IDispatch* CM3daDoc::APIGetModel(void) {
 //	// TODO: Add your command handler code here
 // }
 
-void CM3daDoc::OnVisabilityNodeon() {
+void CM3daDoc::OnVisabilityNodeOn() {
 	// TODO: Add your command handler code here
 	DspFlagsMain.DSP_NODES = !DspFlagsMain.DSP_NODES;
+	// momo
+	CheckPushedButtons("SetOneElement");
+	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
@@ -2471,15 +2529,14 @@ void CM3daDoc::OnVisabilityNodeon() {
 	} else {
 		outtext1("Nodes Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
-void CM3daDoc::OnVisabilityElementOn() {
+void CM3daDoc::OnVisabilityAllElementOn() {
 	// TODO: Add your command handler code here
 	DspFlagsMain.DSP_ELEMENTS_ALL = !DspFlagsMain.DSP_ELEMENTS_ALL;
 	// momo
-	CheckPushedButtons("SetAllElements");
+	CheckPushedButtons("AllElements");
 	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
@@ -2492,23 +2549,43 @@ void CM3daDoc::OnVisabilityElementOn() {
 	//  momo on off button and menu
 }
 
-void CM3daDoc::OnViewNodesask() {
+void CM3daDoc::OnViewNodesAsk() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_NODES_ASK = !DspFlagsMain.DSP_NODES_ASK;
+	DspFlagsMain.DSP_NODESSQUAREASTERISK = !DspFlagsMain.DSP_NODESSQUAREASTERISK;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_NODESSQUAREASTERISK) {
+		outtext1("Display Nodes As Square");
+	} else {
+		outtext1("Display Nodes As Black Asterisk");
+	}
+	//  momo
 }
 
-void CM3daDoc::OnVisabilitySurfaceson() {
+void CM3daDoc::OnVisabilitySurfacesOn() {
 	// TODO: Add your command handler code here
 	DspFlagsMain.DSP_SURFACES = !DspFlagsMain.DSP_SURFACES;
+	// momo
+	CheckPushedButtons("SetOneGeom");
+	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo on off button and menu
+	if (DspFlagsMain.DSP_SURFACES) {
+		outtext1("Surfaces Visibility ON");
+	} else {
+		outtext1("Surfaces Visibility OFF");
+	}
+	//  momo on off button and menu
 }
 
-void CM3daDoc::OnVisabilityCurveson() {
+void CM3daDoc::OnVisabilityCurvesOn() {
 	// TODO: Add your command handler code here
 	DspFlagsMain.DSP_CURVES = !DspFlagsMain.DSP_CURVES;
+	// momo
+	CheckPushedButtons("SetOneGeom");
+	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
@@ -2517,7 +2594,6 @@ void CM3daDoc::OnVisabilityCurveson() {
 	} else {
 		outtext1("Curves Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -2533,7 +2609,7 @@ void CM3daDoc::OnVisabilityAllvisable() {
 	//	cDBase->DspFlags = (DSP_ALL ^ DSP_LINE);
 	//}
 	// bool Last_DSP_WIREFRAME = DspFlagsMain.DSP_WIREFRAME;
-	cDBase->DisplayAll();
+	cDBase->DefaultDisplays();
 	// DspFlagsMain.DSP_WIREFRAME = Last_DSP_WIREFRAME;
 	//  momo change Display Flags Method
 	//  momo// gDSP_CPTS = false;
@@ -2544,9 +2620,6 @@ void CM3daDoc::OnVisabilityAllvisable() {
 	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
-	// momo on off button and menu
-	outtext1("All Objects Visibility ON");
-	// momo on off button and menu
 }
 
 void CM3daDoc::OnViewLabelEntities() {
@@ -2721,9 +2794,16 @@ SHORT CM3daDoc::API_On1d2d(void) {
 
 void CM3daDoc::OnVisabilityAssemblies() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_ASSEM = !DspFlagsMain.DSP_ASSEM;
+	DspFlagsMain.DSP_ASSEMBLIES = !DspFlagsMain.DSP_ASSEMBLIES;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_ASSEMBLIES) {
+		outtext1("Assemblies Visibility ON");
+	} else {
+		outtext1("Assemblies Visibility OFF");
+	}
+	//  momo
 }
 
 void CM3daDoc::OnQwantaBuildamdexport() {
@@ -2882,10 +2962,23 @@ void CM3daDoc::API_DisplayAll(void) {
 	// momo on off button and menu
 }
 
-void CM3daDoc::OnViewWhite() {
-	DspFlagsMain.DSP_BLACK = !DspFlagsMain.DSP_BLACK;
+void CM3daDoc::OnViewBlackWhiteBackground() {
+	DspFlagsMain.DSP_BLACKWHITE = !DspFlagsMain.DSP_BLACKWHITE;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_GRADIENT_BACKGROUND) {
+		if (DspFlagsMain.DSP_BLACKWHITE) {
+			outtext1("Background : Gradient Filled Black");
+		} else {
+			outtext1("Background : Gradient Filled White");
+		}
+	} else if (DspFlagsMain.DSP_BLACKWHITE) {
+		outtext1("Background : Black");
+	} else {
+		outtext1("Background : White");
+	}
+	// momo
 }
 
 SHORT CM3daDoc::API_ExportUNV(LPCTSTR sFName) {
@@ -3016,24 +3109,30 @@ void CM3daDoc::OnListProperty() {
 
 void CM3daDoc::OnViewDisplayshellthickness() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_SHELL_THICKNESS = !DspFlagsMain.DSP_SHELL_THICKNESS;
+	DspFlagsMain.DSP_SHELLTHICKNESS = !DspFlagsMain.DSP_SHELLTHICKNESS;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_SHELL_THICKNESS) {
+	if (DspFlagsMain.DSP_SHELLTHICKNESS) {
 		outtext1("Shell Thicknesses Visibility ON");
 	} else {
 		outtext1("Shell Thicknesses Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
-void CM3daDoc::OnViewDisplayelementoffsets() {
+void CM3daDoc::OnViewDisplayElementOffsets() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_OFF = !DspFlagsMain.DSP_OFF;
+	DspFlagsMain.DSP_ELEMENTOFFSETS = !DspFlagsMain.DSP_ELEMENTOFFSETS;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_ELEMENTOFFSETS) {
+		outtext1("Element Offsets Visibility ON");
+	} else {
+		outtext1("Element Offsets Visibility OFF");
+	}
+	//  momo
 }
 
 void CM3daDoc::OnElementtypeBeam() {
@@ -3502,31 +3601,35 @@ void CM3daDoc::OnSolverCreateforce() {
 	}
 }
 
-void CM3daDoc::OnSurfacesonSurfacecurves() {
+void CM3daDoc::OnVisabilitySurfaceCurvesOn() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_SURC = !DspFlagsMain.DSP_SURC;
-	cDBase->InvalidateOGL();
-	cDBase->ReDraw();
-}
-
-void CM3daDoc::OnSurfacesSurfaceson() {
-	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_SURFACES = !DspFlagsMain.DSP_SURFACES;
+	DspFlagsMain.DSP_SURFACECURVES = !DspFlagsMain.DSP_SURFACECURVES;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_SURFACES) {
-		outtext1("Surfaces Visibility ON");
+	if (DspFlagsMain.DSP_SURFACECURVES) {
+		outtext1("Surfaces Curves Visibility ON");
 	} else {
-		outtext1("Surfaces Visibility OFF");
+		outtext1("Surfaces Curves Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
-void CM3daDoc::OnVisabilityPointson() {
+// momo
+// void CM3daDoc::OnSurfacesSurfaceson() {
+//	// TODO: Add your command handler code here
+//	DspFlagsMain.DSP_SURFACES = !DspFlagsMain.DSP_SURFACES;
+//	cDBase->InvalidateOGL();
+//	cDBase->ReDraw();
+//}
+// momo
+
+void CM3daDoc::OnVisabilityPointsOn() {
 	// TODO: Add your command handler code here
 	DspFlagsMain.DSP_POINTS = !DspFlagsMain.DSP_POINTS;
+	// momo
+	CheckPushedButtons("SetOneGeom");
+	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
@@ -3535,7 +3638,6 @@ void CM3daDoc::OnVisabilityPointson() {
 	} else {
 		outtext1("Points Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -3712,7 +3814,7 @@ void CM3daDoc::OnPostListselectedresset() {
 	}
 }
 
-void CM3daDoc::OnPostContourrawdata() {
+void CM3daDoc::OnPostContourRawResults() {
 	// TODO: Add your command handler code here
 	// momo change Display Flags Method
 	// if ((cDBase->DspFlags & DSP_LINE) == 1)
@@ -3721,9 +3823,16 @@ void CM3daDoc::OnPostContourrawdata() {
 		DspFlagsMain.DSP_WIREFRAME = true;
 	}
 	// momo change Display Flags Method
-	DspFlagsMain.DSP_CONT = !DspFlagsMain.DSP_CONT;
+	DspFlagsMain.DSP_CONTOURRAWRESULTS = !DspFlagsMain.DSP_CONTOURRAWRESULTS;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_CONTOURRAWRESULTS) {
+		outtext1("Contour Raw Results Visibility ON");
+	} else {
+		outtext1("Contour Raw Results Visibility OFF");
+	}
+	//  momo
 }
 
 void CM3daDoc::OnPostSelectvariable() {
@@ -3737,18 +3846,32 @@ void CM3daDoc::OnPostSelectvariable() {
 	}
 }
 
-void CM3daDoc::OnPostTogresultslabels() {
+void CM3daDoc::OnPostToggleResultsLabels() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_RESLAB = !DspFlagsMain.DSP_RESLAB;
+	DspFlagsMain.DSP_RESULTSLABLES = !DspFlagsMain.DSP_RESULTSLABLES;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_RESULTSLABLES) {
+		outtext1("Results Labeles Visibility ON");
+	} else {
+		outtext1("Results Labeles Visibility OFF");
+	}
+	//  momo
 }
 
-void CM3daDoc::OnPostDeformeddisplay() {
+void CM3daDoc::OnPostDeformedResults() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_RESDEF = !DspFlagsMain.DSP_RESDEF;
+	DspFlagsMain.DSP_DEFORMEDRESULTS = !DspFlagsMain.DSP_DEFORMEDRESULTS;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_DEFORMEDRESULTS) {
+		outtext1("Deformed Results Visibility ON");
+	} else {
+		outtext1("Deformed Results Visibility OFF");
+	}
+	//  momo
 }
 
 void CM3daDoc::OnPostSelectdeformedresults() {
@@ -3811,18 +3934,20 @@ void CM3daDoc::OnAnalysisCreatepressure() {
 	}
 }
 
-void CM3daDoc::OnVisabilityBoundaryconditions() {
+void CM3daDoc::OnVisabilityBoundaryConditions() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_BOUNDARY_CONDITIONS = !DspFlagsMain.DSP_BOUNDARY_CONDITIONS;
+	DspFlagsMain.DSP_BOUNDARYCONDITIONS = !DspFlagsMain.DSP_BOUNDARYCONDITIONS;
+	// momo
+	CheckPushedButtons("SetOneElement");
+	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsMain.DSP_BOUNDARYCONDITIONS) {
 		outtext1("Boundary Conditions Visibility ON");
 	} else {
 		outtext1("Boundary Conditions Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -3927,11 +4052,24 @@ void CM3daDoc::OnPostListelementresult() {
 	}
 }
 
-void CM3daDoc::OnViewGfradientfilledbackground() {
+void CM3daDoc::OnViewGradientFilledBackground() {
 	// TODO: Add your command handler code here
 	DspFlagsMain.DSP_GRADIENT_BACKGROUND = !DspFlagsMain.DSP_GRADIENT_BACKGROUND;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_GRADIENT_BACKGROUND) {
+		if (DspFlagsMain.DSP_BLACKWHITE) {
+			outtext1("Background : Gradient Filled Black");
+		} else {
+			outtext1("Background : Gradient Filled White");
+		}
+	} else if (DspFlagsMain.DSP_BLACKWHITE) {
+		outtext1("Background : Black");
+	} else {
+		outtext1("Background : White");
+	}
+	// momo
 }
 
 void CM3daDoc::OnExportExporttotext() {
@@ -3997,11 +4135,18 @@ void CM3daDoc::OnImportTxttogroups() {
 	}
 }
 
-void CM3daDoc::OnViewDisplaymaterialdurection() {
+void CM3daDoc::OnViewDisplayMaterialDirection() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_MATL = !DspFlagsMain.DSP_MATL;
+	DspFlagsMain.DSP_MATERIALDIRECTION = !DspFlagsMain.DSP_MATERIALDIRECTION;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
+	// momo
+	if (DspFlagsMain.DSP_MATERIALDIRECTION) {
+		outtext1("Material Direction Visibility ON");
+	} else {
+		outtext1("Material Direction Visibility OFF");
+	}
+	//  momo
 }
 
 void CM3daDoc::OnOptionsSetcolourbar() {
@@ -4015,18 +4160,20 @@ void CM3daDoc::OnOptionsSetcolourbar() {
 	}
 }
 
-void CM3daDoc::OnVisabilityCoordson() {
+void CM3daDoc::OnVisabilityCoordinateSystemsOn() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_COORD = !DspFlagsMain.DSP_COORD;
+	DspFlagsMain.DSP_COORDINATE_SYSTEMS = !DspFlagsMain.DSP_COORDINATE_SYSTEMS;
+	// momo
+	CheckPushedButtons("SetOneGeom");
+	// momo
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_COORD) {
+	if (DspFlagsMain.DSP_COORDINATE_SYSTEMS) {
 		outtext1("Coordinate Systems Visibility ON");
 	} else {
 		outtext1("Coordinate Systems Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -4719,18 +4866,17 @@ void CM3daDoc::OnPropertyLumpedmass() {
 	}
 }
 
-void CM3daDoc::OnVisabilityWorkplane() {
+void CM3daDoc::OnVisabilityWorkPlane() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_WORK_PLANE = !DspFlagsMain.DSP_WORK_PLANE;
+	DspFlagsMain.DSP_WORKPLANE = !DspFlagsMain.DSP_WORKPLANE;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_WORK_PLANE) {
+	if (DspFlagsMain.DSP_WORKPLANE) {
 		outtext1("Work Plane Visibility ON");
 	} else {
 		outtext1("Work Plane Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -4864,18 +5010,17 @@ void CM3daDoc::OnPropertyBeamBasic() {
 	}
 }
 
-void CM3daDoc::OnViewSurfacedirectionmarkers() {
+void CM3daDoc::OnViewSurfaceDirectionMarkers() {
 	// TODO: Add your command handler code here
-	DspFlagsMain.DSP_SURFACE_DIRECTION_MARKERS = !DspFlagsMain.DSP_SURFACE_DIRECTION_MARKERS;
+	DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS = !DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS;
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 	// momo on off button and menu
-	if (DspFlagsMain.DSP_SURFACE_DIRECTION_MARKERS) {
+	if (DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS) {
 		outtext1("Surface Direction Markers Visibility ON");
 	} else {
 		outtext1("Surface Direction Markers Visibility OFF");
 	}
-	CheckPushedButtons("Check");
 	//  momo on off button and menu
 }
 
@@ -4900,14 +5045,14 @@ void CM3daDoc::OnCurvemodifyInsertknot() {
 	}
 }
 
-void CM3daDoc::OnPostAnimate() {
+void CM3daDoc::OnPostAnimateResults() {
 	// TODO: Add your command handler code here
-	cDBase->Animate();
+	cDBase->AnimateResults();
 }
 
-void CM3daDoc::OnPostAnimateneg() {
+void CM3daDoc::OnPostAnimatePositiveNegative() {
 	// TODO: Add your command handler code here
-	cDBase->AnimatePosNeg();
+	cDBase->AnimatePositiveNegative();
 }
 
 void CM3daDoc::OnPostFramedelay() {
@@ -5937,7 +6082,7 @@ void CM3daDoc::OnEditPolartranslatedfrom() {
 	outtextMSG2("PTRAN");
 }
 
-void CM3daDoc::OnViewTogglecontrolpointvisability() {
+void CM3daDoc::OnViewToggleControlPointVisability() {
 	// TODO: Add your command handler code here
 	// momo change Display Flags Method
 	// if (gDSP_CPTS == FALSE) {
@@ -5947,11 +6092,12 @@ void CM3daDoc::OnViewTogglecontrolpointvisability() {
 	//	gDSP_CPTS = FALSE;
 	//	outtext1("All Control Points OFF.");
 	//}
-	DspFlagsMain.DSP_CONTROL_POINTS = !DspFlagsMain.DSP_CONTROL_POINTS;
-	if (DspFlagsMain.DSP_CONTROL_POINTS) {
-		outtext1("All Control Points ON");
+	DspFlagsMain.DSP_CONTROLPOINTS = !DspFlagsMain.DSP_CONTROLPOINTS;
+	CheckPushedButtons("SetOneGeom");
+	if (DspFlagsMain.DSP_CONTROLPOINTS) {
+		outtext1("Control Points ON");
 	} else {
-		outtext1("All Control Points OFF");
+		outtext1("Control Points OFF");
 	}
 	// momo change Display Flags Method
 	cDBase->InvalidateOGL();
@@ -5959,24 +6105,72 @@ void CM3daDoc::OnViewTogglecontrolpointvisability() {
 }
 
 // momo on off button and menu
+void CM3daDoc::OnUpdateVisabilitySurfaceCurvesOn(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_SURFACECURVES);
+}
+
+void CM3daDoc::OnUpdateViewNodesAsk(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(!DspFlagsMain.DSP_NODESSQUAREASTERISK);
+}
+
+void CM3daDoc::OnUpdateVisabilityAssemblies(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_ASSEMBLIES);
+}
+
+void CM3daDoc::OnUpdateViewDisplayElementOffsets(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_ELEMENTOFFSETS);
+}
+
+void CM3daDoc::OnUpdateViewGradientFilledBackground(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_GRADIENT_BACKGROUND);
+}
+
+void CM3daDoc::OnUpdateViewBlackWhiteBackground(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(!DspFlagsMain.DSP_BLACKWHITE);
+}
+
+void CM3daDoc::OnUpdatePostContourRawResults(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_CONTOURRAWRESULTS);
+}
+
+void CM3daDoc::OnUpdatePostToggleResultsLabels(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_RESULTSLABLES);
+}
+
+void CM3daDoc::OnUpdatePostDeformedResults(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_DEFORMEDRESULTS);
+}
+
+void CM3daDoc::OnUpdateViewDisplayMaterialDirection(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_MATERIALDIRECTION);
+}
+
+void CM3daDoc::OnUpdatePostAnimateResults(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_ANIMATERESULTS);
+}
+
+void CM3daDoc::OnUpdatePostAnimatePositiveNegative(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(!DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE);
+}
+
 void CM3daDoc::OnUpdateVisabilityPointson(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(DspFlagsMain.DSP_POINTS);
 }
 
-void CM3daDoc::OnUpdateTogglecontrolpointvisability(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_CONTROL_POINTS);
+void CM3daDoc::OnUpdateToggleControlPointVisability(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_CONTROLPOINTS);
 }
 
 void CM3daDoc::OnUpdateVisabilityCurveson(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(DspFlagsMain.DSP_CURVES);
 }
 
-void CM3daDoc::OnUpdateSurfacesSurfaceson(CCmdUI* pCmdUI) {
+void CM3daDoc::OnUpdateVisabilitySurfacesOn(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(DspFlagsMain.DSP_SURFACES);
 }
 
 void CM3daDoc::OnUpdateVisabilityCoordson(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_COORD);
+	pCmdUI->SetCheck(DspFlagsMain.DSP_COORDINATE_SYSTEMS);
 }
 
 void CM3daDoc::OnUpdateVisabilityNodeon(CCmdUI* pCmdUI) {
@@ -5987,24 +6181,24 @@ void CM3daDoc::OnUpdateVisabilityElementon(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(DspFlagsMain.DSP_ELEMENTS_ALL);
 }
 
-void CM3daDoc::OnUpdateVisabilityBoundaryconditions(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_BOUNDARY_CONDITIONS);
+void CM3daDoc::OnUpdateVisabilityBoundaryConditions(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_BOUNDARYCONDITIONS);
 }
 
-void CM3daDoc::OnUpdateDisplayshellthickness(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_SHELL_THICKNESS);
+void CM3daDoc::OnUpdateDisplayShellThickness(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_SHELLTHICKNESS);
 }
 
-void CM3daDoc::OnUpdateDisplayelementcoordsys(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_ELEMENT_COORD_SYS);
+void CM3daDoc::OnUpdateDisplayElementCoordSys(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_ELEMENTCOORDSYS);
 }
 
-void CM3daDoc::OnUpdateSurfacedirectionmarkers(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_SURFACE_DIRECTION_MARKERS);
+void CM3daDoc::OnUpdateSurfaceDirectionMarkers(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS);
 }
 
 void CM3daDoc::OnUpdateVisabilityWorkplane(CCmdUI* pCmdUI) {
-	pCmdUI->SetCheck(DspFlagsMain.DSP_WORK_PLANE);
+	pCmdUI->SetCheck(DspFlagsMain.DSP_WORKPLANE);
 }
 
 void CM3daDoc::OnUpdateElementsVisibilityAll(CCmdUI* pCmdUI) {
@@ -6122,14 +6316,14 @@ void CM3daDoc::OnUpdateElementtypeWedge(CCmdUI* pCmdUI) {
 void CM3daDoc::OnUpdateElementtypeBrick(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(cDBase->iCurElemType == 115);
 }
-//
-// void CM3daDoc::OnUpdateVisabilityGeomOn(CCmdUI* pCmdUI) {
-//	pCmdUI->SetCheck(ButtonPush.GeomOn);
-//}
-//
-// void CM3daDoc::OnUpdateVisabilityFiniteOn(CCmdUI* pCmdUI) {
-//	pCmdUI->SetCheck(ButtonPush.FiniteOn);
-//}
+
+void CM3daDoc::OnUpdateVisabilityGeomOn(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(ButtonPush.AllGeomOn);
+}
+
+void CM3daDoc::OnUpdateVisabilityFiniteOn(CCmdUI* pCmdUI) {
+	pCmdUI->SetCheck(ButtonPush.AllFiniteOn);
+}
 
 void CM3daDoc::OnUpdateQfilterNodes(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(ButtonPush.QfilterNodesOn);
@@ -6169,18 +6363,6 @@ void CM3daDoc::OnUpdateViewShadededges(CCmdUI* pCmdUI) {
 //  momo on off button and menu
 //  momo
 void CM3daDoc::OnVisabilityLabelOff() {
-	// gLBL_DSP_TRG = true;
-	// cDBase->DspFlags = (cDBase->DspFlags ^ DSP_RESLAB);
-	// cDBase->InvalidateOGL();
-	// cDBase->ReDraw();
-	// gLBL_DSP_TRG = false;
-	// ButtonPush.LabelOn = !(cDBase->DspFlags & DSP_RESLAB);
-	// if (ButtonPush.LabelOn) {
-	//	outtext1("Labeles Visibility OFF");
-	// } else {
-	//	outtext1("Labeles Visibility ON");
-	// }
-	// CheckPushedButtons("Check");
 	if (pMnu->isNULL()) {
 		outtextMSG2("LABENTOFF");
 		sLastcmd = "LABENTOFF";
@@ -6190,33 +6372,28 @@ void CM3daDoc::OnVisabilityLabelOff() {
 }
 
 void CM3daDoc::OnVisabilityGeomOn() {
-	ButtonPush.GeomOn = !ButtonPush.GeomOn;
-	if (ButtonPush.GeomOn) {
-		outtext1("Geom Elements Visibility ON");
+	ButtonPush.AllGeomOn = !ButtonPush.AllGeomOn;
+	if (ButtonPush.AllGeomOn) {
+		outtext1("All Geom Elements Visibility ON");
 	} else {
-		outtext1("Geom Elements Visibility OFF");
+		outtext1("All Geom Elements Visibility OFF");
 	}
-	DspFlagsMain.DSP_POINTS = ButtonPush.GeomOn;
-	DspFlagsMain.DSP_CURVES = ButtonPush.GeomOn;
-	DspFlagsMain.DSP_SURFACES = ButtonPush.GeomOn;
-	DspFlagsMain.DSP_COORD = ButtonPush.GeomOn;
-	DspFlagsMain.DSP_CONTROL_POINTS = ButtonPush.GeomOn;
-	CheckPushedButtons("GeomOn");
+	CheckPushedButtons("AllGeoms");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 }
 
 void CM3daDoc::OnVisabilityFiniteOn() {
-	ButtonPush.FiniteOn = !ButtonPush.FiniteOn;
-	if (ButtonPush.FiniteOn) {
+	ButtonPush.AllFiniteOn = !ButtonPush.AllFiniteOn;
+	if (ButtonPush.AllFiniteOn) {
 		outtext1("Finite Elements Visibility ON");
 	} else {
 		outtext1("Finite Elements Visibility OFF");
 	}
-	DspFlagsMain.DSP_NODES = ButtonPush.FiniteOn;
-	DspFlagsMain.DSP_ELEMENTS_ALL = ButtonPush.FiniteOn;
-	DspFlagsMain.DSP_BOUNDARY_CONDITIONS = ButtonPush.FiniteOn;
-	CheckPushedButtons("FiniteOn");
+	DspFlagsMain.DSP_NODES = ButtonPush.AllFiniteOn;
+	DspFlagsMain.DSP_ELEMENTS_ALL = ButtonPush.AllFiniteOn;
+	DspFlagsMain.DSP_BOUNDARYCONDITIONS = ButtonPush.AllFiniteOn;
+	CheckPushedButtons("AllFinites");
 	cDBase->InvalidateOGL();
 	cDBase->ReDraw();
 }
@@ -6728,7 +6905,7 @@ void CM3daDoc::OnEXP01() {
 	////Esp_Mod_Labels_4_27_2025_Start: Toggle display labels
 	// momo
 	// gLBL_DSP_TRG = true;
-	// cDBase->DspFlags = (cDBase->DspFlags ^ DSP_RESLAB);
+	// cDBase->DspFlags = (cDBase->DspFlags ^ DSP_RESULTSLABLES);
 	// cDBase->InvalidateOGL();
 	// cDBase->ReDraw();
 	// gLBL_DSP_TRG = false;
