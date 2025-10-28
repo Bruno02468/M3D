@@ -61,9 +61,18 @@ class CM3daDoc: public CDocument, public CUndo {
 		// momo// void LineDrag(CDC* pDC, CPoint P1, CPoint P2);
 		// momo gdi to og
 		void SelectBox(CPoint P1, CPoint P2);
+		// momo
+		void ZoomBox(CPoint startPoint, CPoint endPoint);
+		// momo
 		void InitOGL(CDC* pDC);
 		void InvalidateOGL();
 		double GetHeight();
+		// momo zoom to fit
+		double GetWidth();
+		void SetAllToScr(const C3dMatrix& m);
+		void MoveScreen(double d1, double d2, double dWidth, double dHeight,CView* pCViewIn);
+		void MovePointToScreenCenter(C3dVector fromPointOnScreen);
+		// momo zoom to fit
 		void DoMsg(int MsgType, CPoint PT1, CPoint PT2, CString InFu);
 		BOOL isMenuNULL();
 		void DspAll();
@@ -75,6 +84,11 @@ class CM3daDoc: public CDocument, public CUndo {
 		int GetDrawType();
 		C3dVector GetViewPt();
 		C3dVector GetMeshCentre();
+		// momo zoom to fit
+		void GetObjectsBoxLimits(C3dVector& minValues, C3dVector& maxValues);
+		C3dVector SetToScr(C3dVector& pointXYZ);
+		C3dVector PickPointToGlobal2(CPoint Pt);
+		// momo zoom to fit
 		int GetMeshYExt();
 		// momo gdi to og
 		// momo// void UpTree();
@@ -257,11 +271,11 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnMeshSweepelements();
 		afx_msg void OnViewShadededges();
 		//  afx_msg void OnViewWireframe();
-		afx_msg void OnVisabilityNodeon();
-		afx_msg void OnVisabilityElementOn();
-		afx_msg void OnViewNodesask();
-		afx_msg void OnVisabilitySurfaceson();
-		afx_msg void OnVisabilityCurveson();
+		afx_msg void OnVisabilityNodeOn();
+		afx_msg void OnVisabilityAllElementOn();
+		afx_msg void OnViewNodesAsk();
+		afx_msg void OnVisabilitySurfacesOn();
+		afx_msg void OnVisabilityCurvesOn();
 		afx_msg void OnVisabilityAllvisable();
 		afx_msg void OnViewLabelEntities();
 		afx_msg void OnQwantaImportcatalogue();
@@ -333,7 +347,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		void API_DisplayAll(void);
 
 	public:
-		afx_msg void OnViewWhite();
+		afx_msg void OnViewBlackWhiteBackground();
 
 	protected:
 		SHORT API_ExportUNV(LPCTSTR sFName);
@@ -364,7 +378,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnListMaterial();
 		afx_msg void OnListProperty();
 		afx_msg void OnViewDisplayshellthickness();
-		afx_msg void OnViewDisplayelementoffsets();
+		afx_msg void OnViewDisplayElementOffsets();
 		afx_msg void OnElementtypeBeam();
 		afx_msg void OnElementmodifiyBeamoffset();
 		afx_msg void OnElementmodifiyBeamupvectors();
@@ -377,22 +391,22 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnMaterialIsentropic();
 		afx_msg void OnPropertymodifyChangematerial();
 		// momo
-		afx_msg void CM3daDoc::OnElementsVisibility0D();
-		afx_msg void CM3daDoc::OnElementsVisibilityMass();
-		afx_msg void CM3daDoc::OnElementsVisibility1D();
-		afx_msg void CM3daDoc::OnElementsVisibilityRod();
-		afx_msg void CM3daDoc::OnElementsVisibilityBeam();
-		afx_msg void CM3daDoc::OnElementsVisibilityTranslationSpring();
-		afx_msg void CM3daDoc::OnElementsVisibilityRotationSpring();
-		afx_msg void CM3daDoc::OnElementsVisibilityRigid();
-		afx_msg void CM3daDoc::OnElementsVisibilityBush();
-		afx_msg void CM3daDoc::OnElementsVisibility2D();
-		afx_msg void CM3daDoc::OnElementsVisibilityTri();
-		afx_msg void CM3daDoc::OnElementsVisibilityQuad();
-		afx_msg void CM3daDoc::OnElementsVisibility3D();
-		afx_msg void CM3daDoc::OnElementsVisibilityTet();
-		afx_msg void CM3daDoc::OnElementsVisibilityWedge();
-		afx_msg void CM3daDoc::OnElementsVisibilityBrick();
+		afx_msg void OnElementsVisibility0D();
+		afx_msg void OnElementsVisibilityMass();
+		afx_msg void OnElementsVisibility1D();
+		afx_msg void OnElementsVisibilityRod();
+		afx_msg void OnElementsVisibilityBeam();
+		afx_msg void OnElementsVisibilityTranslationSpring();
+		afx_msg void OnElementsVisibilityRotationSpring();
+		afx_msg void OnElementsVisibilityRigid();
+		afx_msg void OnElementsVisibilityBush();
+		afx_msg void OnElementsVisibility2D();
+		afx_msg void OnElementsVisibilityTri();
+		afx_msg void OnElementsVisibilityQuad();
+		afx_msg void OnElementsVisibility3D();
+		afx_msg void OnElementsVisibilityTet();
+		afx_msg void OnElementsVisibilityWedge();
+		afx_msg void OnElementsVisibilityBrick();
 		// momo
 
 	protected:
@@ -417,25 +431,39 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnSolverSolve();
 		afx_msg void OnSolverCreaterestraint();
 		afx_msg void OnSolverCreateforce();
-		afx_msg void OnSurfacesonSurfacecurves();
-		afx_msg void OnSurfacesSurfaceson();
-		afx_msg void OnVisabilityPointson();
+		afx_msg void OnVisabilitySurfaceCurvesOn();
+		// momo
+		// momo// afx_msg void OnSurfacesSurfaceson();
+		// momo
+		afx_msg void OnVisabilityPointsOn();
 		// momo on off button and menu
+		afx_msg void OnUpdateVisabilitySurfaceCurvesOn(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateViewNodesAsk(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateVisabilityAssemblies(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateViewDisplayElementOffsets(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateViewGradientFilledBackground(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateViewBlackWhiteBackground(CCmdUI* pCmdUI);
+		afx_msg void OnUpdatePostContourRawResults(CCmdUI* pCmdUI);
+		afx_msg void OnUpdatePostToggleResultsLabels(CCmdUI* pCmdUI);
+		afx_msg void OnUpdatePostDeformedResults(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateViewDisplayMaterialDirection(CCmdUI* pCmdUI);
+		afx_msg void OnUpdatePostAnimateResults(CCmdUI* pCmdUI);
+		afx_msg void OnUpdatePostAnimatePositiveNegative(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityPointson(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateTogglecontrolpointvisability(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateToggleControlPointVisability(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityCurveson(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateSurfacesSurfaceson(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateVisabilitySurfacesOn(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityCoordson(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityNodeon(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityElementon(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateVisabilityBoundaryconditions(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateDisplayshellthickness(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateDisplayelementcoordsys(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateSurfacedirectionmarkers(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateVisabilityBoundaryConditions(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateDisplayShellThickness(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateDisplayElementCoordSys(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateSurfaceDirectionMarkers(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityWorkplane(CCmdUI* pCmdUI);
 		// afx_msg void OnUpdateVisabilityLabelOff(CCmdUI* pCmdUI);
-		// afx_msg void OnUpdateVisabilityGeomOn(CCmdUI* pCmdUI);
-		// afx_msg void OnUpdateVisabilityFiniteOn(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateVisabilityGeomOn(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateVisabilityFiniteOn(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateQfilterNodes(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateQfilterElements(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateQfilterPoints(CCmdUI* pCmdUI);
@@ -461,20 +489,20 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnPostListresset();
 		afx_msg void OnPostSelectresults();
 		afx_msg void OnPostListselectedresset();
-		afx_msg void OnPostContourrawdata();
+		afx_msg void OnPostContourRawResults();
 		afx_msg void OnPostSelectvariable();
-		afx_msg void OnPostTogresultslabels();
-		afx_msg void OnPostDeformeddisplay();
+		afx_msg void OnPostToggleResultsLabels();
+		afx_msg void OnPostDeformedResults();
 		afx_msg void OnPostSelectdeformedresults();
 		afx_msg void OnPropertySolid();
 		afx_msg void OnOptionsDeformationscale();
 		afx_msg void OnProperty2dplainstress();
 		afx_msg void OnElementtypeRod();
 		afx_msg void OnPropertyRod();
-		afx_msg void OnViewDisplayelementcoordsys();
+		afx_msg void OnViewDisplayElementCoordSys();
 		afx_msg void OnAnalysisCreatemoment();
 		afx_msg void OnAnalysisCreatepressure();
-		afx_msg void OnVisabilityBoundaryconditions();
+		afx_msg void OnVisabilityBoundaryConditions();
 		afx_msg void OnPostExportresultstotextfile();
 		afx_msg void OnNodemodifyLabel();
 		afx_msg void OnElementmodifiyLabelbyinc();
@@ -482,14 +510,14 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnElementmodifiyLabelbystart();
 		afx_msg void OnMeshFreetrimesh();
 		afx_msg void OnPostListelementresult();
-		afx_msg void OnViewGfradientfilledbackground();
+		afx_msg void OnViewGradientFilledBackground();
 		afx_msg void OnExportExporttotext();
 		afx_msg void OnElementmodifiyReverse();
 		afx_msg void OnMeshqnd();
 		afx_msg void OnImportTxttogroups();
-		afx_msg void OnViewDisplaymaterialdurection();
+		afx_msg void OnViewDisplayMaterialDirection();
 		afx_msg void OnOptionsSetcolourbar();
-		afx_msg void OnVisabilityCoordson();
+		afx_msg void OnVisabilityCoordinateSystemsOn();
 		afx_msg void OnGroupNextgroup();
 		afx_msg void OnGroupPreviousgrpup();
 		afx_msg void OnGroupElementsbytype();
@@ -545,7 +573,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnChecksChecktetcollapse();
 		afx_msg void OnElementtypeMass();
 		afx_msg void OnPropertyLumpedmass();
-		afx_msg void OnVisabilityWorkplane();
+		afx_msg void OnVisabilityWorkPlane();
 		afx_msg void OnToolsMeasureangle();
 		afx_msg void OnLoadsbcCreaterotationalbodyload();
 
@@ -558,11 +586,11 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnPropertymodifyEditpropertyvalues();
 		afx_msg void OnPropertyEditmaterialvalues();
 		afx_msg void OnPropertyBeamBasic();
-		afx_msg void OnViewSurfacedirectionmarkers();
+		afx_msg void OnViewSurfaceDirectionMarkers();
 		afx_msg void OnPostListnodalresults();
 		afx_msg void OnCurvemodifyInsertknot();
-		afx_msg void OnPostAnimate();
-		afx_msg void OnPostAnimateneg();
+		afx_msg void OnPostAnimateResults();
+		afx_msg void OnPostAnimatePositiveNegative();
 		afx_msg void OnPostFramedelay();
 		afx_msg void OnPostAnimationframes();
 		afx_msg void OnElementmodifiyBeamendarelease();
@@ -650,7 +678,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnCurvetoolsPointsoncircle();
 		afx_msg void OnEditPolartranslatedfrom();
 		void DeleteObjs();
-		afx_msg void OnViewTogglecontrolpointvisability();
+		afx_msg void OnViewToggleControlPointVisability();
 		afx_msg void OnExportExportdxf();
 		afx_msg void OnCurvemodifyLayernumber();
 		afx_msg void OnSelectionSelectcurve();

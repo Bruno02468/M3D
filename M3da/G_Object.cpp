@@ -51,7 +51,9 @@ bool gLBL_DSP_TRG = false;
 // END OF GLOBAL VARS
 #define D2R 0.01745329251994
 #define R2D 57.2957795130931
-const double Pi = 3.1415926535;
+// momo
+// momo// const double Pi = 3.1415926535;
+// momo
 const double dTol = 0.00000001; // unsed for Surface tolerance
 // Constant Related to Auto-Meshing
 CONST double PARA_NEAR_ZERO = 0.000001;
@@ -288,7 +290,7 @@ void OglString(DisplayFlags DspFlagsIn, double x, double y, double z, char* s) {
 	////Esp_Mod_Labels_4_27_2025_Start: Redined Label display to use advance font display
 	int iLen;
 	iLen = (int) strlen(s);
-	if (DspFlagsIn.DSP_BLACK) {
+	if (DspFlagsIn.DSP_BLACKWHITE) {
 		// momo
 		glColor3fv(cols[124]);
 		//  momo// glColor3fv(ColorIfSelect(124,-1));
@@ -1767,7 +1769,15 @@ G_Object::G_Object() {
 	seedChanged = false;
 	tempSeedId = 0;
 	Selected = false;
+	realdL = 0.0;
+	realdLBefore = 0.0;
+	realdLNext = 0.0;
 	// MoMo_End
+	// momo zoom to fit
+	isFitable = false;
+	boxMin.Set(0.0, 0.0, 0.0);
+	boxMax.Set(0.0, 0.0, 0.0);
+	// momo zoom to fit
 }
 
 void G_Object::GetBoundingBox(C3dVector& vll, C3dVector& vur) {
@@ -1930,6 +1940,16 @@ void G_Object::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 void G_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 }
+
+// momo zoom to fit
+void G_Object::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	// isFitable = false;
+	// C3dVector deltaXY;
+	// deltaXY.Set(100.0, 100.0, 0.0);
+	// boxMin = SelPt - deltaXY;
+	// boxMax = SelPt + deltaXY;
+}
+// momo zoom to fit
 
 void G_Object::Transform(C3dMatrix TMat) {
 }
@@ -2474,10 +2494,13 @@ void Node::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	dRF = ME->dResFactor;
 	ind = ME->iCVar;
 	if (DspFlagsIn.DSP_NODES) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
 		x = Pt_Point->x;
 		y = Pt_Point->y;
 		z = Pt_Point->z;
-		if (!DspFlagsIn.DSP_RESDEF) {
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			if (pResD != NULL) {
 				vD = pResD->GetVec();
 				vD -= ME->vRelDispOff;
@@ -2493,7 +2516,7 @@ void Node::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		glColor3fv(ColorIfSelect(GetCol(), 170));
 		// momo
 		glPointSize(gND_SIZE);
-		if (DspFlagsIn.DSP_NODES_ASK) {
+		if (DspFlagsIn.DSP_NODESSQUAREASTERISK) {
 			glBegin(GL_POINTS);
 			glVertex3f((float) x, (float) y, (float) z);
 			glEnd();
@@ -2512,7 +2535,7 @@ void Node::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("N%i"), iLabel);
 			OglString(DspFlagsIn, (float) x, (float) y, (float) z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			// Esp_Mod_Label_Old: Offset Labels for Nodes
 			// float radius = gND_SIZE / 100;
@@ -5568,9 +5591,13 @@ void E_Object38::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	glLineWidth(gEL_SIZE);
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_BRICK && iType == 115) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_BRICK && iType == 115;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 8; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -5629,11 +5656,11 @@ void E_Object38::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("E%i"), iLabel);
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			C3dMatrix mS = GetElSys();
 			C3dVector vC = Get_Centroid();
 			mS.Transpose();
@@ -5730,9 +5757,13 @@ void E_Object38::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector Vn;
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_BRICK && iType == 115) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_BRICK && iType == 115;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 8; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -5746,7 +5777,7 @@ void E_Object38::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, -1));
 		// momo
-		if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
+		if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
 			v1.x = pVertex[1]->Pt_Point->x - pVertex[0]->Pt_Point->x;
 			v1.y = pVertex[1]->Pt_Point->y - pVertex[0]->Pt_Point->y;
 			v1.z = pVertex[1]->Pt_Point->z - pVertex[0]->Pt_Point->z;
@@ -6026,6 +6057,13 @@ void E_Object38::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object38::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 void E_Object38::ExportUNV(FILE* pFile) {
 	int i;
@@ -6718,9 +6756,13 @@ void E_Object36::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector Vn;
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_WEDGE && iType == 112) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_WEDGE && iType == 112;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 6; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -6731,7 +6773,7 @@ void E_Object36::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		}
 
 		Selectable = 1;
-		if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
+		if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
 			v1.x = pVertex[1]->Pt_Point->x - pVertex[0]->Pt_Point->x;
 			v1.y = pVertex[1]->Pt_Point->y - pVertex[0]->Pt_Point->y;
 			v1.z = pVertex[1]->Pt_Point->z - pVertex[0]->Pt_Point->z;
@@ -6989,9 +7031,13 @@ void E_Object36::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	glLineWidth(gEL_SIZE);
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_WEDGE && iType == 112) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_WEDGE && iType == 112;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 6; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -7042,11 +7088,11 @@ void E_Object36::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("E%i"), iLabel);
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			C3dMatrix mS = GetElSys();
 			C3dVector vC = Get_Centroid();
 			mS.Transpose();
@@ -7082,6 +7128,13 @@ void E_Object36::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object36::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 void E_Object36::ExportUNV(FILE* pFile) {
 	int i;
@@ -8039,9 +8092,13 @@ void E_Object34::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	glLineWidth(gEL_SIZE);
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_TET && iType == 111) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_TET && iType == 111;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 4; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -8086,11 +8143,11 @@ void E_Object34::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("E%i"), iLabel);
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			C3dMatrix mS = GetElSys();
 			C3dVector vC = Get_Centroid();
 			mS.Transpose();
@@ -8169,9 +8226,13 @@ void E_Object34::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector Vn;
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_TET && iType == 111) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_TET && iType == 111;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 4; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -8185,7 +8246,7 @@ void E_Object34::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, -1));
 		// momo
-		if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
+		if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
 			v1.x = pVertex[1]->Pt_Point->x - pVertex[0]->Pt_Point->x;
 			v1.y = pVertex[1]->Pt_Point->y - pVertex[0]->Pt_Point->y;
 			v1.z = pVertex[1]->Pt_Point->z - pVertex[0]->Pt_Point->z;
@@ -8363,6 +8424,13 @@ void E_Object34::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object34::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 G_Object* E_Object34::GetNode(int i) {
 	return (pVertex[i]);
@@ -9246,7 +9314,7 @@ void E_Object310::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	ind = ME->iCVar;
 	glLineWidth(gEL_SIZE);
 	if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-		if (!DspFlagsIn.DSP_RESDEF) {
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 10; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -9315,11 +9383,11 @@ void E_Object310::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("E%i"), iLabel);
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			C3dMatrix mS = GetElSys();
 			C3dVector vC = Get_Centroid();
 			mS.Transpose();
@@ -9415,7 +9483,7 @@ void E_Object310::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector v2;
 	C3dVector Vn;
 	if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-		if (!DspFlagsIn.DSP_RESDEF) {
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 10; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -9429,7 +9497,7 @@ void E_Object310::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, -1));
 		// momo
-		if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
+		if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
 			v1 = pVertex[1]->Pt_Point - pVertex[0]->Pt_Point;
 			v2 = pVertex[2]->Pt_Point - pVertex[1]->Pt_Point;
 			Vn = v1.Cross(v2);
@@ -10482,6 +10550,13 @@ C3dVector E_Object::GetFirstEdge() {
 	C3dVector V(0, 0, 1);
 	return (V);
 }
+
+// momo zoom to fit
+void E_Object::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	vPt->Set(0.0, 0.0, 0.0);
+	*havePtPoint = false;
+}
+// momo zoom to fit
 
 double E_Object::QualAspect() {
 	return (0.0);
@@ -11917,9 +11992,13 @@ void E_Object2::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	S = ME->dScale;
 	dFS = ME->dResFactor;
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if ((DspFlagsIn.DSP_ELEMENTS_TRANSLATIONALSPRING && iType == 136) || (DspFlagsIn.DSP_ELEMENTS_ROTATIONALSPRING && iType == 137) || (DspFlagsIn.DSP_ELEMENTS_BUSH && iType == 138)) {
+	isFitable = (DspFlagsIn.DSP_ELEMENTS_TRANSLATIONALSPRING && iType == 136) || (DspFlagsIn.DSP_ELEMENTS_ROTATIONALSPRING && iType == 137) || (DspFlagsIn.DSP_ELEMENTS_BUSH && iType == 138);
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 2; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -11945,7 +12024,7 @@ void E_Object2::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		C3dVector vCent;
 		CString sLab;
 		vCent = Get_Centroid();
-		if (!DspFlagsIn.DSP_CONT && (bD == TRUE)) {
+		if (!DspFlagsIn.DSP_CONTOURRAWRESULTS && (bD == TRUE)) {
 			// momo
 			//  momo// glColor3fv(cols[124]);
 			glColor3fv(ColorIfSelect(124, -1));
@@ -11983,11 +12062,11 @@ void E_Object2::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("E%i"), iLabel);
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			// C3dMatrix mS = GetElSys();
 			// momo
 			//  momo// glColor3fv(cols[iColour]);
@@ -12038,6 +12117,13 @@ void E_Object2::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object2::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 double E_Object2::GetCentriodVal(int iDof, Vec<int>& Steer, Vec<double>& Disp) {
 	double dTemp = 0;
@@ -12711,9 +12797,13 @@ void E_Object2R::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if ((DspFlagsIn.DSP_ELEMENTS_ROD && iType == 11) || (DspFlagsIn.DSP_ELEMENTS_BEAM && iType == 21)) {
+	isFitable = (DspFlagsIn.DSP_ELEMENTS_ROD && iType == 11) || (DspFlagsIn.DSP_ELEMENTS_BEAM && iType == 21);
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 2; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -12723,7 +12813,7 @@ void E_Object2R::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			}
 		}
 		Selectable = 1;
-		if (DspFlagsIn.DSP_SHELL_THICKNESS) {
+		if (DspFlagsIn.DSP_SHELLTHICKNESS) {
 			if (pPr != NULL) {
 				BSec* pS = pPr->GetSec();
 				if (pS != NULL) {
@@ -12747,7 +12837,7 @@ void E_Object2R::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 				glEnd();
 			}
 		} else {
-			if (!DspFlagsIn.DSP_CONT || (bD == TRUE)) {
+			if (!DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == TRUE)) {
 				// momo
 				//  momo// glColor3fv(cols[124]);
 				glColor3fv(ColorIfSelect(124, -1));
@@ -12795,9 +12885,13 @@ void E_Object2R::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if ((DspFlagsIn.DSP_ELEMENTS_ROD && iType == 11) || (DspFlagsIn.DSP_ELEMENTS_BEAM && iType == 21)) {
+	isFitable = (DspFlagsIn.DSP_ELEMENTS_ROD && iType == 11) || (DspFlagsIn.DSP_ELEMENTS_BEAM && iType == 21);
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 2; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -12833,11 +12927,11 @@ void E_Object2R::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			sLab.Format(_T("E%i"), iLabel);
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+		if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 			sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 			OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 		}
-		if (DspFlagsIn.DSP_SHELL_THICKNESS) {
+		if (DspFlagsIn.DSP_SHELLTHICKNESS) {
 			if (pPr != NULL) {
 				BSec* pS = pPr->GetSec();
 				if (pS != NULL) {
@@ -12846,7 +12940,7 @@ void E_Object2R::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 				}
 			}
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			// momo
 			//  momo// glColor3fv(cols[iColour]);
 			glColor3fv(ColorIfSelect(iColour, -1));
@@ -12886,6 +12980,13 @@ void E_Object2R::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object2R::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 C3dVector E_Object2R::Get_Centroid() {
 	C3dVector v1;
@@ -14236,9 +14337,13 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	glLineWidth(gEL_SIZE);
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_TRI && iType == 91) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_TRI && iType == 91;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 3; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -14250,8 +14355,12 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 1;
 		// momo
 		// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-		if (DspFlagsIn.DSP_ELEMENTS_TRI && iType == 91) {
+		isFitable = DspFlagsIn.DSP_ELEMENTS_TRI && iType == 91;
+		if (isFitable) {
 			// momo
+			// momo zoom to fit
+			ME->isFitable = true;
+			// momo zoom to fit
 			if (DspFlagsIn.DSP_WIREFRAME) {
 				// momo
 				//  momo// glColor3fv(cols[iColour]);
@@ -14280,14 +14389,14 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 					dPCompOff = pPCOMP->dZ0 + dt;
 				}
 			}
-			if (DspFlagsIn.DSP_OFF && (dZOFFS != DBL_MAX)) {
+			if (DspFlagsIn.DSP_ELEMENTOFFSETS && (dZOFFS != DBL_MAX)) {
 				vOff = vN;
 				vOff *= dZOFFS + dPCompOff;
 			} else {
 				vOff *= 0;
 			}
 			vN *= dt;
-			if (DspFlagsIn.DSP_SHELL_THICKNESS) {
+			if (DspFlagsIn.DSP_SHELLTHICKNESS) {
 				glBegin(GL_LINES);
 				glVertex3f((float) (pVertex[0]->Pt_Point->x + vOff.x + vN.x + d[0].x), (float) (pVertex[0]->Pt_Point->y + vOff.y + vN.y + d[0].y), (float) (pVertex[0]->Pt_Point->z + vOff.z + vN.z + d[0].z));
 				glVertex3f((float) (pVertex[1]->Pt_Point->x + vOff.x + vN.x + d[1].x), (float) (pVertex[1]->Pt_Point->y + vOff.y + vN.y + d[1].y), (float) (pVertex[1]->Pt_Point->z + vOff.z + vN.z + d[1].z));
@@ -14331,12 +14440,12 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 				sLab.Format(_T("E%i"), iLabel);
 				OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 			}
-			if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+			if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 				sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 				OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 			}
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			// momo
 			//  momo// glColor3fv(cols[iColour]);
 			glColor3fv(ColorIfSelect(iColour, -1));
@@ -14372,7 +14481,7 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			glRasterPos3f((float) vZ.x, (float) vZ.y, (float) vZ.z);
 			glBitmap(8, 13, 0.0, 2.0, 10.0, 0.0, BMPZ);
 		}
-		if (!DspFlagsIn.DSP_MATL) {
+		if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
 			C3dMatrix mS = GetElSys();
 			C3dMatrix mR;
 			C3dVector vD;
@@ -14469,7 +14578,7 @@ void E_Object3::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			dPCompOff = pPCOMP->dZ0 + dt;
 		}
 	}
-	if (DspFlagsIn.DSP_OFF && (dZOFFS != DBL_MAX)) {
+	if (DspFlagsIn.DSP_ELEMENTOFFSETS && (dZOFFS != DBL_MAX)) {
 		vOff = vN;
 		vOff *= dZOFFS + dPCompOff;
 	} else {
@@ -14482,9 +14591,13 @@ void E_Object3::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_TRI && iType == 91) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_TRI && iType == 91;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 3; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -14498,8 +14611,8 @@ void E_Object3::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, -1));
 		// momo
-		if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
-			if (DspFlagsIn.DSP_SHELL_THICKNESS) {
+		if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
+			if (DspFlagsIn.DSP_SHELLTHICKNESS) {
 				glBegin(GL_POLYGON);
 				glNormal3f((float) Vn.x, (float) Vn.y, (float) Vn.z);
 				glVertex3f((float) (pVertex[0]->Pt_Point->x + vOff.x + vN.x + d[0].x), (float) (pVertex[0]->Pt_Point->y + vOff.y + vN.y + d[0].y), (float) (pVertex[0]->Pt_Point->z + vOff.z + vN.z + d[0].z));
@@ -14576,6 +14689,13 @@ void E_Object3::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object3::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 int E_Object3::GetfaceList(eFace* Faces[6]) {
 	Faces[0] = new eFace();
@@ -16626,7 +16746,7 @@ void E_Object1::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	S = ME->dScale;
 	dFS = ME->dResFactor;
 	if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-		if (!DspFlagsIn.DSP_RESDEF) {
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			if (pVertex->pResD != NULL) {
 				d = pVertex->pResD->GetVec();
 				d -= ME->vRelDispOff;
@@ -18861,9 +18981,13 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	glLineWidth(gEL_SIZE);
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_QUAD && iType == 94) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_QUAD && iType == 94;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 4; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -18875,8 +18999,12 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 1;
 		// momo
 		// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-		if (DspFlagsIn.DSP_ELEMENTS_QUAD && iType == 94) {
+		isFitable = DspFlagsIn.DSP_ELEMENTS_QUAD && iType == 94;
+		if (isFitable) {
 			// momo
+			// momo zoom to fit
+			ME->isFitable = true;
+			// momo zoom to fit
 			if (DspFlagsIn.DSP_WIREFRAME) {
 				// momo
 				//  momo// glColor3fv(cols[iColour]);
@@ -18905,7 +19033,7 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 					dPCompOff = pPCOMP->dZ0 + dt;
 				}
 			}
-			if (DspFlagsIn.DSP_OFF && (dZOFFS != DBL_MAX)) {
+			if (DspFlagsIn.DSP_ELEMENTOFFSETS && (dZOFFS != DBL_MAX)) {
 				vOff = vN;
 				vOff *= dZOFFS + dPCompOff;
 			} else {
@@ -18913,7 +19041,7 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			}
 
 			vN *= dt;
-			if (DspFlagsIn.DSP_SHELL_THICKNESS) {
+			if (DspFlagsIn.DSP_SHELLTHICKNESS) {
 				glBegin(GL_LINES);
 				glVertex3f((float) (pVertex[0]->Pt_Point->x + vOff.x + vN.x + d[0].x), (float) (pVertex[0]->Pt_Point->y + vOff.y + vN.y + d[0].y), (float) (pVertex[0]->Pt_Point->z + vOff.z + vN.z + d[0].z));
 				glVertex3f((float) (pVertex[1]->Pt_Point->x + vOff.x + vN.x + d[1].x), (float) (pVertex[1]->Pt_Point->y + vOff.y + vN.y + d[1].y), (float) (pVertex[1]->Pt_Point->z + vOff.z + vN.z + d[1].z));
@@ -18965,14 +19093,14 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 				sLab.Format(_T("E%i"), iLabel);
 				OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 			}
-			if (!DspFlagsIn.DSP_RESLAB && (pResV != NULL)) {
+			if (!DspFlagsIn.DSP_RESULTSLABLES && (pResV != NULL)) {
 				sLab.Format(_T("%f"), *pResV->GetAddress(ind));
 				OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 			}
 
 			// Results Label
 		}
-		if (!DspFlagsIn.DSP_ELEMENT_COORD_SYS) {
+		if (DspFlagsIn.DSP_ELEMENTCOORDSYS) {
 			// momo
 			//  momo// glColor3fv(cols[iColour]);
 			glColor3fv(ColorIfSelect(iColour, -1));
@@ -19009,7 +19137,7 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			glBitmap(8, 13, 0.0, 2.0, 10.0, 0.0, BMPZ);
 		}
 
-		if (!DspFlagsIn.DSP_MATL) {
+		if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
 			C3dMatrix mS = GetElSys();
 			C3dMatrix mR;
 			C3dVector vD;
@@ -19118,7 +19246,7 @@ void E_Object4::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		}
 	}
 
-	if (DspFlagsIn.DSP_OFF && (dZOFFS != DBL_MAX)) {
+	if (DspFlagsIn.DSP_ELEMENTOFFSETS && (dZOFFS != DBL_MAX)) {
 		vOff = vN;
 		vOff *= dZOFFS + dPCompOff;
 	} else {
@@ -19130,9 +19258,13 @@ void E_Object4::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 	// momo
 	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
-	if (DspFlagsIn.DSP_ELEMENTS_QUAD && iType == 94) {
+	isFitable = DspFlagsIn.DSP_ELEMENTS_QUAD && iType == 94;
+	if (isFitable) {
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < 4; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -19146,8 +19278,8 @@ void E_Object4::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, -1));
 		// momo
-		if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
-			if (DspFlagsIn.DSP_SHELL_THICKNESS) {
+		if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
+			if (DspFlagsIn.DSP_SHELLTHICKNESS) {
 				glBegin(GL_POLYGON);
 				glNormal3f((float) Vn.x, (float) Vn.y, (float) Vn.z);
 				glVertex3f((float) (pVertex[0]->Pt_Point->x + vOff.x + vN.x + d[0].x), (float) (pVertex[0]->Pt_Point->y + vOff.y + vN.y + d[0].y), (float) (pVertex[0]->Pt_Point->z + vOff.z + vN.z + d[0].z));
@@ -19239,6 +19371,13 @@ void E_Object4::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_Object4::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 int E_Object4::GetfaceList(eFace* Faces[6]) {
 	int ic;
@@ -20049,10 +20188,6 @@ void E_ObjectR::Draw() {
 	// momo gdi to og2
 }
 
-void E_ObjectR::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	OglDraw(DspFlagsIn, dS1, dS2);
-}
-
 G_Object* E_ObjectR::GetNode(int i) {
 	return (pVertex[i]);
 }
@@ -20120,6 +20255,10 @@ void E_ObjectR::PutVarValues(PropTable* PT, int iNo, CString sVar[]) {
 	;
 }
 
+void E_ObjectR::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
+	OglDraw(DspFlagsIn, dS1, dS2);
+}
+
 void E_ObjectR::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	int i;
 	CString sLab;
@@ -20139,14 +20278,21 @@ void E_ObjectR::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		dFS = ME->dResFactor;
 	}
 
-	if (DspFlagsIn.DSP_ELEMENTS_ALL) {
+	// momo
+	// momo// if (DspFlagsIn.DSP_ELEMENTS_ALL) {
+	isFitable = (DspFlagsIn.DSP_ELEMENTS_RIGID && iType == 122);
+	if (isFitable) {
+		// momo
+		// momo zoom to fit
+		ME->isFitable = true;
+		// momo zoom to fit
 		Selectable = 1;
 		C3dVector vCent;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, -1));
 		// momo
-		if (!DspFlagsIn.DSP_RESDEF) {
+		if (!DspFlagsIn.DSP_DEFORMEDRESULTS) {
 			for (i = 0; i < iNoNodes; i++) {
 				if (pVertex[i]->pResD != NULL) {
 					d[i] = pVertex[i]->pResD->GetVec();
@@ -20174,6 +20320,13 @@ void E_ObjectR::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void E_ObjectR::GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint) {
+	*vPt = pVertex[iPoint]->Pt_Point;
+	*havePtPoint = true;
+}
+// momo zoom to fit
 
 int E_ObjectR::GetLinkList(eEdge* Links[200]) {
 	int i;
@@ -20969,11 +21122,18 @@ void WP_Object::Draw() {
 	// momo gdi to og2
 }
 
+void WP_Object::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
+	OglDrawW(DspFlagsIn, dS1, dS2);
+}
+
 void WP_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector T_Point[40];
 	C3dVector V;
 	int i;
-	if (DspFlagsIn.DSP_WORK_PLANE) {
+	// momo zoom to fit
+	isFitable = true;
+	// momo zoom to fit
+	if (DspFlagsIn.DSP_WORKPLANE) {
 		Selectable = 1;
 		for (i = 0; i < 40; i++) {
 			V.x = Pt_Point[i]->x;
@@ -21085,9 +21245,25 @@ void WP_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	}
 }
 
-void WP_Object::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	OglDrawW(DspFlagsIn, dS1, dS2);
+// momo zoom to fit
+void WP_Object::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	C3dVector boxCorner1, boxCorner2, boxCorner3, boxCorner4;
+	boxCorner1.Set(-5.0, -5.0, 0.0);
+	boxCorner2.Set(5.0, 5.0, 0.0);
+	boxCorner3.Set(-5.0, 5.0, 0.0);
+	boxCorner4.Set(5.0, -5.0, 0.0);
+	boxCorner1.SetToScr(pModMat, pScrMat);
+	boxCorner2.SetToScr(pModMat, pScrMat);
+	boxCorner3.SetToScr(pModMat, pScrMat);
+	boxCorner4.SetToScr(pModMat, pScrMat);
+	boxMin.SetMin(boxCorner1, boxCorner2);
+	boxMin.SetMin(boxMin, boxCorner3);
+	boxMin.SetMin(boxMin, boxCorner4);
+	boxMax.SetMax(boxCorner1, boxCorner2);
+	boxMax.SetMax(boxMax, boxCorner3);
+	boxMax.SetMax(boxMax, boxCorner4);
 }
+// momo zoom to fit
 
 void WP_Object::Reset() {
 	mWPTransform.MakeUnit();
@@ -27313,7 +27489,9 @@ void DrawColBar(DisplayFlags DspFlagsIn, double dW, double dH) {
 
 void ME_Object::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	int i;
-
+	// momo zoom to fit
+	isFitable = false;
+	// momo zoom to fit
 	if (iElNo > 0) {
 		for (i = 0; i < iElNo; i++) {
 			pElems[i]->OglDraw(DspFlagsIn, dS1, dS2);
@@ -27347,6 +27525,9 @@ void ME_Object::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 void ME_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	int i;
 	CString sLab;
+	// momo zoom to fit
+	isFitable = false;
+	// momo zoom to fit
 	if (pResVectors != NULL)
 		pResVectors->OglDrawW(DspFlagsIn, dS1, dS2);
 	if (iElNo > 0) {
@@ -27394,6 +27575,68 @@ void ME_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		OglString(DspFlagsIn, vCent.x, vCent.y, vCent.z, CT2A(sLab));
 	}
 }
+
+// momo zoom to fit
+void ME_Object::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	bool firstSet = false;
+	if (isFitable) {
+		C3dVector vPt;
+		if (DspFlagsMain.DSP_NODES) {
+			for (int i = 0; i < iNdNo; i++) {
+				vPt = pNodes[i]->Pt_Point;
+				vPt.SetToScr(pModMat, pScrMat);
+				if (!firstSet) {
+					firstSet = true;
+					boxMin.SetMin(vPt, vPt);
+					boxMax.SetMax(vPt, vPt);
+				} else {
+					boxMin.SetMin(boxMin, vPt);
+					boxMax.SetMax(boxMax, vPt);
+				}
+			}
+		} else {
+			for (int i = 0; i < iElNo; i++) {
+				if (pElems[i]->isFitable) {
+					for (int j = 0; j < pElems[i]->iNoNodes; j++) {
+						// vPt = pElems[i]->pVertex[j]->Pt_Point;
+						bool havePtPoint;
+						pElems[i]->GetPt_Point(j, &vPt, &havePtPoint);
+						if (havePtPoint) {
+							vPt.SetToScr(pModMat, pScrMat);
+							if (!firstSet) {
+								firstSet = true;
+								boxMin.SetMin(vPt, vPt);
+								boxMax.SetMax(vPt, vPt);
+							} else {
+								boxMin.SetMin(boxMin, vPt);
+								boxMax.SetMax(boxMax, vPt);
+							}
+						}
+					}
+				}
+			}
+		}
+		for (int i = 0; i < iCYS; i++) {
+			pSys[i]->BoxPoints(pModMat, pScrMat);
+			if (pSys[i]->isFitable) {
+				C3dVector vPtMin = pSys[i]->boxMin;
+				C3dVector vPtMax = pSys[i]->boxMax;
+				if (!firstSet) {
+					firstSet = true;
+					boxMin = vPtMin;
+					boxMax = vPtMax;
+				} else {
+					boxMin.SetMin(boxMin, vPtMin);
+					boxMax.SetMax(boxMax, vPtMax);
+				}
+			}
+		}
+		isFitable = firstSet;
+	} else {
+		G_Object::BoxPoints(pModMat, pScrMat);
+	}
+}
+// momo zoom to fit
 
 // momo gdi to og
 // momo// void ME_Object::Draw(CDC* pDC, int iDrawmode) {
@@ -37330,7 +37573,7 @@ void Moment::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dMatrix mT;
 	C3dVector vOff;
 	C3dVector vOffA2;
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		Point[1] = F;
 		Point[1].Normalize();
@@ -37473,7 +37716,7 @@ void Pressure::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dMatrix mT;
 	C3dVector vOff;
 
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		E_Object* pE = (E_Object*) pObj;
 		Point[0] = pE->Get_Centroid();
@@ -37751,7 +37994,7 @@ void Temperature::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 }
 
 void Temperature::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -37893,7 +38136,7 @@ void AccelLoad::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 }
 
 void AccelLoad::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -38032,7 +38275,7 @@ void RotationLoad::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 }
 
 void RotationLoad::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -38113,7 +38356,7 @@ void TemperatureBC::Create(G_Object* pInNode,
 }
 
 void TemperatureBC::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -38200,7 +38443,7 @@ void FluxLoad::Create(G_Object* pInNode,
 }
 
 void FluxLoad::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -38381,7 +38624,7 @@ void Force::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector Pts[7]; // Arrow Head
 	C3dMatrix mT;
 	C3dVector vOff;
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		Point[1] = F;
 		Point[1].Normalize();
@@ -38565,7 +38808,7 @@ void TEMPD::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 void TEMPD::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	dS1 *= 5;
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -38671,7 +38914,7 @@ void GRAV::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 void GRAV::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	dS1 *= 5;
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -38896,7 +39139,7 @@ CString Restraint::GetDofStr() {
 }
 
 void Restraint::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	if (DspFlagsIn.DSP_BOUNDARY_CONDITIONS) {
+	if (DspFlagsIn.DSP_BOUNDARYCONDITIONS) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
@@ -39150,7 +39393,7 @@ void ResultsVec::DrawVector(DisplayFlags DspFlagsIn, double dS1, double dS2, dou
 	glEnd();
 	glDisable(GL_TEXTURE_1D);
 	glLineWidth(2);
-	if (!DspFlagsIn.DSP_RESLAB) {
+	if (!DspFlagsIn.DSP_RESULTSLABLES) {
 		CString sLab;
 		sLab.Format(_T("%g"), iSign * Vector.Mag());
 		OglString(DspFlagsIn, Point.x, Point.y, Point.z, CT2A(sLab));
@@ -39316,7 +39559,7 @@ void ResultsVec::DrawTenVector(DisplayFlags DspFlagsIn, double dS1, double dS2, 
 
 	glDisable(GL_TEXTURE_1D);
 	glLineWidth(2);
-	if (!DspFlagsIn.DSP_RESLAB) {
+	if (!DspFlagsIn.DSP_RESULTSLABLES) {
 		CString sLab;
 		sLab.Format(_T("%g"), iSign * Vector.Mag());
 		OglString(DspFlagsIn, Point.x, Point.y, Point.z, CT2A(sLab));
@@ -39331,7 +39574,7 @@ void ResultsVec::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		dS = ME->dScaleVec;
 		dRF = ME->dResFactor;
 	}
-	if (!DspFlagsIn.DSP_VEC) {
+	if (!DspFlagsIn.DSP_VECTORS) {
 		Selectable = 1;
 		if (iType == 1)
 			DrawVector(DspFlagsIn, dS1, dS2, dS, dRF);
@@ -39625,13 +39868,25 @@ void CoordSys::Serialize(CArchive& ar, int iV) {
 	}
 }
 
+void CoordSys::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
+	OglDrawW(DspFlagsIn, dS1, dS2);
+}
+
 void CoordSys::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector X;
 	C3dVector Y;
 	C3dVector Z;
 	C3dVector O;
 
-	if (DspFlagsIn.DSP_COORD) {
+
+	ME_Object* ME = (ME_Object*) this->pParent;
+	// momo zoom to fit
+	// momo// if (DspFlagsIn.DSP_COORDINATE_SYSTEMS) {
+	dMFullScl = dS1;
+	isFitable = DspFlagsMain.DSP_COORDINATE_SYSTEMS;
+	if (isFitable) {
+		ME->isFitable = true;
+		// momo zoom to fit
 		Selectable = 1;
 
 		X.x = mOrientMat.m_00;
@@ -39686,7 +39941,7 @@ void CoordSys::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		glVertex3f((float) Z.x, (float) Z.y, (float) Z.z);
 		glEnd();
 
-		if (DspFlagsIn.DSP_BLACK) {
+		if (DspFlagsIn.DSP_BLACKWHITE) {
 			// momo
 			//  momo// glColor3fv(cols[124]);
 			glColor3fv(ColorIfSelect(124, -1));
@@ -39735,9 +39990,50 @@ void CoordSys::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	}
 }
 
-void CoordSys::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	OglDrawW(DspFlagsIn, dS1, dS2);
+// momo zoom to fit
+void CoordSys::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	if (isFitable) {
+		C3dVector X;
+		C3dVector Y;
+		C3dVector Z;
+		C3dVector O;
+		X.x = mOrientMat.m_00;
+		X.y = mOrientMat.m_10;
+		X.z = mOrientMat.m_20;
+		Y.x = mOrientMat.m_01;
+		Y.y = mOrientMat.m_11;
+		Y.z = mOrientMat.m_21;
+		Z.x = mOrientMat.m_02;
+		Z.y = mOrientMat.m_12;
+		Z.z = mOrientMat.m_22;
+		X *= dMFullScl;
+		Y *= dMFullScl;
+		Z *= dMFullScl;
+		X += Origin;
+		Y += Origin;
+		Z += Origin;
+		O = Origin;
+		C3dVector vPt1;
+		C3dVector vPt2;
+		C3dVector vPt3;
+		C3dVector vPt4;
+		vPt1 = X;
+		vPt2 = Y;
+		vPt3 = Z;
+		vPt4 = O;
+		vPt1.SetToScr(pModMat, pScrMat);
+		vPt2.SetToScr(pModMat, pScrMat);
+		vPt3.SetToScr(pModMat, pScrMat);
+		vPt4.SetToScr(pModMat, pScrMat);
+		boxMin.SetMin(vPt1, vPt2);
+		boxMax.SetMax(vPt1, vPt2);
+		boxMin.SetMin(boxMin, vPt3);
+		boxMax.SetMax(boxMax, vPt3);
+		boxMin.SetMin(boxMin, vPt4);
+		boxMax.SetMax(boxMax, vPt4);
+	}
 }
+// momo zoom to fit
 
 //*****************************************************************
 // BlowsR 14/07/2020
@@ -44639,6 +44935,9 @@ void CvPt_Object::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 
 void CvPt_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	CString sLab;
+	// momo zoom to fit
+	isFitable = DspFlagsMain.DSP_POINTS;
+	// momo zoom to fit
 	if (DspFlagsIn.DSP_POINTS) {
 		Selectable = 1;
 		// momo
@@ -44665,6 +44964,37 @@ void CvPt_Object::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void CvPt_Object::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	if (isFitable) {
+		double delta = 0.01;
+		C3dVector boxCorner[8];
+		C3dVector centerPoint, boxCornerNew;
+		centerPoint = Pt_Point;
+		boxCorner[0].Set(-delta, -delta, -delta);
+		boxCorner[1].Set(-delta, -delta, delta);
+		boxCorner[2].Set(-delta, delta, -delta);
+		boxCorner[3].Set(-delta, delta, delta);
+		boxCorner[4].Set(delta, -delta, -delta);
+		boxCorner[5].Set(delta, -delta, delta);
+		boxCorner[6].Set(delta, delta, -delta);
+		boxCorner[7].Set(delta, delta, delta);
+		for (int i = 0; i <= 7; i++) {
+			boxCornerNew = boxCorner[i];
+			boxCornerNew = centerPoint + boxCornerNew;
+			boxCornerNew.SetToScr(pModMat, pScrMat);
+			if (i == 0) {
+				boxMin.SetMin(boxCornerNew, boxCornerNew);
+				boxMax.SetMax(boxCornerNew, boxCornerNew);
+			} else {
+				boxMin.SetMin(boxMin, boxCornerNew);
+				boxMax.SetMax(boxMax, boxCornerNew);
+			}
+		}
+	}
+}
+// momo zoom to fit
 
 void CvPt_Object::SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran) {
 	C3dVector V;
@@ -46275,10 +46605,6 @@ void NCurve::DrawCtrlPtsTog() {
 	}
 }
 
-void NCurve::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
-	OglDrawW(DspFlagsIn, dS1, dS2);
-}
-
 void NCurve::OglDrawCtrlPts() {
 	int i;
 	// momo
@@ -46293,17 +46619,24 @@ void NCurve::OglDrawCtrlPts() {
 	glEnd();
 }
 
+void NCurve::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
+	OglDrawW(DspFlagsIn, dS1, dS2);
+}
+
 void NCurve::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	CString sLab;
 	int i = 0;
 	double dt;
+	// momo zoom to fit
+	isFitable = DspFlagsMain.DSP_CURVES;
+	// momo zoom to fit
 	if (DspFlagsIn.DSP_CURVES) {
 		Selectable = 1;
 		// momo
 		//  momo// glColor3fv(cols[iColour]);
 		glColor3fv(ColorIfSelect(iColour, 171));
 		// momo
-		if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+		if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 			OglDrawCtrlPts();
 		}
 		// momo
@@ -46379,6 +46712,49 @@ void NCurve::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void NCurve::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	if (isFitable) {
+		int i = 0;
+		double dt;
+		C3dVector vPt;
+		double dw = 0;
+		double dSpan;
+		double dInc = 0.005;
+		int iNo;
+		dSpan = we - ws;
+		if (p > 0) {
+			dt = dSpan / dInc;
+			iNo = static_cast<int>(dt);
+			dt = dSpan / iNo;
+		}
+		vPt = GetPt(ws);
+		vPt.SetToScr(pModMat, pScrMat);
+		boxMin.SetMin(vPt, vPt);
+		boxMax.SetMax(vPt, vPt);
+		dw = ws;
+		for (i = 0; i < iNo; i++) {
+			dw += dt;
+			if (dw > 1.0) {
+				dw = 1;
+			}
+			vPt = GetPt(dw);
+			vPt.SetToScr(pModMat, pScrMat);
+			boxMin.SetMin(boxMin, vPt);
+			boxMax.SetMax(boxMax, vPt);
+		}
+		if (DspFlagsMain.DSP_CONTROLPOINTS) {
+			for (i = 0; i < iNoCPts; i++) {
+				vPt = cPts[i]->Pt_Point;
+				vPt.SetToScr(pModMat, pScrMat);
+				boxMin.SetMin(boxMin, vPt);
+				boxMax.SetMax(boxMax, vPt);
+			}
+		}
+	}
+}
+// momo zoom to fit
 
 double NCurve::CorrectW(double w) {
 	return (w);
@@ -46623,7 +46999,7 @@ G_ObjectD NCurve::SelDist(CPoint InPT, Filter FIL) {
 void NCurve::S_Box(CPoint P1, CPoint P2, ObjList* pSel) {
 	int i;
 
-	if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+	if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 		for (i = 0; i < iNoCPts; i++) {
 			cPts[i]->S_Box(P1, P2, pSel);
 		}
@@ -46829,7 +47205,7 @@ void NCurveOnSurf::OglDrawW() {
 	double dt;
 	int iNo;
 	if (pParent != NULL) {
-		if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+		if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 			OglDrawCtrlPts();
 		}
 		NSurf* pS = (NSurf*) pParent;
@@ -47929,8 +48305,11 @@ void NLine::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	CString sLab;
 	C3dVector vC;
 
+	// momo zoom to fit
+	isFitable = DspFlagsMain.DSP_CURVES;
+	// momo zoom to fit
 	if (DspFlagsIn.DSP_CURVES) {
-		if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+		if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 			OglDrawCtrlPts();
 		}
 		Selectable = 1;
@@ -47974,6 +48353,25 @@ void NLine::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		Selectable = 0;
 	}
 }
+
+// momo zoom to fit
+void NLine::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
+	OglDrawW(DspFlagsIn, dS1, dS2);
+}
+
+void NLine::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	if (isFitable) {
+		C3dVector vPt1;
+		C3dVector vPt2;
+		vPt1 = GetPt(ws);
+		vPt2 = GetPt(we);
+		vPt1.SetToScr(pModMat, pScrMat);
+		vPt2.SetToScr(pModMat, pScrMat);
+		boxMin.SetMin(vPt1, vPt2);
+		boxMax.SetMax(vPt1, vPt2);
+	}
+}
+// momo zoom to fit
 
 // momo gdi to og
 //// void NLine::HighLight(CDC* pDC) {
@@ -48572,6 +48970,9 @@ void NSurf::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector vO;
 	C3dVector vO1;
 
+	// momo zoom to fit
+	isFitable = DspFlagsMain.DSP_SURFACES;
+	// momo zoom to fit
 	if (DspFlagsIn.DSP_SURFACES) {
 		int i;
 		int j;
@@ -48593,7 +48994,7 @@ void NSurf::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		vVDir.Normalize();
 		vZDir = vUDir.Cross(vVDir);
 		for (i = 0; i < iNoTrimCvs; i++) {
-			if (DspFlagsIn.DSP_SURC) {
+			if (DspFlagsIn.DSP_SURFACECURVES) {
 				pSurfCvs[i]->Selectable = 1;
 				pSurfCvs[i]->OglDrawW();
 			} else {
@@ -48601,7 +49002,7 @@ void NSurf::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			}
 		}
 		// DRAW EXTERNAL TRIM LOOP
-		if (DspFlagsIn.DSP_SURC) {
+		if (DspFlagsIn.DSP_SURFACECURVES) {
 			for (i = 0; i < iNoExtCvs; i++) {
 				pExtLoop[i]->OglDrawW();
 				pExtLoop[i]->Selectable = 1;
@@ -48686,7 +49087,7 @@ void NSurf::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		//*********************************************************************************
 
 		// Draw the U marker
-		if (DspFlagsIn.DSP_SURFACE_DIRECTION_MARKERS) {
+		if (DspFlagsIn.DSP_SURFACEDIRECTIONMARKERS) {
 			C3dVector p2;
 			C3dVector p3;
 			C3dVector p4;
@@ -48848,7 +49249,7 @@ void NSurf::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			glBitmap(8, 13, 0.0, 2.0, 10.0, 0.0, BMPZ);
 		}
 
-		if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+		if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 			for (i = 0; i < iNoCvs; i++) {
 				pCVsU[i]->OglDrawCtrlPts();
 			}
@@ -48873,6 +49274,9 @@ void NSurf::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	//*******************************************************************
 	// CleanExternalTrim();
 
+	// momo zoom to fit
+	isFitable = DspFlagsMain.DSP_SURFACES;
+	// momo zoom to fit
 	if (DspFlagsIn.DSP_SURFACES) {
 		Selectable = 1;
 		GLfloat* ctrlpts;
@@ -48993,6 +49397,85 @@ void NSurf::OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	}
 }
 
+// momo zoom to fit
+void NSurf::BoxPoints(C3dMatrix* pModMat, C3dMatrix* pScrMat) {
+	if (isFitable) {
+		bool firstSet = true;
+		for (int i = 0; i < iNoTrimCvs; i++) {
+			if (pSurfCvs[i]->pParent != NULL) {
+				double dw = 0;
+				double dSpan;
+				double dInc = 0.02;
+				C3dVector vPt;
+				double dt;
+				int iNo;
+				NSurf* pS = (NSurf*) pParent;
+				dSpan = pSurfCvs[i]->we - pSurfCvs[i]->ws;
+				dt = dSpan / dInc;
+				iNo = (int) dt;
+				vPt = pSurfCvs[i]->GetPt(pSurfCvs[i]->ws);
+				// vPt = pS->GetPt(vPt.x, vPt.y);
+				vPt.SetToScr(pModMat, pScrMat);
+				boxMin.SetMin(vPt, vPt);
+				boxMax.SetMax(vPt, vPt);
+				firstSet = false;
+				dw = pSurfCvs[i]->ws;
+				for (int j = 0; j < iNo; j++) {
+					dw = dw + dInc;
+					if (dw > 1.0) {
+						dw = 1;
+					}
+					vPt = pSurfCvs[i]->GetPt(dw);
+					// vPt = pS->GetPt(vPt.x, vPt.y);
+					vPt.SetToScr(pModMat, pScrMat);
+					boxMin.SetMin(boxMin, vPt);
+					boxMax.SetMax(boxMax, vPt);
+				}
+			}
+		}
+
+		for (int i = 0; i < iNoExtCvs; i++) {
+			if (pExtLoop[i]->pParent != NULL) {
+				double dw = 0;
+				double dSpan;
+				double dInc = 0.02;
+				C3dVector vPt;
+				double dt;
+				int iNo;
+				NSurf* pS = (NSurf*) pExtLoop[i]->pParent;
+				dSpan = pExtLoop[i]->we - pExtLoop[i]->ws;
+				dt = dSpan / dInc;
+				iNo = (int) dt;
+				vPt = pExtLoop[i]->GetPt(pExtLoop[i]->ws);
+				// vPt = pS->GetPt(vPt.x, vPt.y);
+				vPt.SetToScr(pModMat, pScrMat);
+				if (firstSet) {
+					firstSet = false;
+					boxMin.SetMin(vPt, vPt);
+					boxMax.SetMax(vPt, vPt);
+				} else {
+					boxMin.SetMin(boxMin, vPt);
+					boxMax.SetMax(boxMax, vPt);
+				}
+				dw = pExtLoop[i]->ws;
+				for (int j = 0; j < iNo; j++) {
+					dw = dw + dInc;
+					if (dw > 1.0) {
+						dw = 1;
+					}
+					vPt = pExtLoop[i]->GetPt(dw);
+					// vPt = pS->GetPt(vPt.x, vPt.y);
+					vPt.SetToScr(pModMat, pScrMat);
+					boxMin.SetMin(boxMin, vPt);
+					boxMax.SetMax(boxMax, vPt);
+				}
+			}
+		}
+		////for
+	}
+}
+// momo zoom to fit
+
 void NSurf::SetToScr(C3dMatrix* pModMat, C3dMatrix* pScrTran) {
 	pModZ = pModMat;
 	pScrZ = pScrTran;
@@ -49065,7 +49548,7 @@ void NSurf::S_Box(CPoint P1, CPoint P2, ObjList* pSel) {
 	// CALL SURFACE S_BOX METHOD
 	G_Object::S_Box(P1, P2, pSel);
 
-	if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+	if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 		for (i = 0; i < iNoCvs; i++) {
 			pCVsU[i]->S_Box(P1, P2, pSel);
 			for (j = 0; j < pCVsU[i]->iNoCPts; j++) {
@@ -49222,7 +49705,7 @@ G_ObjectD NSurf::SelDist(CPoint InPT, Filter FIL) {
 
 	// Check the control points
 	if (FIL.isFilter(0)) {
-		if (DrawCPts || DspFlagsMain.DSP_CONTROL_POINTS) {
+		if (DrawCPts || DspFlagsMain.DSP_CONTROLPOINTS) {
 			for (i = 0; i < iNoCvs; i++) {
 				for (j = 0; j < pCVsU[i]->iNoCPts; j++) {
 					vT = pCVsU[i]->cPts[j]->SelDist(InPT, FIL);
@@ -51160,7 +51643,7 @@ void BSec::OglDraw(DisplayFlags DspFlagsIn, C3dMatrix TA, C3dMatrix TB, C3dVecto
 	C3dVector p4;
 
 	int j = 0;
-	if (DspFlagsIn.DSP_CONT || (bD == FALSE)) {
+	if (DspFlagsIn.DSP_CONTOURRAWRESULTS || (bD == FALSE)) {
 		if (iLnCnt1 > 1) {
 			for (j = 0; j < iLnCnt1 - 1; j++) {
 				p1 = TA * pLnLoop1[j + 1];
@@ -53045,7 +53528,7 @@ void CEntEditDialog::InitOGL() {
 void CEntEditDialog::OglDraw() {
 	// momo change Display Flags Method
 	DisplayFlags DspFlagsIn;
-	DspFlagsIn.DSP_BLACK = true;
+	DspFlagsIn.DSP_BLACKWHITE = true;
 	// momo change Display Flags Method
 	glClearColor(255.0f, 255.0f, 255.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -53494,7 +53977,7 @@ void Lamina::SetAng(double dA) {
 void Lamina::OglDraw() {
 	// momo change Display Flags Method
 	DisplayFlags DspFlagsIn;
-	DspFlagsIn.DSP_BLACK = true;
+	DspFlagsIn.DSP_BLACKWHITE = true;
 	// momo change Display Flags Method
 	C3dMatrix R;
 	CString s1;
@@ -53742,7 +54225,7 @@ void CPcompEditor::InitOGL() {
 void CPcompEditor::OglDraw() {
 	// momo change Display Flags Method
 	DisplayFlags DspFlagsIn;
-	DspFlagsIn.DSP_BLACK = true;
+	DspFlagsIn.DSP_BLACKWHITE = true;
 	// momo change Display Flags Method
 	glClearColor(255.0f, 255.0f, 255.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

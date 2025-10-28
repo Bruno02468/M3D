@@ -4,7 +4,20 @@
 
 #pragma once
 
+// momo
+class CM3daDoc;
+// momo
+
 class CM3daView: public CView {
+		// momo set cursor
+	protected:
+		HCURSOR CursorMove;
+		HCURSOR CursorRotate;
+		HCURSOR CursorZoomInOut;
+		HCURSOR CursorZoomBox;
+		virtual void OnInitialUpdate();
+		// momo set cursor
+
 	protected: // create from serialization only
 		CM3daView();
 		DECLARE_DYNCREATE(CM3daView)
@@ -20,14 +33,19 @@ class CM3daView: public CView {
 		// CPoint m_PointOld; // old move point
 		// CPoint m_PointNew; // new move point
 		// momo close for LNC
-		CPoint m_PointDown;
+		CPoint m_PointDownLeft;
 		int m_iMouseButStat; // mouse button status
 		int m_iWidth; // client width
 		int m_iHeight; // client height
 		CRect m_rcClient; // client area in screen coords
-		int m_iFuncKey;
 		// MoMo_Start
+		// momo// int m_iFuncKey;
 		BOOL m_middleIsDraging = false;
+		BOOL m_rightIsDraging = false;
+		CPoint m_PointDownRight;
+		bool DoMiddleUp = false;
+		bool DoubleClickDone = false;
+		bool MouseMiddleDownWait = false;
 		// MoMo_End
 		// momo gdi to og
 		// momo// void ClearScr();
@@ -58,6 +76,9 @@ class CM3daView: public CView {
 	protected:
 		afx_msg void OnFilePrintPreview();
 		afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+		// momo set cursor
+		afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+		// momo set cursor
 		DECLARE_MESSAGE_MAP()
 	public:
 		afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
@@ -84,13 +105,13 @@ class CM3daView: public CView {
 		afx_msg void OnViewShadedWithoutEdges();
 		afx_msg void OnUpdateViewShadedWithoutEdges(CCmdUI* pCmdUI);
 		// momo on off button and menu
-		afx_msg void OnViewLocateeye();
-		afx_msg void OnViewResetview();
+		afx_msg void OnViewLocateEye();
+		afx_msg void OnViewResetView();
 		//  afx_msg BOOL OnMouseHWheel(UINT nFlags, short zDelta, CPoint pt);
 		afx_msg void OnMButtonDblClk(UINT nFlags, CPoint point);
 		afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 		afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-		afx_msg void OnViewZoomall();
+		afx_msg void OnViewZoomAll();
 		afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 		// momo
 		// afx_msg void OnViewTop();
@@ -99,6 +120,7 @@ class CM3daView: public CView {
 		// afx_msg void OnViewBack();
 		// afx_msg void OnViewRight();
 		// afx_msg void OnViewBottomxz();
+		afx_msg void OnTimer(UINT_PTR nIDEvent);
 		// momo
 		afx_msg void OnProjwp();
 		afx_msg void OnProjFront();

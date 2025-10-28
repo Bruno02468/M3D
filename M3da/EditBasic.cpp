@@ -44,41 +44,156 @@ END_MESSAGE_MAP()
 
 // CEditBasic message handlers
 
-BOOL CEditBasic::PreTranslateMessage(MSG* pMsg) {
-	// TODO: Add your specialized code here and/or call the base class
+// MoMo_Start
+// BOOL CEditBasic::PreTranslateMessage(MSG* pMsg)
+//{
+//  // TODO: Add your specialized code here and/or call the base class
+//
+//  if (pMsg->wParam == VK_ESCAPE)
+//  {
+//    return TRUE;
+//  }
+//  else
+//  {
+//    return CEdit::PreTranslateMessage(pMsg);
+//  }
+//}
 
-	// MoMo_Start
-	// MoMo// if (pMsg->wParam == VK_ESCAPE) {
+BOOL CEditBasic::PreTranslateMessage(MSG* pMsg) {
+	static bool ctrl_shift_down = false;
+	static bool ctrl_down = false;
+	static bool shift_down = false;
+	static bool f1_down = false;
+	static bool f2_down = false;
+	static bool f3_down = false;
+	static bool f4_down = false;
 	if (pMsg->wParam == VK_ESCAPE && pMsg->message == WM_KEYDOWN) {
+		// Escape down
 		if (!SeedVals.IsSeedMode) {
 			outtextMSG2("C");
 		} else {
 			outtextMSG2("Cancel");
 		}
-		// MoMo_End
 		return TRUE;
-		// MoMo_Start
-	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000)) {
-		switch (pMsg->wParam) {
-			case 'C': // Ctrl+C
-				Copy();
-				return TRUE;
-			case 'X': // Ctrl+X
-				Cut();
-				return TRUE;
-			case 'V': // Ctrl+V
-				Paste();
-				return TRUE;
-			case 'A': // Ctrl+A
-				SetSel(0, -1);
-				return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_F1) {
+		if (!f1_down) {
+			// F1 down
+			f1_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_MOVE);
+			m_iFuncKey = 1;
 		}
-		return CEdit::PreTranslateMessage(pMsg);
-		// MoMo_End
-	} else {
-		return CEdit::PreTranslateMessage(pMsg);
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_F2) {
+		if (!f2_down) {
+			// F2 down
+			f2_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_ZOOM_IN_OUT);
+			m_iFuncKey = 2;
+		}
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_F3) {
+		if (!f3_down) {
+			// F3 down
+			f3_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_ROTATE);
+			m_iFuncKey = 3;
+		}
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_F4) {
+		if (!f4_down) {
+			// F4 down
+			f4_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_ZOOM_BOX);
+			m_iFuncKey = 7;
+		}
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000) && toupper((int) pMsg->wParam) == 'C') {
+		// Ctrl+C
+		Copy();
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000) && toupper((int) pMsg->wParam) == 'X') {
+		// Ctrl+X
+		Cut();
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000) && toupper((int) pMsg->wParam) == 'V') {
+		// Ctrl+V
+		Paste();
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000) && toupper((int) pMsg->wParam) == 'A') {
+		// Ctrl+A
+		SetSel(0, -1);
+		return TRUE;
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000) && (::GetKeyState(VK_SHIFT) & 0x8000)) {
+		if (!ctrl_shift_down) {
+			// Ctrl+Shift down
+			ctrl_shift_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_ZOOM_BOX);
+			m_iFuncKey = 7;
+		}
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_CONTROL) & 0x8000)) {
+		if (!ctrl_down) {
+			// Ctrl down
+			ctrl_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_MOVE);
+			m_iFuncKey = 1;
+		}
+	} else if (pMsg->message == WM_KEYDOWN && (::GetKeyState(VK_SHIFT) & 0x8000)) {
+		if (!shift_down) {
+			// Shift down
+			shift_down = true;
+			SetViewCursor(IDC_MOUSE_CURSOR_ROTATE);
+			m_iFuncKey = 3;
+		}
+	} else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_F1) {
+		// F1 up
+		f1_down = false;
+		SetViewCursor(0);
+		m_iFuncKey = 0;
+		return TRUE;
+	} else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_F2) {
+		// F2 up
+		f2_down = false;
+		SetViewCursor(0);
+		m_iFuncKey = 0;
+		return TRUE;
+	} else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_F3) {
+		// F3 up
+		f3_down = false;
+		SetViewCursor(0);
+		m_iFuncKey = 0;
+		return TRUE;
+	} else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_F4) {
+		// F4 up
+		f4_down = false;
+		SetViewCursor(0);
+		m_iFuncKey = 0;
+		return TRUE;
+	} else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_CONTROL) {
+		// Ctrl up
+		ctrl_down = false;
+		if (ctrl_shift_down) {
+			SetViewCursor(IDC_MOUSE_CURSOR_ROTATE);
+			m_iFuncKey = 3;
+		} else {
+			SetViewCursor(0);
+			m_iFuncKey = 0;
+		}
+		ctrl_shift_down = false;
+	} else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_SHIFT) {
+		// Shift up
+		shift_down = false;
+		if (ctrl_shift_down) {
+			SetViewCursor(IDC_MOUSE_CURSOR_MOVE);
+			m_iFuncKey = 1;
+		} else {
+			SetViewCursor(0);
+			m_iFuncKey = 0;
+		}
+		ctrl_shift_down = false;
 	}
+	return CEdit::PreTranslateMessage(pMsg);
 }
+//  MoMo_End
 
 // momo change command box color
 void CEditBasic::SetBgColor(COLORREF clr) {

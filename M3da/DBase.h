@@ -148,7 +148,7 @@ class DBase: public CCmdTarget {
 		void SetActStep(int iD);
 		void SetActSol(int iD);
 		// momo change Display Flags Method
-		void DisplayAll();
+		void DefaultDisplays();
 		void ResteFileSettings(bool bMode);
 		// momo change Display Flags Method
 		// momo
@@ -582,8 +582,8 @@ class DBase: public CCmdTarget {
 		void OglDraw(DisplayFlags DspFlagsIn);
 		void OglDrawW(DisplayFlags DspFlagsIn);
 		void Cycle();
-		void Animate();
-		void AnimatePosNeg();
+		void AnimateResults();
+		void AnimatePositiveNegative();
 		void SetToScr();
 		void SetToScr2(C3dMatrix pM);
 		void SetWPMode(int iMode);
@@ -622,6 +622,12 @@ class DBase: public CCmdTarget {
 		// MoMo_End
 		C3dVector GetVPt();
 		C3dVector GetMeshCentre();
+		// momo zoom to fit
+		void GetObjectsBoxLimits(C3dVector& minValues, C3dVector& maxValues);
+		void SetAllToScr(const C3dMatrix& pM);
+		void MoveScreen(double d1, double d2, double dWidth, double dHeight, CView* pCViewIn);
+		void MovePointToScreenCenter(C3dVector fromPointOnScreen);
+		// momo zoom to fit
 		int GetMeshYExt();
 		//***************************************************
 		// Set buffer for incomming points
@@ -642,6 +648,7 @@ class DBase: public CCmdTarget {
 		void S_Box(CPoint UL, CPoint LR);
 		// momo
 		void DeSelect_Box(CPoint UL, CPoint LR);
+		void ZoomBox(CPoint startPoint, CPoint endPoint);
 		// momo
 		void S_Des();
 		void S_All(int iT);
@@ -829,6 +836,9 @@ class DBase: public CCmdTarget {
 		// 09/04/2020
 		//***************************************************************************
 		C3dVector PickPointToGlobal2(CPoint Pt);
+		// momo
+		C3dVector PickPointToGlobal2Exact(C3dVector Pt);
+		// momo
 		void ListMat(int MID, BOOL bPID);
 		// MoMo_Material_FormKeysBugV1_05_22_2025_Start
 		// MoMo// void EditMat(int MID, BOOL bPID);

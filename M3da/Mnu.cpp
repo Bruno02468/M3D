@@ -10,7 +10,9 @@
 // momo
 
 // constructor sets where to out text
-const double Pi = 3.1415926535;
+// momo
+// momo// const double Pi = 3.1415926535;
+// momo
 #define D2R 0.01745329251994
 #define R2D 57.2957795130931
 
@@ -6249,6 +6251,9 @@ int zWPGLOB_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 	TWP->Reset();
 	cDBase->TmpOGL[cDBase->TmpOGLCnt] = TWP;
 	cDBase->TmpOGLCnt++;
+	// momo
+	cDBase->InvalidateOGL();
+	// momo
 	cDBase->ReDraw();
 	RetVal = 1;
 	return RetVal;
@@ -6697,9 +6702,9 @@ int zELTYPE_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			outtext2("D");
 			RetVal = 1;
 			// momo
+			// CheckPushedButtons("SetOneElement");
 			cDBase->InvalidateOGL();
 			cDBase->ReDraw();
-			CheckPushedButtons("SetOneElements");
 			// momo
 		}
 	}

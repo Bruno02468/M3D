@@ -11,11 +11,24 @@ class CMainFrame: public CFrameWndEx {
 	protected: // create from serialization only
 		CMainFrame();
 		DECLARE_DYNCREATE(CMainFrame)
+		// momo
+		void OnViewToolbarBC();
+		void OnUpdateViewToolbarBC(CCmdUI* pCmdUI);
+		void LockToolbarsDocking(bool lockAll);
+		// momo
 
 	public:
 		virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 		virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd* pParentWnd = NULL, CCreateContext* pContext = NULL);
 		// MoMo_Start
+		struct ToolBarInfo {
+				CMFCToolBar* pToolbar;
+				UINT ResourceID;
+				BOOL isVisible;
+				int Align; // 0:any 1:right 2:left 3:top 4:bottom
+				int DockCommand; // 1:DockPane 2:DockPaneLeftOf Negative:DockPane(&p_Input)
+		};
+		ToolBarInfo toolbars[19];
 		//  MoMo// void sizeCbar();
 		// MoMo_End
 		virtual ~CMainFrame();
@@ -62,24 +75,25 @@ class CMainFrame: public CFrameWndEx {
 		//// Esp_Mod_Experimental_Toolbar_4_10_2025_End
 		CMFCMenuBar m_MenuBar;
 		CMFCStatusBar s_StatusBar;
-		CMFCToolBar t_BoundaryConditions;
-		CMFCToolBar t_Create;
-		CMFCToolBar t_Dimension;
-		CMFCToolBar t_Draw;
-		CMFCToolBar t_Edit;
-		CMFCToolBar t_ElementTypes;
-		CMFCToolBar t_Experimental;
-		CMFCToolBar t_FE;
-		CMFCToolBar t_File;
-		CMFCToolBar t_Groups;
-		CMFCToolBar t_MenuCommands;
-		CMFCToolBar t_PostProcessing;
-		CMFCToolBar t_Projection;
-		CMFCToolBar t_QuickFilter;
-		CMFCToolBar t_Selection;
-		CMFCToolBar t_ShowHide;
-		CMFCToolBar t_ElementVisibility;
-		CMFCToolBar t_Utils;
+		CMFCToolBar BoundaryConditionsToolbar;
+		CMFCToolBar CreateToolbar;
+		CMFCToolBar DimensionToolbar;
+		CMFCToolBar DrawToolbar;
+		CMFCToolBar EditToolbar;
+		CMFCToolBar SetElementToolbar;
+		CMFCToolBar ExperimentalToolbar;
+		CMFCToolBar FiniteElementsToolbar;
+		CMFCToolBar FileToolbar;
+		CMFCToolBar GroupToolbar;
+		CMFCToolBar MenuCommandsToolbar;
+		CMFCToolBar PostProcessingToolbar;
+		CMFCToolBar ProjectionToolbar;
+		CMFCToolBar SelectFilterQuickToolbar;
+		CMFCToolBar SelectToolbar;
+		CMFCToolBar ShowHideToolbar;
+		CMFCToolBar ElementVisibilityToolbar;
+		CMFCToolBar GeomVisibilityToolbar;
+		CMFCToolBar UtilitiesToolbar;
 		// momo
 
 		// Generated message map functions

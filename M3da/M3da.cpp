@@ -26,7 +26,10 @@
 SeedValues SeedVals;
 CString LastRequest = _T("");
 BOOL CurrentBufferResult = false;
-BOOL m_leftIsDragging = false;
+BOOL leftIsDraggingForSelect = false;
+BOOL leftIsDraggingForZoomBox = false;
+BOOL rightIsDraggingForZoomBox = false;
+BOOL rightIsDraggingForZoomBoxCanceled = false;
 BOOL DeSelectAll = false;
 BOOL StartLoad = true;
 int m_x1 = 0;
@@ -38,6 +41,13 @@ int SelectMode = 3;
 int MainDrawState = 0;
 bool AxisOrigin = false;
 bool AxisCorner = false;
+int m_iFuncKey = 0;
+bool NeedLeftClick = false;
+int RightDragAction = 3;
+int MiddleDragAction = 1;
+bool MouseLeftDown = false;
+bool MouseRightDown = false;
+bool MouseMiddleDown = false;
 // MoMo_End
 // momo
 int SelRowsCurrent[MAX_RESSETS][2];
@@ -70,17 +80,21 @@ CPoint m_PointNew; // new move point
 // momo random color change bug
 bool bUseDoubleBuffer = false;
 // momo random color change bug
+// momo
+extern double Pi = 3.1415926535;
+// momo
 
 // CM3daApp
 
 BEGIN_MESSAGE_MAP(CM3daApp, CWinAppEx)
 ON_COMMAND(ID_APP_ABOUT, &CM3daApp::OnAppAbout)
 // momo add type id form
-ON_COMMAND(ID_TYPEID_HELP, &CM3daApp::OnShowInfoDialog)
+ON_COMMAND(ID_HELP_TYPEID, &CM3daApp::OnShowInfoDialog)
 // momo add type id form
 // momo
-ON_COMMAND(ID_PROPERTY_HELP, &CM3daApp::OnShowInfoDialog)
-ON_COMMAND(ID_ELEMENTMODIFIY_HELP, &CM3daApp::OnShowInfoDialog)
+ON_COMMAND(ID_HELP_SHORTCUT_KEYS, &CM3daApp::OnShowInfoDialog)
+ON_COMMAND(ID_HELP_PROPERTY, &CM3daApp::OnShowInfoDialog)
+ON_COMMAND(ID_HELP_ELEMENTMODIFIY, &CM3daApp::OnShowInfoDialog)
 // momo
 // Standard file based document commands
 // momo
@@ -338,7 +352,7 @@ BOOL CM3daApp::InitInstance() {
 	// such as the name of your company or organization
 	// MoMo_Start
 	// MoMo// SetRegistryKey(_T("Local AppWizard-Generated Applications"));
-	SetRegistryKey(_T("M3D-DevM-Reg-25"));
+	SetRegistryKey(_T("M3D-DevM-Reg-29"));
 	// MoMo_End
 	// momo
 	SelRowsCurrent[0][0] = -1;
@@ -356,21 +370,21 @@ BOOL CM3daApp::InitInstance() {
 	ButtonPush.ShadedWithEdges = true;
 	DspFlagsMain.DSP_SHADED_WITH_EDGES = true;
 	ButtonPush.ShadedWithoutEdges = false;
-	ButtonPush.FiniteOn = true;
+	ButtonPush.AllFiniteOn = true;
 	DspFlagsMain.DSP_NODES = true;
 	DspFlagsMain.DSP_ELEMENTS_ALL = true;
-	DspFlagsMain.DSP_BOUNDARY_CONDITIONS = true;
-	ButtonPush.GeomOn = true;
+	DspFlagsMain.DSP_BOUNDARYCONDITIONS = true;
+	ButtonPush.AllGeomOn = true;
 	DspFlagsMain.DSP_POINTS = true;
-	DspFlagsMain.DSP_CONTROL_POINTS = false;
+	DspFlagsMain.DSP_CONTROLPOINTS = false;
 	DspFlagsMain.DSP_CURVES = true;
 	DspFlagsMain.DSP_SURFACES = true;
-	DspFlagsMain.DSP_COORD = true;
+	DspFlagsMain.DSP_COORDINATE_SYSTEMS = true;
 	ButtonPush.OnlySelectedOn = false;
-	DspFlagsMain.DSP_WORK_PLANE = true;
-	DspFlagsMain.DSP_SHELL_THICKNESS = false;
-	DspFlagsMain.DSP_ELEMENT_COORD_SYS = true;
-	DspFlagsMain.DSP_SURFACE_DIRECTION_MARKERS = false;
+	DspFlagsMain.DSP_WORKPLANE = true;
+	DspFlagsMain.DSP_SHELLTHICKNESS = false;
+	DspFlagsMain.DSP_ELEMENTCOORDSYS = false;
+	DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS = false;
 	DspFlagsMain.DSP_GRADIENT_BACKGROUND = false;
 	DspFlagsMain.DSP_ELEMENTS_0D = true;
 	DspFlagsMain.DSP_ELEMENTS_MASS = true;
@@ -397,18 +411,18 @@ BOOL CM3daApp::InitInstance() {
 	ButtonPush.FullBody = true;
 	ButtonPush.PartOfBody = false;
 	ButtonPush.CenterOfBody = true;
-	DspFlagsMain.DSP_NODES_ASK = true;
-	DspFlagsMain.DSP_OFF = true;
-	DspFlagsMain.DSP_SURC = true;
-	DspFlagsMain.DSP_BLACK = true;
-	DspFlagsMain.DSP_ASSEM = true;
-	DspFlagsMain.DSP_CONT = true;
-	DspFlagsMain.DSP_RESLAB = true;
-	DspFlagsMain.DSP_RESDEF = true;
-	DspFlagsMain.DSP_MATL = true;
-	DspFlagsMain.DSP_ANIMATION = true;
-	DspFlagsMain.DSP_ANIMPOSNEG = true;
-	DspFlagsMain.DSP_VEC = true;
+	DspFlagsMain.DSP_NODESSQUAREASTERISK = true;
+	DspFlagsMain.DSP_ELEMENTOFFSETS = true;
+	DspFlagsMain.DSP_SURFACECURVES = true;
+	DspFlagsMain.DSP_BLACKWHITE = true;
+	DspFlagsMain.DSP_ASSEMBLIES = true;
+	DspFlagsMain.DSP_CONTOURRAWRESULTS = true;
+	DspFlagsMain.DSP_RESULTSLABLES = true;
+	DspFlagsMain.DSP_DEFORMEDRESULTS = true;
+	DspFlagsMain.DSP_MATERIALDIRECTION = true;
+	DspFlagsMain.DSP_ANIMATERESULTS = false;
+	DspFlagsMain.DSP_ANIMATEPOSITIVENEGATIVE = true;
+	DspFlagsMain.DSP_VECTORS = true;
 	// momo
 	// momo gdi to og2
 	mClickPoint.IsClicked = false;
@@ -425,6 +439,9 @@ BOOL CM3daApp::InitInstance() {
 	DeselectCadrMode = settings.ReadDeselectCadrMode();
 	SelectMode = settings.ReadSelectMode();
 	settings.ReadAxisMode(AxisOrigin, AxisCorner);
+	NeedLeftClick = settings.ReadNeedLeftClick();
+	RightDragAction = settings.ReadRightDragAction();
+	MiddleDragAction = settings.ReadMiddleDragAction();
 	// momo
 	// momo random color change bug
 	bUseDoubleBuffer = settings.ReadDoubleBuffer();
@@ -551,12 +568,38 @@ class CAboutDlg: public CDialog {
 
 	protected:
 		virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+		// momo add link
+		virtual BOOL OnInitDialog();
+		// CMFCLinkCtrl WebsiteLinkControl;
+		// CMFCLinkCtrl GithubLinkControl;
+		afx_msg void OnLinkClick(NMHDR* pNMHDR, LRESULT* pResult);
+		// momo add link
 
 		// Implementation
 	protected:
 		DECLARE_MESSAGE_MAP()
 	public:
 };
+
+// momo add link
+BOOL CAboutDlg::OnInitDialog() {
+	CDialog::OnInitDialog();
+
+	GetDlgItem(IDC_WEBSITE_LINK)->SetWindowText(L"Website: <a href=\"https://www.m3dfea.com/\">www.m3dfea.com</a>");
+	GetDlgItem(IDC_GITHUB_LINK)->SetWindowText(L"Github: <a href=\"https://github.com/ClassicalFEA\">www.github.com/ClassicalFEA</a>");
+	CFont* BoldFont = CreatePointFont(12, _T("Microsoft Sans Serif"), FW_BOLD);
+	GetDlgItem(IDC_STATIC_BOLD)->SetFont(BoldFont);
+	return TRUE;
+}
+
+void CAboutDlg::OnLinkClick(NMHDR* pNMHDR, LRESULT* pResult) {
+	PNMLINK pNMLink = (PNMLINK) pNMHDR;
+	if (pNMLink && pNMLink->item.szUrl[0] != 0) {
+		ShellExecute(0, L"open", pNMLink->item.szUrl, NULL, NULL, SW_SHOWNORMAL);
+	}
+	*pResult = 0;
+}
+// momo add link
 
 CAboutDlg::CAboutDlg()
     : CDialog(CAboutDlg::IDD) {
@@ -567,7 +610,12 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-
+// momo add link
+ON_NOTIFY(NM_CLICK, IDC_WEBSITE_LINK, &CAboutDlg::OnLinkClick)
+ON_NOTIFY(NM_RETURN, IDC_WEBSITE_LINK, &CAboutDlg::OnLinkClick)
+ON_NOTIFY(NM_CLICK, IDC_GITHUB_LINK, &CAboutDlg::OnLinkClick)
+ON_NOTIFY(NM_RETURN, IDC_GITHUB_LINK, &CAboutDlg::OnLinkClick)
+// momo add link
 END_MESSAGE_MAP()
 
 // App command to run the dialog
@@ -583,6 +631,9 @@ ON_WM_CTLCOLOR()
 ON_WM_SHOWWINDOW()
 ON_BN_CLICKED(IDC_CLOSE_BUTTON, &InfoDialog::OnCloseButtonClick)
 ON_EN_SETFOCUS(IDC_INFO_EDIT, &InfoDialog::OnEditSetFocus)
+ON_BN_CLICKED(1001, &InfoDialog::OnCheckNeedLeftClick_Clicked)
+ON_CBN_SELCHANGE(1002, &InfoDialog::OnComboRightDragAction_SelChange)
+ON_CBN_SELCHANGE(1003, &InfoDialog::OnComboMiddleDragAction_SelChange)
 END_MESSAGE_MAP()
 
 BOOL InfoDialog::OnInitDialog() {
@@ -594,7 +645,7 @@ BOOL InfoDialog::OnInitDialog() {
 	if (formKind == 1) {
 		strCaption = _T("Type ID Numbers");
 		kWidth = 0.3;
-		kHeight = 0.55;
+		kHeight = 0.65;
 		strText = _T("Type ID Numbers\r\n")
 		          _T("\r\n")
 		          _T("OD\r\n")
@@ -623,37 +674,86 @@ BOOL InfoDialog::OnInitDialog() {
 	} else if (formKind == 2) {
 		strCaption = _T("Properties Help");
 		kWidth = 0.4;
-		kHeight = 0.3;
+		kHeight = 0.4;
 		strText = _T("- For Nastran/MYSTRAN, these are the formal properties, which are associated with entries/cards that start with the letter \"P\".\r\n")
 		          _T("\r\n")
 		          _T("- Note that the \"Element Modify\" menu also affects model \"properties\", but those \"properties\" are stored in entries/cards that begin with \"C\". For example, a CBAR entry contains the bar's orientation vector. Offsets may also be present in the CBAR entry. Similarly, the CQUAD4 stores the offsets (offsets are not stored in the \"P\" cards, such as PBAR and PSHELL).\r\n");
 	} else if (formKind == 3) {
 		strCaption = _T("Element Modify Help");
 		kWidth = 0.4;
-		kHeight = 0.3;
+		kHeight = 0.33;
 		strText = _T("-Some of these menus are modifiers to the elements, but may also be considered informal \"properties\" of the element.\r\n")
 		          _T("\r\n")
 		          _T("-The modifiers affect the Nastran/MYSTRAN entries/cards that begin with a \" C \". For example, a CBAR entry contains the bar's orientation vector. Offsets may also be present in the CBAR entry. Similarly, the CQUAD4 stores the offsets (offsets are not stored in the \"P\" cards, such as PBAR and PSHELL).");
+	} else if (formKind == 4) {
+		strCaption = _T("Pan/Zoom/Spin Controls Help");
+		kWidth = 0.39;
+		kHeight = 0.38;
+		strText = _T("Pan  = (option below) or (Ctrl) or (F1)\r\n")
+		          _T("Zoom = (option below) or (Mouse Wheel) or (F2)\r\n")
+		          _T("Spin = (option below) or (Shift) or (F3)\r\n\r\n")
+		          _T("Zoom Box = (Ctrl + Shift) or (F4)\r\n\r\n")
+		          _T("Fit All = (Double Middle Click) or (Right Click/Fit All) or Icon");
 	}
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-	int dlgWidth, dlgHeight, elementSpacing;
+	int elementSpacing = 20;
+	int dlgWidth, dlgHeight;
 	dlgWidth = (int) (kWidth * screenWidth);
 	dlgHeight = (int) (kHeight * screenHeight);
-	elementSpacing = 20;
 	SetWindowPos(nullptr, 0, 0, dlgWidth, dlgHeight, SWP_NOMOVE | SWP_NOZORDER);
-
 	CRect client;
 	GetClientRect(&client);
 	dlgWidth = client.Width();
 	dlgHeight = client.Height();
-
-	int btnWidth = 75;
-	int btnHeight = 35;
-	int btnX = (dlgWidth - btnWidth) / 2;
-	int btnY = dlgHeight - btnHeight - elementSpacing;
-	buttonClose.MoveWindow(btnX, btnY, btnWidth, btnHeight, TRUE);
-	editInfo.MoveWindow(elementSpacing, elementSpacing, dlgWidth - 2 * elementSpacing, dlgHeight - btnHeight - 3 * elementSpacing, TRUE);
+	int btnCloWidth = 75;
+	int btnCloHeight = 35;
+	int editInfW = dlgWidth - 2 * elementSpacing;
+	int editInfH = dlgHeight - btnCloHeight - 3 * elementSpacing;
+	int editInfX = elementSpacing;
+	int editInfY = elementSpacing;
+	int btnCloX = (dlgWidth - btnCloWidth) / 2;
+	int btnCloY = editInfY + editInfH + elementSpacing;
+	if (formKind == 4) {
+		int chkNlcWidth = 180;
+		int chkNlcHeight = 20;
+		int labelRdaWidth = 150;
+		int labelRdaHeight = 20;
+		int comboRdaWidth = 150;
+		int comboRdaHeight = 300;
+		int labelMdaWidth = 150;
+		int labelMdaHeight = 20;
+		int comboMdaWidth = 150;
+		int comboMdaHeight = 300;
+		editInfH = editInfH - chkNlcHeight - labelRdaHeight - labelMdaHeight - elementSpacing - elementSpacing / 2;
+		int chkX = editInfX;
+		int chkY = editInfY + editInfH + elementSpacing / 2;
+		checkNeedLeftClick.Create(_T("Need Left Click"), WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX, CRect(chkX, chkY, chkX + chkNlcWidth, chkY + chkNlcHeight), this, 1001);
+		checkNeedLeftClick.SetCheck(NeedLeftClick ? BST_CHECKED : BST_UNCHECKED);
+		int labelRdaX = editInfX;
+		int labelRdaY = chkY + chkNlcHeight + elementSpacing / 2;
+		int comboRdaX = labelRdaX + labelRdaWidth + elementSpacing / 2;
+		int comboRdaY = labelRdaY - 1;
+		labelRightDragAction.Create(_T("Right Mouse Drag:"), WS_CHILD | WS_VISIBLE, CRect(labelRdaX, labelRdaY, labelRdaX + labelRdaWidth, labelRdaY + labelRdaHeight), this, 1004);
+		comboRightDragAction.Create(WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL, CRect(comboRdaX, comboRdaY, comboRdaX + comboRdaWidth, comboRdaY + comboRdaHeight), this, 1002);
+		comboRightDragAction.AddString(_T("Pan"));
+		comboRightDragAction.AddString(_T("Zoom"));
+		comboRightDragAction.AddString(_T("Spin"));
+		comboRightDragAction.SetCurSel(RightDragAction - 1);
+		int labelMdaX = editInfX;
+		int labelMdaY = labelRdaY + labelRdaHeight + elementSpacing / 2;
+		int comboMdaX = labelMdaX + labelMdaWidth + elementSpacing / 2;
+		int comboMdaY = labelMdaY - 1;
+		labelMiddleDragAction.Create(_T("Middle Mouse Drag:"), WS_CHILD | WS_VISIBLE, CRect(labelMdaX, labelMdaY, labelMdaX + labelMdaWidth, labelMdaY + labelMdaHeight), this, 1005);
+		comboMiddleDragAction.Create(WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL, CRect(comboMdaX, comboMdaY, comboMdaX + comboMdaWidth, comboMdaY + comboMdaHeight), this, 1003);
+		comboMiddleDragAction.AddString(_T("Pan"));
+		comboMiddleDragAction.AddString(_T("Zoom"));
+		comboMiddleDragAction.AddString(_T("Spin"));
+		comboMiddleDragAction.SetCurSel(MiddleDragAction - 1);
+		btnCloY = labelMdaY + labelMdaHeight + elementSpacing;
+	}
+	buttonClose.MoveWindow(btnCloX, btnCloY, btnCloWidth, btnCloHeight, TRUE);
+	editInfo.MoveWindow(editInfX, editInfY, editInfW, editInfH, TRUE);
 	SetWindowText(strCaption);
 	editInfo.SetWindowText(strText);
 	m_brWhite.CreateSolidBrush(RGB(255, 255, 255));
@@ -676,12 +776,14 @@ void CM3daApp::OnShowInfoDialog() {
 	InfoDialog dlgInfo;
 	const MSG* pMsg = AfxGetCurrentMessage();
 	UINT nID = (UINT) pMsg->wParam;
-	if (nID == ID_TYPEID_HELP) {
+	if (nID == ID_HELP_TYPEID) {
 		dlgInfo.formKind = 1;
-	} else if (nID == ID_PROPERTY_HELP) {
+	} else if (nID == ID_HELP_PROPERTY) {
 		dlgInfo.formKind = 2;
-	} else if (nID == ID_ELEMENTMODIFIY_HELP) {
+	} else if (nID == ID_HELP_ELEMENTMODIFIY) {
 		dlgInfo.formKind = 3;
+	} else if (nID == ID_HELP_SHORTCUT_KEYS) {
+		dlgInfo.formKind = 4;
 	}
 	dlgInfo.DoModal();
 }
@@ -698,6 +800,30 @@ HBRUSH InfoDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
 		return m_brWhite;
 	}
 	return hbr;
+}
+
+void InfoDialog::OnCheckNeedLeftClick_Clicked() {
+	NeedLeftClick = (checkNeedLeftClick.GetCheck() == BST_CHECKED);
+	CAppSettings settings;
+	settings.WriteNeedLeftClick();
+}
+
+void InfoDialog::OnComboRightDragAction_SelChange() {
+	int selIndex = comboRightDragAction.GetCurSel();
+	if (selIndex != CB_ERR) {
+		RightDragAction = selIndex + 1;
+		CAppSettings settings;
+		settings.WriteRightDragAction();
+	}
+}
+
+void InfoDialog::OnComboMiddleDragAction_SelChange() {
+	int selIndex = comboMiddleDragAction.GetCurSel();
+	if (selIndex != CB_ERR) {
+		MiddleDragAction = selIndex + 1;
+		CAppSettings settings;
+		settings.WriteMiddleDragAction();
+	}
 }
 // momo add type id form
 
