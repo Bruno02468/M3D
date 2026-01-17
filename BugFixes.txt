@@ -137,3 +137,33 @@ In the two newly added commands for adding and using mesh seeds (which are still
 134-Completed the code for the "[Draw] Fit All" and "[Draw] Reset View" buttons.
 135-Fixed the issue where the view was not centered when pressing the "[Draw] Set Eye" button with no objects selected.
 136-Fixed the bug where the previous workplane position was displayed when executing the "WP to Global" command.
+
+137-The material list is cleared after creating a new file.
+138-Fixed a bug where the program crashed when exporting a DECK file without completing all required settings.
+139-Some minor changes in the "Solution" window under the "Solution Setup" menu.
+140-Some minor changes in the exported DECK file.
+
+141-Some minor changes in the "Solution Step" window under the "Solution Setup" menu.
+142-Some minor changes in the "Deck Mods" menu.
+143-Some minor changes in the "Boundary Condition Sets" window under the "LoadsBC" menu.
+
+?[bc] nodal resistance
+deck preview button
+added eigen card
+ERROR: Empty Solution Title.
+SOLCR command edit
+focuses in form and tab and default button set
+set default button dblclick and enter on list
+create by enter in textboxes
+dont show window when any command is active
+STEPCR>ERROR: No Active Solution.>command color
+in solution window no select : dlelet or active error
+error when press list when no active set 
+bug: selection bug from previous file to new file
+bug: can not reopen changed file
+check changes then open or new file
+
+=====
+solution types window:
+141-Fixed the error that occurred in the Solution Type window when pressing the Delete button while the list was empty or no item was selected.
+

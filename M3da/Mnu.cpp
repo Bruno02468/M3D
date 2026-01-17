@@ -33,6 +33,14 @@ void zMnu::Init(DBase* TheDBase, int iType) {
 	initCnt = cDBase->DB_BuffCount;
 	S_initCnt = cDBase->S_Count;
 	iT = iType;
+	// momo
+	iNoPos = 0;
+	nCancel = 0;
+	nMode = 0;
+	// momo
+	// momo close for LNC
+	iStringCommandPos = 0;
+	// momo close for LNC
 }
 
 void zMnu::DoNext(CString* CInMsg, CPoint Pt) {
@@ -2529,6 +2537,30 @@ int zMnu::DoMenu(CString CInMsg, CPoint Pt) {
 					pNext = new zLABENTOff_Mnu();
 					pNext->Init(cDBase, -1);
 					this->DoMenu(CInMsg, Pt);
+				} else if (CInMsg.CompareNoCase(_T("DEFMODELNAME")) == 0) {
+					iResumePos = 0;
+					iCancelPos = 100;
+					cDBase->DB_ActiveBuffSet(2);
+					cDBase->DB_ClearBuff();
+					pNext = new zDEFMODELNAME_Mnu();
+					pNext->Init(cDBase, -1);
+					this->DoMenu(CInMsg, Pt);
+				} else if (CInMsg.CompareNoCase(_T("SHOWMODELNAME")) == 0) {
+					iResumePos = 0;
+					iCancelPos = 100;
+					cDBase->DB_ActiveBuffSet(2);
+					cDBase->DB_ClearBuff();
+					pNext = new zSHOWMODELNAME_Mnu();
+					pNext->Init(cDBase, -1);
+					this->DoMenu(CInMsg, Pt);
+				} else if (CInMsg.CompareNoCase(_T("ADDDECK")) == 0) {
+					iResumePos = 0;
+					iCancelPos = 100;
+					cDBase->DB_ActiveBuffSet(2);
+					cDBase->DB_ClearBuff();
+					pNext = new zADDDECK_Mnu();
+					pNext->Init(cDBase, -1);
+					this->DoMenu(CInMsg, Pt);
 				}
 				// MoMo_End
 				// momo
@@ -2571,13 +2603,15 @@ int zMnu::DoMenu(CString CInMsg, CPoint Pt) {
 			// momo change command box color
 		}
 		// momo change command box color
-		if (inputInOneCommand == 1 && CInMsg.CompareNoCase(_T("DEL")) != 0 && CInMsg.CompareNoCase(_T("ELTYPE")) != 0 && CInMsg.CompareNoCase(_T("NEW")) != 0 && CInMsg.CompareNoCase(_T("OPEN")) != 0 //
-		    && CInMsg.CompareNoCase(_T("SAVE")) != 0 && CInMsg.CompareNoCase(_T("SAVEAS")) != 0 && CInMsg.CompareNoCase(_T("DSPALL")) != 0 && CInMsg.CompareNoCase(_T("DSPSEL")) != 0 //
-		    && CInMsg.CompareNoCase(_T("SHOWALL")) != 0 && CInMsg.CompareNoCase(_T("DSPGP")) != 0 && CInMsg.CompareNoCase(_T("SOLVE")) != 0 && CInMsg.CompareNoCase(_T("ADDDECK")) != 0 //
-		    && CInMsg.CompareNoCase(_T("ADDDECK_S")) != 0 && CInMsg.CompareNoCase(_T("ADDDECK_SR")) != 0 && CInMsg.CompareNoCase(_T("DES")) != 0 && CInMsg.CompareNoCase(_T("WPGLOB")) != 0) {
-			CommIsActive.NewState = true;
+		// if (inputInOneCommand == 1 && pNext != NULL && CInMsg.CompareNoCase(_T("DEL")) != 0 && CInMsg.CompareNoCase(_T("ELTYPE")) != 0 && CInMsg.CompareNoCase(_T("NEW")) != 0 && CInMsg.CompareNoCase(_T("OPEN")) != 0 //
+		//    && CInMsg.CompareNoCase(_T("SAVE")) != 0 && CInMsg.CompareNoCase(_T("SAVEAS")) != 0 && CInMsg.CompareNoCase(_T("DSPALL")) != 0 && CInMsg.CompareNoCase(_T("DSPSEL")) != 0 //
+		//    && CInMsg.CompareNoCase(_T("SHOWALL")) != 0 && CInMsg.CompareNoCase(_T("DSPGP")) != 0 && CInMsg.CompareNoCase(_T("SOLVE")) != 0 && CInMsg.CompareNoCase(_T("ADDDECK")) != 0 //
+		//    && CInMsg.CompareNoCase(_T("ADDDECK_S")) != 0 && CInMsg.CompareNoCase(_T("ADDDECK_SR")) != 0 && CInMsg.CompareNoCase(_T("DES")) != 0 && CInMsg.CompareNoCase(_T("WPGLOB")) != 0 //
+		//    && CInMsg.CompareNoCase(_T("MATLISTALL")) != 0 && CInMsg.CompareNoCase(_T("SOLLIST")) != 0) {
+		if (inputInOneCommand == 1 && pNext != NULL) {
+			CommandLineState.NewStateIsActive = true;
 		} else if (inputInOneCommand == -1 || CInMsg.CompareNoCase(_T("NULL")) != 0) {
-			CommIsActive.NewState = false;
+			CommandLineState.NewStateIsActive = false;
 			CheckCommandEditColor(false);
 		}
 		// momo change command box color
@@ -2594,6 +2628,17 @@ BOOL zMnu::isNULL() {
 }
 
 int zMnu::ExtractPt(CString mCInMsg, C3dVector* ReturnPt) {
+	// momo
+	while (mCInMsg.Replace(_T("  "), _T(" ")) > 0)
+		;
+	mCInMsg.TrimLeft();
+	mCInMsg.TrimRight();
+	while (mCInMsg.Replace(_T(" ,"), _T(",")) > 0)
+		;
+	while (mCInMsg.Replace(_T(", "), _T(",")) > 0)
+		mCInMsg.Replace(_T(" "), _T(","));
+	// momo
+
 	C3dVector C_TmpPt;
 	int iIsValid = 0;
 	int iC = 0;
@@ -2626,9 +2671,9 @@ int zMnu::ExtractPt(CString mCInMsg, C3dVector* ReturnPt) {
 		CZtxt = mCInMsg.Right(iLen - iComPos[1] - 1);
 	}
 	// pTextDia->OutStr(CXtxt+' '+CYtxt+' '+CZtxt);
-	// ReturnPt->x = _ttoi(CXtxt);
-	// ReturnPt->y = _ttoi(CYtxt);
-	// ReturnPt->z = _ttoi(CZtxt);
+	// ReturnPt->x = _ttof(CXtxt);
+	// ReturnPt->y = _ttof(CYtxt);
+	// ReturnPt->z = _ttof(CZtxt);
 	// momo
 	ReturnPt->x = evaluate(std::string(CT2A(CXtxt.GetString())));
 	ReturnPt->y = evaluate(std::string(CT2A(CYtxt.GetString())));
@@ -3004,10 +3049,10 @@ int zPT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 				OutPt.Set(0.0, 0.0, 0.0);
 				cDBase->DB_AddPtBuff(OutPt);
 				iStat = 2;
-			} else if (CInMsg.FindOneOf(_T("0123456789")) == -1) {
-				outtext2("// Invalid input. Please try again:");
-				RetVal = -1;
-				goto MenuEnd;
+				//} else if (CInMsg.FindOneOf(_T("0123456789")) == -1) {
+				//	outtext2("// Invalid input. Please try again:");
+				//	RetVal = -1;
+				//	goto MenuEnd;
 				// momo close for LNC
 			} else {
 				C3dVector GetPt;
@@ -4461,10 +4506,11 @@ int zLNC_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			cDBase->bIsDrag = FALSE;
 			cDBase->ReDraw();
 			// momo
-			cDBase->S_BuffChanged(S_initCnt, cDBase->S_Count - 1, false);
+			// cDBase->DB_BuffCount = initCnt;
+			// cDBase->S_Count = S_initCnt;
+
+			cDBase->S_BuffChanged(-1000, -1000, false);
 			// momo
-			cDBase->DB_BuffCount = initCnt;
-			cDBase->S_Count = S_initCnt;
 			RetVal = 1;
 		}
 	}
@@ -4748,7 +4794,7 @@ int zTEXTCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			iStat = 3;
 		} else if (iStat == 3) {
 			double dH;
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH <= 0)
 				dH = gTXT_HEIGHT;
 			else
@@ -4797,7 +4843,7 @@ int zDIMSCL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			iStat = 1;
 		} else if (iStat == 1) {
 			double dH;
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH <= 0)
 				dH = gDIM_SIZE;
 			else
@@ -5135,7 +5181,19 @@ int zKEY_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		if (iStat == 1) {
 			C3dVector GetPt;
-			int iPt = ExtractPt(CInMsg, &GetPt);
+			// momo
+			// momo// int iPt = ExtractPt(CInMsg, &GetPt);
+			CString CInMsg2 = CInMsg;
+			if (nMode == 1 || nMode == 2) {
+				for (int i = 0; i < CInMsg2.GetLength(); ++i) {
+					if (CInMsg2[i] >= _T('0') && CInMsg2[i] <= _T('9')) {
+						CInMsg2.SetAt(i, _T('1'));
+					}
+				}
+			}
+			int iPt = ExtractPt(CInMsg2, &GetPt);
+			ShowC3dVector123456(nMode, GetPt, GetPt);
+			// momo
 			cDBase->DB_AddPtBuff(GetPt);
 			iStat = 2;
 		}
@@ -7268,7 +7326,7 @@ int zSURRV_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dAng = _ttoi(CInMsg);
+			dAng = _ttof(CInMsg);
 			if ((dAng < 0) || (dAng > 360)) {
 				iStat = 4;
 				outtext1("ERROR: Invalid Rotation Angle.");
@@ -9836,6 +9894,76 @@ MenuEnd:
 	return RetVal;
 }
 
+// momo
+// int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
+//	DoNext(&CInMsg, Pt);
+//	if (pNext == NULL) {
+//		if (CInMsg.CompareNoCase(_T("C")) == 0) // Common Options
+//		{
+//			RetVal = 2;
+//			cDBase->FILTER.SetAll();
+//			goto MenuEnd;
+//		}
+//
+//		if (iStat == 0) {
+//			cDBase->FILTER.Clear();
+//			cDBase->FILTER.SetFilter(1);
+//			outtext2("// PICK NODES");
+//			iStat = 1;
+//		}
+//		if (iStat == 1) {
+//			if ((CInMsg.CompareNoCase(_T("D")) == 0) || (CInMsg == "")) {
+//				iStat = 2;
+//			}
+//			iResumePos = 2;
+//			iCancelPos = 100;
+//			pNext = new zSEL_Mnu();
+//			pNext->Init(cDBase, 1);
+//			DoNext(&CInMsg, Pt);
+//		}
+//		if (iStat == 2) {
+//			cDBase->S_Save(cDBase->OTemp);
+//			cDBase->S_Des();
+//			outtext2("// ENTER TRANS RESTRAINT VECTOR");
+//			iResumePos = 3;
+//			iCancelPos = 100;
+//			pNext = new zKEY_Mnu();
+//			pNext->Init(cDBase, -1);
+//			DoNext(&CInMsg, Pt);
+//		}
+//		if (iStat == 3) {
+//			outtext2("// ENTER ROT RESTRAINT VECTOR");
+//			iResumePos = 4;
+//			iCancelPos = 100;
+//			pNext = new zKEY_Mnu();
+//			pNext->Init(cDBase, -1);
+//			DoNext(&CInMsg, Pt);
+//		}
+//		if (iStat == 4) {
+//			C3dVector TVec;
+//			C3dVector RVec;
+//			RVec = cDBase->DB_PopBuff();
+//			TVec = cDBase->DB_PopBuff();
+//			cDBase->AddRestraint(cDBase->OTemp, TVec, RVec);
+//			cDBase->FILTER.SetAll();
+//			cDBase->S_Res();
+//			RetVal = 1;
+//		}
+//		// Escape clause
+//		if (iStat == 100) {
+//			// momo
+//			cDBase->S_BuffChanged(S_initCnt, cDBase->S_Count - 1, false);
+//			// momo
+//			cDBase->DB_BuffCount = initCnt;
+//			cDBase->S_Count = S_initCnt;
+//			cDBase->FILTER.SetAll();
+//			RetVal = 1;
+//		}
+//	}
+// MenuEnd:
+//	return RetVal;
+//}
+
 int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 	DoNext(&CInMsg, Pt);
 	if (pNext == NULL) {
@@ -9862,6 +9990,7 @@ int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			pNext->Init(cDBase, 1);
 			DoNext(&CInMsg, Pt);
 		}
+		// momo
 		if (iStat == 2) {
 			cDBase->S_Save(cDBase->OTemp);
 			cDBase->S_Des();
@@ -9870,6 +9999,7 @@ int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			iCancelPos = 100;
 			pNext = new zKEY_Mnu();
 			pNext->Init(cDBase, -1);
+			pNext->nMode = 1;
 			DoNext(&CInMsg, Pt);
 		}
 		if (iStat == 3) {
@@ -9878,6 +10008,7 @@ int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			iCancelPos = 100;
 			pNext = new zKEY_Mnu();
 			pNext->Init(cDBase, -1);
+			pNext->nMode = 2;
 			DoNext(&CInMsg, Pt);
 		}
 		if (iStat == 4) {
@@ -9885,12 +10016,27 @@ int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			C3dVector RVec;
 			RVec = cDBase->DB_PopBuff();
 			TVec = cDBase->DB_PopBuff();
+			// momo
+			ShowC3dVector123456(3, TVec, RVec);
+			// momo
 			cDBase->AddRestraint(cDBase->OTemp, TVec, RVec);
 			cDBase->FILTER.SetAll();
 			cDBase->S_Res();
 			RetVal = 1;
 		}
-		// Escape clause
+
+		// if (iStat == 2) {
+		//	cDBase->S_Save(cDBase->OTemp);
+		//	cDBase->S_Des();
+		//	outtext2("// ENTER TRANS AND ROT COMBINATION OF 1-6 (EXAMPLE: 1236)");
+		//	iResumePos = 3;
+		//	iCancelPos = 100;
+		//	pNext = new zKEY_Mnu();
+		//	pNext->Init(cDBase, -1);
+		//	DoNext(&CInMsg, Pt);
+		// }
+		//  momo
+		//  Escape clause
 		if (iStat == 100) {
 			// momo
 			cDBase->S_BuffChanged(S_initCnt, cDBase->S_Count - 1, false);
@@ -9904,6 +10050,86 @@ int zRCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 MenuEnd:
 	return RetVal;
 }
+
+void ShowC3dVector123456(int nMode, C3dVector GetPt1, C3dVector GetPt2) {
+	if (nMode == 1 || nMode == 2) {
+		int iResult = 0;
+		int iX = (int) GetPt1.x;
+		int iY = (int) GetPt1.y;
+		int iZ = (int) GetPt1.z;
+		int iNumbers[6] = {1, 2, 3, 4, 5, 6};
+		int addIndex = (nMode - 1) * 3 - 1;
+		CString sX = _T(" ");
+		if (iX != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 1];
+			sX = _T("0");
+		}
+		CString sY = _T(" ");
+		if (iY != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 2];
+			sY = _T("0");
+		}
+		CString sZ = _T(" ");
+		if (iZ != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 3];
+			sZ = _T("0");
+		}
+		CString strResult = _T("\"\"");
+		if (iResult != 0) {
+			strResult.Format(_T("%d"), iResult);
+		}
+		strResult.Format(_T("Read result: (%s,%s,%s) -> %s"), sX, sY, sZ, strResult);
+		outtext1(strResult);
+	} else if (nMode == 3) {
+		int iResult = 0;
+		int iX1 = (int) GetPt1.x;
+		int iY1 = (int) GetPt1.y;
+		int iZ1 = (int) GetPt1.z;
+		int iX2 = (int) GetPt2.x;
+		int iY2 = (int) GetPt2.y;
+		int iZ2 = (int) GetPt2.z;
+		int iNumbers[6] = {1, 2, 3, 4, 5, 6};
+		int addIndex = -1;
+		CString sX1 = _T(" ");
+		if (iX1 != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 1];
+			sX1 = _T("0");
+		}
+		CString sY1 = _T(" ");
+		if (iY1 != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 2];
+			sY1 = _T("0");
+		}
+		CString sZ1 = _T(" ");
+		if (iZ1 != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 3];
+			sZ1 = _T("0");
+		}
+		CString sX2 = _T(" ");
+		if (iX2 != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 4];
+			sX2 = _T("0");
+		}
+		CString sY2 = _T(" ");
+		if (iY2 != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 5];
+			sY2 = _T("0");
+		}
+		CString sZ2 = _T(" ");
+		if (iZ2 != 0) {
+			iResult = iResult * 10 + iNumbers[addIndex + 6];
+			sZ2 = _T("0");
+		}
+		CString strResult = _T("\"\"");
+		if (iResult != 0) {
+			strResult.Format(_T("%d"), iResult);
+		}
+		// strResult.Format(_T("Final result: (%s,%s,%s,%s,%s,%s) -> %s"), sX1, sY1, sZ1, sX2, sY2, sZ2, strResult);
+		strResult.Format(_T("Final result: %s"), strResult);
+		outtext1(strResult);
+	}
+}
+// momo
 
 int zCOL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 	DoNext(&CInMsg, Pt);
@@ -10065,6 +10291,150 @@ int zLABENTOff_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			cDBase->S_BuffChanged(S_initCnt, cDBase->S_Count - 1, false);
 			cDBase->DB_BuffCount = initCnt;
 			cDBase->S_Count = S_initCnt;
+			RetVal = 1;
+		}
+	}
+MenuEnd:
+	return RetVal;
+}
+
+int zDEFMODELNAME_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
+	DoNext(&CInMsg, Pt);
+	if (pNext == NULL) {
+		if (CInMsg.CompareNoCase(_T("C")) == 0) // Common Options
+		{
+			RetVal = 2;
+			goto MenuEnd;
+		}
+
+		if (iStat == 0) {
+			outtextMultiLine(_T("\r\n'solve_dat_path' = \"") + DataPath + _T("\""), 1);
+			CString sYesNo;
+			if (DatFileOverwritePrompt) {
+				sYesNo = _T("Yes");
+			} else {
+				sYesNo = _T("No");
+			}
+			outtextMultiLine(_T("\r\n'solve_dat_auto_overwrite' = ") + sYesNo, 1);
+			outtextMultiLine(_T("\r\n'text_viewer_exe' = \"") + TextViewerExe + _T("\""), 1);
+			outtextMultiLine(_T("\r\nCurrent Model Name = \"") + ModelFileName + _T("\""), 1);
+			outtext2("// Input new 'Model Name' or Nothing to cancel >> Press Enter:");
+			SetFocus();
+			iResumePos = 1;
+			iCancelPos = 100;
+			iStat = 1;
+		} else if (iStat == 1) {
+			CString fileName = CInMsg;
+			fileName.Trim();
+			if (fileName.IsEmpty() || fileName.CompareNoCase(_T("D")) == 0 || ModelFileName == fileName) {
+				RetVal = 1;
+				outtext1(_T("'Model Name' was not changed."));
+			} else if (!((CM3daApp*) AfxGetApp())->IsValidFileName(fileName)) {
+				outtext2("ERROR >>> Invalid File Name. [!!!]");
+				outtext2("Please input again.");
+				outtext2("// Input 'Model Name' >> Press Enter:");
+			} else {
+				CFrameWnd* pMainWnd = (CFrameWnd*) AfxGetMainWnd();
+				CDocument* pDoc = pMainWnd->GetActiveDocument();
+				if (pDoc && pMainWnd) {
+					pDoc->SetModifiedFlag();
+				}
+				ModelFileName = fileName;
+				ModelFileNameChanged = true;
+				outtext1(_T("New 'Model Name' = \"") + ModelFileName + _T("\""));
+				RetVal = 1;
+			}
+		}
+		// Escape clause
+		if (iStat == 100) {
+			RetVal = 1;
+		}
+	}
+MenuEnd:
+	return RetVal;
+}
+
+int zSHOWMODELNAME_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
+	DoNext(&CInMsg, Pt);
+	if (pNext == NULL) {
+		if (CInMsg.CompareNoCase(_T("C")) == 0) // Common Options
+		{
+			RetVal = 2;
+			goto MenuEnd;
+		}
+
+		if (iStat == 0) {
+			outtextMultiLine(_T("\r\nCurrent Model Name = \"") + ModelFileName + _T("\""), 1);
+			SetFocus();
+			iResumePos = 1;
+			iCancelPos = 100;
+			iStat = 100;
+		}
+		// Escape clause
+		if (iStat == 100) {
+			RetVal = 1;
+		}
+	}
+MenuEnd:
+	return RetVal;
+}
+
+int zADDDECK_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
+	DoNext(&CInMsg, Pt);
+	if (pNext == NULL) {
+		if (CInMsg.CompareNoCase(_T("C")) == 0) // Common Options
+		{
+			RetVal = 2;
+			goto MenuEnd;
+		}
+
+		if (iStat == 0) {
+			outtext1(_T(""));
+			if (ModelFileName.IsEmpty()) {
+				outtext1(_T("ERROR >>> 'Current Model Name' is empty."));
+			} else if (DataPath.IsEmpty()) {
+				outtext1(_T("ERROR >>> 'Data Path' is empty."));
+			} else {
+				CM3daApp* pApp = (CM3daApp*) AfxGetApp();
+				if (!pApp->PrepareAndCheckFolder(DataPath)) {
+					outtext1(_T("ERROR >>> 'Data Path' is not ready to make files."));
+					outtext1(_T("\"") + DataPath + _T("\""));
+				} else {
+					CString strFileName;
+					strFileName = DataPath + _T("\\") + ModelFileName + _T(".dat");
+					CFile file;
+					CFileException ex;
+					bool letMakeFile = true;
+					if (DatFileOverwritePrompt) {
+						CFileStatus status;
+						if (CFile::GetStatus(strFileName, status)) {
+							CString strMsg;
+							strMsg.Format(_T("File already exists:\n%s\n\nDo you want to replace it?"), strFileName);
+							if (AfxMessageBox(strMsg, MB_YESNO | MB_ICONQUESTION) == IDNO) {
+								outtext1(_T("Operation cancelled by user (File exists)."));
+								letMakeFile = false;
+							}
+						}
+					}
+					if (letMakeFile) {
+						if (file.Open(strFileName, CFile::modeCreate | CFile::modeWrite | CFile::shareDenyNone, &ex)) {
+							file.Close();
+							outtext1(_T("\"") + strFileName + _T("\""));
+							outtext1(_T("Deck File created successfully."));
+						} else {
+							outtext1(_T("ERROR >>> Can not create Deck File:"));
+							outtext1(_T("\"") + strFileName + _T("\""));
+						}
+					}
+				}
+			}
+			SetFocus();
+			iResumePos = 1;
+			iCancelPos = 100;
+			iStat = 100;
+		}
+		// Escape clause
+		if (iStat == 100) {
 			RetVal = 1;
 		}
 	}
@@ -10345,7 +10715,7 @@ int zPRBROD_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dR = _ttoi(CInMsg);
+			dR = _ttof(CInMsg);
 			if (dR < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Radius.");
@@ -10441,7 +10811,7 @@ int zPRROD_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dA = _ttoi(CInMsg);
+			dA = _ttof(CInMsg);
 			if (dA < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Radius.");
@@ -10456,7 +10826,7 @@ int zPRROD_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dJ = _ttoi(CInMsg);
+			dJ = _ttof(CInMsg);
 			if (dJ < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Torsional Coeff.");
@@ -10552,7 +10922,7 @@ int zPRBAR2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dA = _ttoi(CInMsg);
+			dA = _ttof(CInMsg);
 			if (dA < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Radius.");
@@ -10567,7 +10937,7 @@ int zPRBAR2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dI1 = _ttoi(CInMsg);
+			dI1 = _ttof(CInMsg);
 			if (dI1 < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid I1.");
@@ -10582,7 +10952,7 @@ int zPRBAR2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dI2 = _ttoi(CInMsg);
+			dI2 = _ttof(CInMsg);
 			if (dA < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid I2.");
@@ -10597,7 +10967,7 @@ int zPRBAR2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dJ = _ttoi(CInMsg);
+			dJ = _ttof(CInMsg);
 			if (dJ < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid Torsional Coeff.");
@@ -10693,7 +11063,7 @@ int zPRBBAR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dW = _ttoi(CInMsg);
+			dW = _ttof(CInMsg);
 			if (dW < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Width.");
@@ -10708,7 +11078,7 @@ int zPRBBAR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Height.");
@@ -10758,7 +11128,7 @@ int zQWNODES_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 1) {
-			dTol = _ttoi(CInMsg);
+			dTol = _ttof(CInMsg);
 			if (dTol == 0) {
 				dTol = 0.0001;
 				iStat = 2;
@@ -10818,7 +11188,7 @@ int zMERNODES_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 3) {
-			dTol = _ttoi(CInMsg);
+			dTol = _ttof(CInMsg);
 			if (dTol <= 0) {
 				dTol = 0.0001;
 				iStat = 4;
@@ -10919,7 +11289,7 @@ int zNDEQLAB_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 3) {
-			dTol = _ttoi(CInMsg);
+			dTol = _ttof(CInMsg);
 			if (dTol <= 0) {
 				dTol = 0.0001;
 				iStat = 4;
@@ -10985,7 +11355,7 @@ int zCHKSHELLASP_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 3) {
-			dT = _ttoi(CInMsg);
+			dT = _ttof(CInMsg);
 			if (dT <= 0) {
 				dT = 2.0;
 				iStat = 4;
@@ -11068,7 +11438,7 @@ int zCHKTETCOL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 3) {
-			dT = _ttoi(CInMsg);
+			dT = _ttof(CInMsg);
 			if (dT <= 0) {
 				dT = 0.2;
 				iStat = 4;
@@ -11339,7 +11709,7 @@ int zPRSHELL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dT = _ttoi(CInMsg);
+			dT = _ttof(CInMsg);
 			if (dT < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Thickness.");
@@ -11354,7 +11724,7 @@ int zPRSHELL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dNSM = _ttoi(CInMsg);
+			dNSM = _ttof(CInMsg);
 			if (dNSM < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid NSM.");
@@ -11436,7 +11806,7 @@ int zPRPCOMP_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dNSM = _ttoi(CInMsg);
+			dNSM = _ttof(CInMsg);
 			if (dNSM < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid NSM.");
@@ -11532,7 +11902,7 @@ int zPRSPGT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dkx = _ttoi(CInMsg);
+			dkx = _ttof(CInMsg);
 			if (dkx < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid KX.");
@@ -11547,7 +11917,7 @@ int zPRSPGT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dky = _ttoi(CInMsg);
+			dky = _ttof(CInMsg);
 			if (dky < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid KY.");
@@ -11562,7 +11932,7 @@ int zPRSPGT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dkz = _ttoi(CInMsg);
+			dkz = _ttof(CInMsg);
 			if (dkz < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid KZ.");
@@ -11578,7 +11948,7 @@ int zPRSPGT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dkt = _ttoi(CInMsg);
+			dkt = _ttof(CInMsg);
 			if (dkt < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid kCoeff.");
@@ -11660,7 +12030,7 @@ int zPRBUSH_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dk1 = _ttoi(CInMsg);
+			dk1 = _ttof(CInMsg);
 			if (dk1 < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid K1.");
@@ -11675,7 +12045,7 @@ int zPRBUSH_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dk2 = _ttoi(CInMsg);
+			dk2 = _ttof(CInMsg);
 			if (dk2 < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid K2.");
@@ -11690,7 +12060,7 @@ int zPRBUSH_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dk3 = _ttoi(CInMsg);
+			dk3 = _ttof(CInMsg);
 			if (dk3 < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid K3.");
@@ -11705,7 +12075,7 @@ int zPRBUSH_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dk4 = _ttoi(CInMsg);
+			dk4 = _ttof(CInMsg);
 			if (dk4 < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid K4.");
@@ -11721,7 +12091,7 @@ int zPRBUSH_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dk5 = _ttoi(CInMsg);
+			dk5 = _ttof(CInMsg);
 			if (dk5 < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid K5.");
@@ -11737,7 +12107,7 @@ int zPRBUSH_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 15) {
-			dk5 = _ttoi(CInMsg);
+			dk5 = _ttof(CInMsg);
 			if (dk5 < 0) {
 				iStat = 14;
 				outtext1("ERROR: Invalid K6.");
@@ -11818,7 +12188,7 @@ int zPRMASS_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dM = _ttoi(CInMsg);
+			dM = _ttof(CInMsg);
 			if (dM < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid MASS.");
@@ -11898,7 +12268,7 @@ int zPRSPGR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dkx = _ttoi(CInMsg);
+			dkx = _ttof(CInMsg);
 			if (dkx < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid RX.");
@@ -11913,7 +12283,7 @@ int zPRSPGR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dky = _ttoi(CInMsg);
+			dky = _ttof(CInMsg);
 			if (dky < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid RY.");
@@ -11928,7 +12298,7 @@ int zPRSPGR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dkz = _ttoi(CInMsg);
+			dkz = _ttof(CInMsg);
 			if (dkz < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid RZ.");
@@ -11944,7 +12314,7 @@ int zPRSPGR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dkt = _ttoi(CInMsg);
+			dkt = _ttof(CInMsg);
 			if (dkt < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid kCoeff.");
@@ -12042,7 +12412,7 @@ int zPRBBOX_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dW = _ttoi(CInMsg);
+			dW = _ttof(CInMsg);
 			if (dW < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Width.");
@@ -12057,7 +12427,7 @@ int zPRBBOX_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Height.");
@@ -12072,7 +12442,7 @@ int zPRBBOX_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dWT = _ttoi(CInMsg);
+			dWT = _ttof(CInMsg);
 			if (dWT < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12087,7 +12457,7 @@ int zPRBBOX_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dHT = _ttoi(CInMsg);
+			dHT = _ttof(CInMsg);
 			if (dHT < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12185,7 +12555,7 @@ int zPRBL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dW = _ttoi(CInMsg);
+			dW = _ttof(CInMsg);
 			if (dW < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Width.");
@@ -12200,7 +12570,7 @@ int zPRBL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Height.");
@@ -12215,7 +12585,7 @@ int zPRBL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dWT = _ttoi(CInMsg);
+			dWT = _ttof(CInMsg);
 			if (dWT < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12230,7 +12600,7 @@ int zPRBL_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dHT = _ttoi(CInMsg);
+			dHT = _ttof(CInMsg);
 			if (dHT < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12328,7 +12698,7 @@ int zPRBT2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dW = _ttoi(CInMsg);
+			dW = _ttof(CInMsg);
 			if (dW < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Width.");
@@ -12343,7 +12713,7 @@ int zPRBT2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Height.");
@@ -12358,7 +12728,7 @@ int zPRBT2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dWT = _ttoi(CInMsg);
+			dWT = _ttof(CInMsg);
 			if (dWT < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12373,7 +12743,7 @@ int zPRBT2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dHT = _ttoi(CInMsg);
+			dHT = _ttof(CInMsg);
 			if (dHT < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12471,7 +12841,7 @@ int zPRBCHAN2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dW = _ttoi(CInMsg);
+			dW = _ttof(CInMsg);
 			if (dW < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Width.");
@@ -12486,7 +12856,7 @@ int zPRBCHAN2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dH = _ttoi(CInMsg);
+			dH = _ttof(CInMsg);
 			if (dH < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Height.");
@@ -12501,7 +12871,7 @@ int zPRBCHAN2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dWT = _ttoi(CInMsg);
+			dWT = _ttof(CInMsg);
 			if (dWT < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12516,7 +12886,7 @@ int zPRBCHAN2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dHT = _ttoi(CInMsg);
+			dHT = _ttof(CInMsg);
 			if (dHT < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12614,7 +12984,7 @@ int zPRBI2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			d1 = _ttoi(CInMsg);
+			d1 = _ttof(CInMsg);
 			if (d1 < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid height.");
@@ -12629,7 +12999,7 @@ int zPRBI2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			d2 = _ttoi(CInMsg);
+			d2 = _ttof(CInMsg);
 			if (d2 < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid width.");
@@ -12644,7 +13014,7 @@ int zPRBI2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			d3 = _ttoi(CInMsg);
+			d3 = _ttof(CInMsg);
 			if (d3 < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid Width.");
@@ -12659,7 +13029,7 @@ int zPRBI2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			d4 = _ttoi(CInMsg);
+			d4 = _ttof(CInMsg);
 			if (d4 < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12674,7 +13044,7 @@ int zPRBI2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 15) {
-			d5 = _ttoi(CInMsg);
+			d5 = _ttof(CInMsg);
 			if (d5 < 0) {
 				iStat = 14;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12689,7 +13059,7 @@ int zPRBI2_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 17) {
-			d6 = _ttoi(CInMsg);
+			d6 = _ttof(CInMsg);
 			if (d6 < 0) {
 				iStat = 16;
 				outtext1("ERROR: Invalid Thickness.");
@@ -12772,7 +13142,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dE1 = _ttoi(CInMsg);
+			dE1 = _ttof(CInMsg);
 			if (dE1 < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid Young's Modulus.");
@@ -12788,7 +13158,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dE2 = _ttoi(CInMsg);
+			dE2 = _ttof(CInMsg);
 			if (dE2 < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Young's Modulus.");
@@ -12804,7 +13174,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dNU12 = _ttoi(CInMsg);
+			dNU12 = _ttof(CInMsg);
 			if (dNU12 < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Value.");
@@ -12820,7 +13190,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dG12 = _ttoi(CInMsg);
+			dG12 = _ttof(CInMsg);
 			iStat = 12;
 		}
 
@@ -12830,7 +13200,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dG1Z = _ttoi(CInMsg);
+			dG1Z = _ttof(CInMsg);
 			iStat = 14;
 		}
 
@@ -12840,7 +13210,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 15) {
-			dG2Z = _ttoi(CInMsg);
+			dG2Z = _ttof(CInMsg);
 			iStat = 16;
 		}
 
@@ -12850,7 +13220,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 17) {
-			dRHO = _ttoi(CInMsg);
+			dRHO = _ttof(CInMsg);
 			if (dRHO < 0) {
 				iStat = 16;
 				outtext1("ERROR: Invalid Value.");
@@ -12866,7 +13236,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 19) {
-			dA1 = _ttoi(CInMsg);
+			dA1 = _ttof(CInMsg);
 			iStat = 20;
 		}
 		if (iStat == 20) {
@@ -12875,7 +13245,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 21) {
-			dA2 = _ttoi(CInMsg);
+			dA2 = _ttof(CInMsg);
 			iStat = 22;
 		}
 
@@ -12885,7 +13255,7 @@ int zMMAT8_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 23) {
-			dk = _ttoi(CInMsg);
+			dk = _ttof(CInMsg);
 			if (dk < 0) {
 				iStat = 22;
 				outtext1("ERROR: Invalid k.");
@@ -12969,7 +13339,7 @@ int zMMAT1_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
-			dE = _ttoi(CInMsg);
+			dE = _ttof(CInMsg);
 			if (iMID < 0) {
 				iStat = 4;
 				outtext1("ERROR: Invalid Young's Modulus.");
@@ -12984,7 +13354,7 @@ int zMMAT1_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dV = _ttoi(CInMsg);
+			dV = _ttof(CInMsg);
 			if (dV < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Poisson's Ratio.");
@@ -12999,7 +13369,7 @@ int zMMAT1_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dDen = _ttoi(CInMsg);
+			dDen = _ttof(CInMsg);
 			if (dDen < 0) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Density.");
@@ -13014,7 +13384,7 @@ int zMMAT1_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 11) {
-			dA = _ttoi(CInMsg);
+			dA = _ttof(CInMsg);
 			if (dA < 0) {
 				iStat = 10;
 				outtext1("ERROR: Invalid CTE.");
@@ -13029,7 +13399,7 @@ int zMMAT1_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 13) {
-			dk = _ttoi(CInMsg);
+			dk = _ttof(CInMsg);
 			if (dk < 0) {
 				iStat = 12;
 				outtext1("ERROR: Invalid k.");
@@ -13125,7 +13495,7 @@ int zPRBTUBE_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
-			dR = _ttoi(CInMsg);
+			dR = _ttof(CInMsg);
 			if (dR < 0) {
 				iStat = 6;
 				outtext1("ERROR: Invalid Outer Radius.");
@@ -13140,7 +13510,7 @@ int zPRBTUBE_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 9) {
-			dr = _ttoi(CInMsg);
+			dr = _ttof(CInMsg);
 			if ((dr < 0) || (dr > dR)) {
 				iStat = 8;
 				outtext1("ERROR: Invalid Inner Radius.");
@@ -15756,7 +16126,7 @@ int zMMESHTET_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 3) {
-			dT = _ttoi(CInMsg);
+			dT = _ttof(CInMsg);
 			if (dT <= 0) {
 				dT = 0.55;
 				iStat = 4;
@@ -16261,51 +16631,141 @@ int zSOLCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		C3dVector ptVec;
+		// momo
+		// if (iStat == 0) {
+		//	outtext2("// ENTER SOLUTION TITLE");
+		//	SetFocus();
+		//	iStat = 1;
+		//	goto MenuEnd;
+		//}
+		// if (iStat == 1) {
+		//	// momo
+		//	if (CInMsg.IsEmpty()) {
+		//		outtext1("ERROR: Empty Solution Title.");
+		//		outtext2("// ENTER SOLUTION TITLE");
+		//		goto MenuEnd;
+		//	}
+		//	// momo
+		//	sT = CInMsg;
+		//	// momo
+		//	// outtext2("// ENTER SOLUTION TYPE");
+		//	// outtext2("// 0 LINEAR STATIC;");
+		//	// outtext2("// 1 STEADY STATE THERMAL (N/A);");
+		//	// outtext2("// 2 SPARSE;");
+		//	outtext2("// ENTER SOLUTION TYPE");
+		//	outtext2("// 0 SOL 101 - LINEAR STATIC;");
+		//	outtext2("// 1 SOL 103 - NATURAL FREQ;");
+		//	outtext2("// 2 SOL 105 - BUCKLING;");
+		//	outtext2("// 3 LINEAR STATIC (LEGACY M3D);");
+		//	outtext2("// 4 STEADY STATE THERMAL (N/A) (LEGACY M3D);");
+		//	outtext2("// 5 SPARSE (LEGACY M3D);");
+		//	// momo
+		//	SetFocus();
+		//	iStat = 2;
+		//	goto MenuEnd;
+		//}
+		// if (iStat == 2) {
+		//	iSol = _ttoi(CInMsg);
+		//	// momo
+		//	// momo// if ((iSol == 0) || (iSol == 1) || (iSol == 2)) {
+		//	if (iSol >= 0 && iSol <= 5) {
+		//		iSol = SolutionTypeNumbers[iSol];
+		//		// momo
+		//		iStat = 3;
+		//	} else {
+		//		iStat = 1;
+		//		outtext1("ERROR: Invalid Solution Type.");
+		//		DoMenu(CInMsg, Pt);
+		//	}
+		//}
 		if (iStat == 0) {
-			outtext2("// ENTER SOLUTION TITLE");
+			outtext2("// ENTER SOLUTION TYPE");
+			outtext2("// 0 SOL 101 - LINEAR STATIC;");
+			outtext2("// 1 SOL 103 - NATURAL FREQ;");
+			outtext2("// 2 SOL 105 - BUCKLING;");
+			outtext2("// 3 LINEAR STATIC (INTERNAL M3D SOLVER);");
+			outtext2("// 4 STEADY STATE THERMAL (N/A) (INTERNAL M3D SOLVER);");
+			outtext2("// 5 SPARSE (INTERNAL M3D SOLVER);");
 			SetFocus();
 			iStat = 1;
 			goto MenuEnd;
 		}
 		if (iStat == 1) {
-			sT = CInMsg;
-			outtext2("// ENTER SOLUTION TYPE");
-			outtext2("// 0 LINEAR STATIC;");
-			outtext2("// 1 STEADY STATE THERMAL (N/A);");
-			outtext2("// 2 Sparse;");
-			SetFocus();
-			iStat = 2;
-			goto MenuEnd;
-		}
-		if (iStat == 2) {
 			iSol = _ttoi(CInMsg);
-			if ((iSol == 0) || (iSol == 1) || (iSol == 2)) {
-				iStat = 3;
+			if (iSol >= 0 && iSol <= 5 && !CInMsg.IsEmpty()) {
+				iSol = SolutionTypeNumbers[iSol];
+				outtext2("// ENTER SOLUTION TITLE");
+				SetFocus();
+				iStat = 2;
+				goto MenuEnd;
 			} else {
-				iStat = 1;
+				iStat = 0;
 				outtext1("ERROR: Invalid Solution Type.");
 				DoMenu(CInMsg, Pt);
 			}
 		}
+		if (iStat == 2) {
+			// if (CInMsg.IsEmpty()) {
+			//	outtext1("ERROR: Empty Solution Title.");
+			//	outtext2("// ENTER SOLUTION TITLE");
+			//	goto MenuEnd;
+			// }
+			sT = CInMsg;
+			iStat = 3;
+		}
+		// momo
 		if (iStat == 3) {
-			outtext2("// ENTER CONVERGENCE TOLERANCE");
+			// momo
+			// outtext2("// ENTER CONVERGENCE TOLERANCE");
+			// SetFocus();
+			// iStat = 4;
+			// goto MenuEnd;
+			if (iSol >= 0 && iSol <= 2) {
+				outtext2("// ENTER CONVERGENCE TOLERANCE");
+				iStat = 4;
+				goto MenuEnd;
+			} else if (iSol == 3) {
+				dT = 0.0;
+				iStat = 5;
+			} else if (iSol >= 4 && iSol <= 5) {
+				outtext2("// ENTER EIGEN CARD");
+				iStat = 4;
+				goto MenuEnd;
+			}
 			SetFocus();
-			iStat = 4;
-			goto MenuEnd;
+			// momo
 		}
 		if (iStat == 4) {
-			dT = _ttoi(CInMsg);
-			if (dT < 0.1) {
-				iStat = 5;
-			} else {
-				iStat = 3;
-				outtext1("ERROR: Tolerance Must be < 0.1.");
-				DoMenu(CInMsg, Pt);
+			// momo
+			if (iSol >= 0 && iSol <= 2) {
+				// momo
+				dT = _ttof(CInMsg);
+				if (dT < 0.1 && !CInMsg.IsEmpty()) {
+					iStat = 5;
+				} else {
+					iStat = 3;
+					outtext1("ERROR: Tolerance Must be < 0.1");
+					DoMenu(CInMsg, Pt);
+				}
+				// momo
+			} else if (iSol >= 4 && iSol <= 5) {
+				sE = CInMsg;
+				if (!CInMsg.IsEmpty()) {
+					iStat = 5;
+				} else {
+					iStat = 3;
+					outtext1("ERROR: Empty Solution Eigen Card.");
+					DoMenu(CInMsg, Pt);
+				}
 			}
+			// momo
 		}
 		if (iStat == 5) {
 			RetVal = 1;
-			cDBase->AddSolutions(sT, iSol, dT);
+			// momo
+			// momo// cDBase->AddSolutions(sT, iSol, dT);
+			cDBase->AddSolutions(iSol, sT, sE, dT);
+			// momo
 			outtext1("Solution Added and Set as Active.");
 		}
 		// Escape clause
@@ -16323,7 +16783,10 @@ MenuEnd:
 	return RetVal;
 }
 
+// momo
 int zSTEPCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
+	// momo// int zSTEPCR_Mnu::DoMenu(CString &CInMsg, CPoint Pt) {
+	// momo
 	CString CInMsg2 = CInMsg;
 	DoNext(&CInMsg, Pt);
 	if (pNext == NULL) {
@@ -16338,7 +16801,12 @@ int zSTEPCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 				iStat = 1;
 			} else {
 				outtext1("ERROR: No Active Solution.");
+				// momo
+				// momo// RetVal = 2;
 				RetVal = 2;
+				CInMsg = _T("NEW");
+				iStat = 100;
+				// momo
 				goto MenuEnd;
 			}
 		}
@@ -16349,15 +16817,31 @@ int zSTEPCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			goto MenuEnd;
 		}
 		if (iStat == 2) {
+			// momo
+			// if (CInMsg.IsEmpty()) {
+			//	outtext1("ERROR: Empty Step Title.");
+			//	outtext2("// ENTER STEP TITLE");
+			//	goto MenuEnd;
+			//}
+			// momo
 			sT = CInMsg;
-			outtext2("// ENTER LOAD SET ID");
+			// momo
+			// momo// outtext2("// ENTER LOAD SET ID");
+			outtext2("// ENTER LOAD SET ID or -1 for None");
+			// momo
 			SetFocus();
 			iStat = 3;
 			goto MenuEnd;
 		}
 		if (iStat == 3) {
 			iLC = _ttoi(CInMsg);
-			if (cDBase->isValidLCid(iLC)) {
+			// momo
+			// momo// if (cDBase->isValidLCid(iLC)) {
+			if (CInMsg.IsEmpty()) {
+				iLC = -1;
+			}
+			if (iLC == -1 || iLC >= 0) {
+				// momo
 				iStat = 4;
 			} else {
 				iStat = 2;
@@ -16367,14 +16851,23 @@ int zSTEPCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		}
 
 		if (iStat == 4) {
-			outtext2("// ENTER BOUNDARY SET ID");
+			// momo
+			// momo// outtext2("// ENTER BOUNDARY SET ID");
+			outtext2("// ENTER BOUNDARY SET ID or -1 for None");
+			// momo
 			SetFocus();
 			iStat = 5;
 			goto MenuEnd;
 		}
 		if (iStat == 5) {
 			iBC = _ttoi(CInMsg);
-			if (cDBase->isValidBCid(iBC)) {
+			// momo
+			// momo// if (cDBase->isValidBCid(iBC)) {
+			if (CInMsg.IsEmpty()) {
+				iBC = -1;
+			}
+			if (iBC == -1 || iBC >= 0) {
+				// momo
 				iStat = 6;
 			} else {
 				iStat = 4;
@@ -16384,17 +16877,28 @@ int zSTEPCR_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		}
 
 		if (iStat == 6) {
-			outtext2("// ENTER TEMP SET ID or ENTRE FOR N/A");
+			// momo
+			// momo// outtext2("// ENTER TEMP SET ID or ENTRE FOR N/A");
+			outtext2("// ENTER TEMPERATURE SET ID or -1 for None");
+			// momo
 			SetFocus();
 			iStat = 7;
 			goto MenuEnd;
 		}
 		if (iStat == 7) {
 			iTC = _ttoi(CInMsg);
+			// momo
+			if (CInMsg.IsEmpty()) {
+				iTC = -1;
+			}
+			// momo
 			if (iTC == 0) {
 				iTC = -1;
 				iStat = 8;
-			} else if (cDBase->isValidTCid(iTC)) {
+				// momo
+				// momo// } else if (cDBase->isValidTCid(iTC)) {
+			} else if (iTC == -1 || iTC >= 0) {
+				// momo
 				iStat = 8;
 			} else {
 				iStat = 6;
@@ -18962,7 +19466,12 @@ int zEXPINC_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		} else if (iStat == 1) {
 			C3dVector ptVec;
 			ptVec = cDBase->DB_PopBuff();
-			cDBase->ExporttoNAS((int) ptVec.x);
+			// momo
+			// momo// cDBase->ExporttoNAS((int) ptVec.x);
+			CString tempFilePath;
+			cDBase->ExporttoNAS((int) ptVec.x, &tempFilePath);
+			// momo
+
 			RetVal = 1;
 		}
 		// Escape clause

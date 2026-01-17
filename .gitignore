@@ -266,3 +266,6 @@ M3da/config.txt
 M3da/config-.txt
 # Ignore folder with all scripts
 Scripts/
+# Ignore "EXE Files" and "Code Snapshots" folder
+EXE Files/
+Code Snapshots/

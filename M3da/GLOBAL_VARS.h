@@ -70,14 +70,23 @@ extern int MiddleDragAction;
 extern bool MouseLeftDown;
 extern bool MouseRightDown;
 extern bool MouseMiddleDown;
+extern int DeckModsExecutiveControl;
+extern int DeckModsCaseControl;
+extern int DeckModsBulkData;
+extern int DeckModsParamBailout;
+extern int DeckModsParamAutoSpc;
+extern int DeckModsParamPost;
+extern int DeckModsParamFiles;
+extern int DeckModsParamQuad4typ;
+extern CString TemporaryDeckFilePath;
 // momo
 // momo change command box color
-struct CommandIsActive {
-		bool CurrentState;
-		bool NewState;
-		bool ChangeEdit1;
+struct CommandLine_State {
+		bool CurrentStateIsActive;
+		bool NewStateIsActive;
+		bool AlsoChangeEdit1Color;
 };
-extern CommandIsActive CommIsActive;
+extern CommandLine_State CommandLineState;
 // momo change command box color
 // momo on off button and menu
 struct ButtonPushed {
@@ -159,7 +168,7 @@ extern DisplayFlags DspFlagsMain;
 // momo change Display Flags Method
 // momo save by old versions
 extern int FileFormatIndex;
-extern bool MakingNewFile;
+extern bool ResetVariables;
 // momo save by old versions
 // momo close for LNC
 extern CPoint m_PointOld; // old move point
@@ -170,6 +179,15 @@ extern bool bUseDoubleBuffer;
 // momo random color change bug
 // momo
 extern double Pi;
+extern CString SolutionTypeNames[6];
+extern int SolutionTypeNumbers[6];
+extern bool TemporaryChangeFlagCleared;
+extern CString sSpliter;
+extern CString DataPath;
+extern CString ModelFileName;
+extern bool ModelFileNameChanged;
+extern bool DatFileOverwritePrompt;
+extern CString TextViewerExe;
 // momo
 extern BOOL gDSP_BACK;
 extern BOOL gORTHO;

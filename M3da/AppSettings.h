@@ -100,6 +100,86 @@ class CAppSettings {
 			return;
 		}
 
+		int ReadDeckModsExecutiveControl() {
+			int returnValue = ReadInt(_T("DeckModsExecutiveControl"), 1);
+			return returnValue;
+		}
+
+		void WriteDeckModsExecutiveControl() {
+			WriteInt(_T("DeckModsExecutiveControl"), DeckModsExecutiveControl);
+			return;
+		}
+
+		int ReadDeckModsCaseControl() {
+			int returnValue = ReadInt(_T("DeckModsCaseControl"), 1);
+			return returnValue;
+		}
+
+		void WriteDeckModsCaseControl() {
+			WriteInt(_T("DeckModsCaseControl"), DeckModsCaseControl);
+			return;
+		}
+
+		int ReadDeckModsBulkData() {
+			int returnValue = ReadInt(_T("DeckModsBulkData"), 1);
+			return returnValue;
+		}
+
+		void WriteDeckModsBulkData() {
+			WriteInt(_T("DeckModsBulkData"), DeckModsBulkData);
+			return;
+		}
+
+		int ReadDeckModsParamBailout() {
+			int returnValue = ReadInt(_T("DeckModsParamBailout"), 1);
+			return returnValue;
+		}
+
+		void WriteDeckModsParamBailout() {
+			WriteInt(_T("DeckModsParamBailout"), DeckModsParamBailout);
+			return;
+		}
+
+		int ReadDeckModsParamAutoSpc() {
+			int returnValue = ReadInt(_T("DeckModsParamAutoSpc"), 1);
+			return returnValue;
+		}
+
+		void WriteDeckModsParamAutoSpc() {
+			WriteInt(_T("DeckModsParamAutoSpc"), DeckModsParamAutoSpc);
+			return;
+		}
+
+		int ReadDeckModsParamPost() {
+			int returnValue = ReadInt(_T("DeckModsParamPost"), -1);
+			return returnValue;
+		}
+
+		void WriteDeckModsParamPost() {
+			WriteInt(_T("DeckModsParamPost"), DeckModsParamPost);
+			return;
+		}
+
+		int ReadDeckModsParamFiles() {
+			int returnValue = ReadInt(_T("DeckModsParamFiles"), 0);
+			return returnValue;
+		}
+
+		void WriteDeckModsParamFiles() {
+			WriteInt(_T("DeckModsParamFiles"), DeckModsParamFiles);
+			return;
+		}
+
+		int ReadDeckModsParamQuad4typ() {
+			int returnValue = ReadInt(_T("DeckModsParamQuad4typ"), 0);
+			return returnValue;
+		}
+
+		void WriteDeckModsParamQuad4typ() {
+			WriteInt(_T("DeckModsParamQuad4typ"), DeckModsParamQuad4typ);
+			return;
+		}
+
 		bool ReadWindowState() {
 			int windowState = ReadInt(_T("WindowState"), 1); // 0:Restore 1:Maximize
 			return windowState;

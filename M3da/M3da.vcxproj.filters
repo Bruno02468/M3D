@@ -60,6 +60,9 @@
     <ClCompile Include="Mnu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="G_object.h">
@@ -120,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Mnu.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditInfo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -204,6 +210,63 @@
     <Image Include="res\ToolbarSelectionTest.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\FileToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DimensionToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GroupToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\UtilitiesToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\OrientationToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DrawToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SelectFilterQuickToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ExperimentalToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SelectToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ShowHideToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GeomVisibilityToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ElementVisibilityToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SetElementToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\FEToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BCToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CreateToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\EditToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\PostToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\MenuCommandsToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
@@ -212,6 +275,18 @@
     <None Include="ClassDiagram.cd" />
     <None Include="res\M3da.rc2">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\CursorMove.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\CursorRotate.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\CursorZoomInOut.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\CursorZoomBox.cur">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

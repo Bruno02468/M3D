@@ -11,6 +11,9 @@
 // MoMo_Material_SaveBugV1_05_20_2025_Start
 #include <set>
 // MoMo_Material_SaveBugV1_05_20_2025_End
+// momo
+#include "EditInfo.h"
+// momo
 
 // CM3daApp:
 // See M3da.cpp for the implementation of this class
@@ -34,11 +37,20 @@ class CM3daApp: public CWinAppEx {
 		// momo
 		void OnFileNewMain();
 		void OnFileOpenMain();
+		BOOL AskToSaveIfModified();
+		BOOL IsValidFileName(CString strFileName);
+		void ReplaceWindowsDirectories(CString& strPath);
+		void ReplaceNoCase(CString& strSource, const CString& strFind, CString& strReplace);
+		BOOL PrepareAndCheckFolder(const CString& strPath);
+		// BOOL UseFolderInExePath(const CString subFoldername, int warnByWindow, CString& strFullPath);
+		BOOL TheFileExists(const CString& strFilePath);
+		BOOL FolderExists(const CString& strFolderPath);
+		CString ExeFolderPath();
 		// momo
 		// momo save by old versions
 		void OnFileSaveMain();
 		void OnFileSaveAsMain();
-		void LoadConfiguration();
+		bool LoadConfigFile(CString fileName, const CString stMode);
 		// momo save by old versions
 
 		afx_msg void OnAppAbout();
@@ -105,27 +117,55 @@ class InfoDialog: public CDialogEx {
 		    : CDialogEx(IDD_INFO_DIALOG, pParent) {}
 
 	protected:
-		virtual void DoDataExchange(CDataExchange* pDX) {
-			CDialogEx::DoDataExchange(pDX);
-		}
+		// virtual void DoDataExchange(CDataExchange* pDX) {
+		//	CDialogEx::DoDataExchange(pDX);
+		// }
 		virtual BOOL OnInitDialog();
+		virtual void DoDataExchange(CDataExchange* pDX);
 		afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 		afx_msg void OnCloseButtonClick();
+		afx_msg void OnExportButtonClick();
 		afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-		afx_msg void OnEditSetFocus();
+		// afx_msg void OnEditSetFocus();
+		// afx_msg void OnEditKillFocus();
 		afx_msg void OnCheckNeedLeftClick_Clicked();
 		afx_msg void OnComboRightDragAction_SelChange();
 		afx_msg void OnComboMiddleDragAction_SelChange();
+		afx_msg void OnRadioClickAll();
+		afx_msg void OnRadioClickExecutive();
+		afx_msg void OnRadioClickCase();
+		afx_msg void OnRadioClickBulk();
+		afx_msg void OnRadioClickBrief();
+		afx_msg void OnRadioClickDetailed();
 		DECLARE_MESSAGE_MAP()
 
 	private:
-		CEdit editInfo;
+		CEditInfo editInfo;
 		CButton buttonClose;
+		CButton buttonExport;
 		CBrush m_brWhite;
 		CButton checkNeedLeftClick;
 		CComboBox comboRightDragAction;
 		CStatic labelRightDragAction;
 		CComboBox comboMiddleDragAction;
 		CStatic labelMiddleDragAction;
+		CFont m_monoFont;
+		CButton radioAll;
+		CButton radioExecutive;
+		CButton radioCase;
+		CButton radioBulk;
+		CString AllDeckText;
+		int nLastRadio;
+		CButton radioDescriptionBrief;
+		CButton radioDescriptionDetailed;
+		CString DescriptionBriefText;
+		CString DescriptionDetailedText;
+		// int editInfoSelStart;
+		// int editInfoSelEnd;
+		// int editInfoFirstVisibleLine;
+
+	public:
+		bool LoadFileIntoEdit(CEdit& edit, const CString& path);
+		void ApplyMonospaceFont(CEdit& edit, int pointSize /*=10*/);
 };
 // momo add type id form

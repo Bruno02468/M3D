@@ -15,6 +15,7 @@ class CMainFrame: public CFrameWndEx {
 		void OnViewToolbarBC();
 		void OnUpdateViewToolbarBC(CCmdUI* pCmdUI);
 		void LockToolbarsDocking(bool lockAll);
+		virtual BOOL OnShowPopupMenu(CMFCPopupMenu* pMenuPopup);
 		// momo
 
 	public:
@@ -27,8 +28,10 @@ class CMainFrame: public CFrameWndEx {
 				BOOL isVisible;
 				int Align; // 0:any 1:right 2:left 3:top 4:bottom
 				int DockCommand; // 1:DockPane 2:DockPaneLeftOf Negative:DockPane(&p_Input)
+				bool HasSeparator; // Has separator after it
+				int MenuOrder; // Menu order
 		};
-		ToolBarInfo toolbars[19];
+		ToolBarInfo toolbars[20];
 		//  MoMo// void sizeCbar();
 		// MoMo_End
 		virtual ~CMainFrame();
@@ -65,7 +68,7 @@ class CMainFrame: public CFrameWndEx {
 		// CMFCToolBar m_BC;
 		// CMFCToolBar m_ELTYPE;
 		// CMFCToolBar m_POST;
-		// CMFCToolBar m_Projection;
+		// CMFCToolBar m_Orientation;
 		// CMFCToolBar m_Utils;
 		// CMFCToolBar m_QFilter;
 		// CMFCToolBar m_DIMS;
@@ -76,10 +79,11 @@ class CMainFrame: public CFrameWndEx {
 		CMFCMenuBar m_MenuBar;
 		CMFCStatusBar s_StatusBar;
 		CMFCToolBar BoundaryConditionsToolbar;
-		CMFCToolBar CreateToolbar;
-		CMFCToolBar DimensionToolbar;
-		CMFCToolBar DrawToolbar;
-		CMFCToolBar EditToolbar;
+		CMFCToolBar PointCurveToolsToolbar;
+		CMFCToolBar SurfaceToolsToolbar;
+		CMFCToolBar DimensionToolsToolbar;
+		CMFCToolBar ViewToolbar;
+		CMFCToolBar ToolsToolbar;
 		CMFCToolBar SetElementToolbar;
 		CMFCToolBar ExperimentalToolbar;
 		CMFCToolBar FiniteElementsToolbar;
@@ -87,9 +91,9 @@ class CMainFrame: public CFrameWndEx {
 		CMFCToolBar GroupToolbar;
 		CMFCToolBar MenuCommandsToolbar;
 		CMFCToolBar PostProcessingToolbar;
-		CMFCToolBar ProjectionToolbar;
-		CMFCToolBar SelectFilterQuickToolbar;
-		CMFCToolBar SelectToolbar;
+		CMFCToolBar OrientationToolbar;
+		CMFCToolBar SelectFilterToolbar;
+		CMFCToolBar SelectOptionsToolbar;
 		CMFCToolBar ShowHideToolbar;
 		CMFCToolBar ElementVisibilityToolbar;
 		CMFCToolBar GeomVisibilityToolbar;

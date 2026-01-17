@@ -1855,7 +1855,7 @@ G_Object* G_Object::Copy(G_Object* parrent) {
 	return (NULL);
 }
 
-void G_Object::Serialize(CArchive& ar, int iV) {
+void G_Object::Serialize(CArchive& ar, int iVer) {
 	if (ar.IsStoring()) {
 		// TODO: add storing code here
 		ar << iObjType;
@@ -1867,19 +1867,19 @@ void G_Object::Serialize(CArchive& ar, int iV) {
 		ar << Selectable;
 		ar << Visable;
 		// MoMo_Start
-		if (iV <= -79) {
+		if (iVer <= -79) {
 			ar << nSeeds;
 		}
 		// MoMo_End
 	} else {
 		ar >> iObjType;
 		// New file number to group include files
-		if (iV < -62)
+		if (iVer < -62)
 			ar >> iFile;
 		else
 			iFile = -1;
 
-		if (iV < -52)
+		if (iVer < -52)
 			ar >> iType;
 		else
 			iType = -1;
@@ -1890,7 +1890,7 @@ void G_Object::Serialize(CArchive& ar, int iV) {
 		ar >> Selectable;
 		ar >> Visable;
 		// MoMo_Start
-		if (iV <= -79) {
+		if (iVer <= -79) {
 			ar >> nSeeds;
 		}
 		// MoMo_End
@@ -14481,7 +14481,10 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			glRasterPos3f((float) vZ.x, (float) vZ.y, (float) vZ.z);
 			glBitmap(8, 13, 0.0, 2.0, 10.0, 0.0, BMPZ);
 		}
-		if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
+		// momo
+		// momo// if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
+		if (DspFlagsIn.DSP_MATERIALDIRECTION) {
+		// momo
 			C3dMatrix mS = GetElSys();
 			C3dMatrix mR;
 			C3dVector vD;
@@ -19137,7 +19140,10 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 			glBitmap(8, 13, 0.0, 2.0, 10.0, 0.0, BMPZ);
 		}
 
-		if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
+		// momo
+		// momo// if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
+		if (DspFlagsIn.DSP_MATERIALDIRECTION) {
+		// momo
 			C3dMatrix mS = GetElSys();
 			C3dMatrix mR;
 			C3dVector vD;
@@ -21452,20 +21458,39 @@ IMPLEMENT_DYNAMIC(Solution, CObject)
 Solution::Solution() {
 	iType = 0;
 	sTitle = "UNDEFINED";
+	// momo
+	sEigenCard = "";
+	// momo
 	iNo = 0;
-	dTol = 1.0e-9;
+	// momo
+	// momo// dTol = 1.0e-9;
+	dTol = 0.0;
+	// momo
 	iCur = -1;
 }
 
 CString Solution::GetSolutionTitleString() {
 	CString src = _T("ERROR.");
 	CString S1;
-	S1.Format(_T("%s TP: %i TOL: %g"), sTitle, iType, dTol);
+	// momo
+	// momo// S1.Format(_T("%s TP: %i TOL: %g"), sTitle, iType, dTol);
+	if (iType <= 2) {
+		S1.Format(_T("%s%s Model Title = %s%s TOL = %g"), SolutionTypeNames[SolutionTypeNumbers[iType]], sSpliter, sTitle, sSpliter, dTol);
+	} else if (iType == 3) {
+		S1.Format(_T("%s%s Model Title = %s"), SolutionTypeNames[SolutionTypeNumbers[iType]], sSpliter, sTitle);
+	} else if (iType == 4 || iType == 5) {
+		S1.Format(_T("%s%s Model Title = %s%s EIGEN = %s"), SolutionTypeNames[SolutionTypeNumbers[iType]], sSpliter, sTitle, sSpliter, sEigenCard);
+	}
+	// momo
 	src = S1;
 	return (src);
 }
 
-Solution::Solution(int iT, CString sTit, double dT) {
+// momo
+// momo// Solution::Solution(int iT, CString sTit, double dT) {
+Solution::Solution(int iT, CString sTit, CString sEigen, double dT) {
+	sEigenCard = sEigen;
+	// momo
 	iType = iT;
 	sTitle = sTit;
 	iNo = 0;
@@ -21477,6 +21502,10 @@ Solution::~Solution() {
 	iNo = 0;
 	iType = 0;
 	sTitle = "UNDEFINED";
+	// momo
+	sEigenCard = "";
+	dTol = 0.0;
+	// momo
 }
 
 void Solution::AddStep(CString sT, int idLS, int idBS, int idTS, BOOL bRS) {
@@ -21508,12 +21537,17 @@ void Solution::DelStep(int ind) {
 	iCur = -1;
 }
 
-void Solution::Serialize(CArchive& ar, int iV) {
+void Solution::Serialize(CArchive& ar, int iVer) {
 	int i;
 	if (ar.IsStoring()) {
 		ar << iNo;
 		ar << iCur;
 		ar << sTitle;
+		// momo
+		if (iVer <= -80) {
+			ar << sEigenCard;
+		}
+		// momo
 		ar << iType;
 		ar << dTol;
 		for (i = 0; i < iNo; i++) {
@@ -21527,6 +21561,11 @@ void Solution::Serialize(CArchive& ar, int iV) {
 		ar >> iNo;
 		ar >> iCur;
 		ar >> sTitle;
+		// momo
+		if (iVer <= -80) {
+			ar >> sEigenCard;
+		}
+		// momo
 		ar >> iType;
 		ar >> dTol;
 		for (i = 0; i < iNo; i++) {
@@ -21557,7 +21596,31 @@ CString Solution::GetStepTitleString(int iC) {
 	CString src;
 	CString S1;
 	if ((iC > -1) && (iC < iNo)) {
-		S1.Format(_T("STEP: %i LC: %i BC: %i TSET: %i RS: %i %s"), iC, LS[iC], BS[iC], TS[iC], RS[iC], sStepTitle[iC]);
+		// momo
+		// momo// S1.Format(_T("STEP: %i LC: %i BC: %i TSET: %i RS: %i %s"), iC, LS[iC], BS[iC], TS[iC], RS[iC], sStepTitle[iC]);
+		CString RS1, sLS, sBS, sTS;
+		if (RS[iC]) {
+			RS1 = _T("YES");
+		} else {
+			RS1 = _T("NO");
+		}
+		if (LS[iC] == -1) {
+			sLS = _T("NONE");
+		} else {
+			sLS.Format(_T("%i"), LS[iC]);
+		}
+		if (BS[iC] == -1) {
+			sBS = _T("NONE");
+		} else {
+			sBS.Format(_T("%i"), BS[iC]);
+		}
+		if (TS[iC] == -1) {
+			sTS = _T("NONE");
+		} else {
+			sTS.Format(_T("%i"), TS[iC]);
+		}
+		S1.Format(_T("SUBCASE %i: LOAD = %s%s SPC = %s%s TEMP = %s%s Restart = %s%s SUBCASE TITLE = %s"), iC + 1, sLS, sSpliter, sBS, sSpliter, sTS, sSpliter, RS1, sSpliter, sStepTitle[iC]);
+		// momo
 		src = S1;
 	} else {
 		src = "ERROR.";
@@ -21593,7 +21656,7 @@ IMPLEMENT_DYNAMIC(SolSets, CObject)
 
 SolSets::SolSets() {
 	int i;
-	iCur = -1;
+	iActive = -1;
 	iNo = 0;
 	sTitle = "UNDEFINED";
 	for (i = 0; i < MAX_SOLS; i++) {
@@ -21603,7 +21666,7 @@ SolSets::SolSets() {
 
 SolSets::SolSets(CString sTitle) {
 	int i;
-	iCur = -1;
+	iActive = -1;
 	iNo = 0;
 	sTitle = sTitle;
 	for (i = 0; i < MAX_SOLS; i++) {
@@ -21621,10 +21684,16 @@ SolSets::~SolSets() {
 	}
 }
 
-void SolSets::AddSolution(int iT, CString sTit, double dT) {
+// momo
+// momo// void SolSets::AddSolution(int iT, CString sTit, double dT) {
+void SolSets::AddSolution(int iT, CString sTit, CString sEigen, double dT) {
+	// momo
 	if (iNo < MAX_SOLS) {
-		pSols[iNo] = new Solution(iT, sTit, dT);
-		iCur = iNo;
+		// momo
+		// momo// pSols[iNo] = new Solution(iT, sTit, dT);
+		pSols[iNo] = new Solution(iT, sTit, sEigen, dT);
+		// momo
+		iActive = iNo;
 		iNo++;
 	} else {
 		outtext1("ERROR: Max No of Solutions Exceeded.");
@@ -21633,9 +21702,9 @@ void SolSets::AddSolution(int iT, CString sTit, double dT) {
 
 // add step to current solution
 void SolSets::AddStep(CString sT, int idLS, int idBS, int idTS, BOOL bRS) {
-	if (iCur != -1) {
-		if (pSols[iCur] != NULL)
-			pSols[iCur]->AddStep(sT, idLS, idBS, idTS, bRS);
+	if (iActive != -1) {
+		if (pSols[iActive] != NULL)
+			pSols[iActive]->AddStep(sT, idLS, idBS, idTS, bRS);
 	}
 }
 
@@ -21656,14 +21725,14 @@ void SolSets::Serialize(CArchive& ar, int iV) {
 	int i;
 	if (ar.IsStoring()) {
 		ar << iNo;
-		ar << iCur;
+		ar << iActive;
 		ar << sTitle;
 		for (i = 0; i < iNo; i++) {
 			pSols[i]->Serialize(ar, iV);
 		}
 	} else {
 		ar >> iNo;
-		ar >> iCur;
+		ar >> iActive;
 		ar >> sTitle;
 		for (i = 0; i < iNo; i++) {
 			pSols[i] = new Solution();
@@ -21674,25 +21743,25 @@ void SolSets::Serialize(CArchive& ar, int iV) {
 
 Solution* SolSets::GetCurSolution() {
 	Solution* pSol = NULL;
-	if (iCur > -1)
-		pSol = pSols[iCur];
+	if (iActive > -1)
+		pSol = pSols[iActive];
 	return (pSol);
 }
 
-BOOL SolSets::SetCurSol(int iC) {
+BOOL SolSets::SetCurSol(int iAc) {
 	BOOL brc = FALSE;
-	if ((iC > -1) && (iC < iNo)) {
-		iCur = iC;
+	if ((iAc > -1) && (iAc < iNo)) {
+		iActive = iAc;
 		brc = TRUE;
 	} else
-		iCur = -1;
+		iActive = -1;
 	return (brc);
 }
 
-BOOL SolSets::SetCurStep(int iC) {
+BOOL SolSets::SetCurStep(int iAc) {
 	BOOL brc = FALSE;
-	if (iCur > -1)
-		brc = pSols[iCur]->SetCurStep(iC);
+	if (iActive > -1)
+		brc = pSols[iActive]->SetCurStep(iAc);
 	else {
 		outtext1("ERROR: No Solution Active.");
 	}
@@ -21701,8 +21770,8 @@ BOOL SolSets::SetCurStep(int iC) {
 
 int SolSets::GetCurStep() {
 	int irc = -1;
-	if (iCur > -1)
-		irc = pSols[iCur]->GetCurStep();
+	if (iActive > -1)
+		irc = pSols[iActive]->GetCurStep();
 	else
 		outtext1("ERROR: No Solution Active.");
 	return (irc);
@@ -21729,7 +21798,7 @@ void SolSets::Info() {
 	for (i = 0; i < iNo; i++) {
 		pSols[i]->Info(i);
 	}
-	S1.Format(_T("CURRENT SOL SEQ: %i"), iCur);
+	S1.Format(_T("CURRENT SOL SEQ: %i"), iActive);
 	outtext1(S1);
 }
 
@@ -22215,7 +22284,7 @@ void ME_Object::DeleteNodeList() {
 BOOL ME_Object::isActiveSolSet() {
 	BOOL brc = FALSE;
 	if (pSOLS != NULL) {
-		if (pSOLS->iCur != -1)
+		if (pSOLS->iActive != -1)
 			brc = TRUE;
 	}
 	return (brc);
@@ -22484,7 +22553,10 @@ void ME_Object::ListLC() {
 		buff.Format(_T("%3i%s ID%i %s"), i, _T(" : "), LCS[i]->iLabel, LCS[i]->sTitle);
 		outtext1(buff);
 	}
-	if ((iNoLCs > 0) && (iCurLC < iNoLCs)) {
+	// momo
+	// momo// if ((iNoLCs > 0) && (iCurLC < iNoLCs)) {
+	if (iNoLCs > 0 && iCurLC < iNoLCs && iCurLC >= 0) {
+		// momo
 		outtext1("Active Load Set:-");
 		buff.Format(_T("%3i%s ID%i %s"), iCurLC, _T(" : "), LCS[iCurLC]->iLabel, LCS[iCurLC]->sTitle);
 		outtext1(buff);
@@ -22504,7 +22576,10 @@ void ME_Object::ListBC() {
 		buff.Format(_T("%3i%s ID%i %s"), i, _T(" : "), BCS[i]->iLabel, BCS[i]->sTitle);
 		outtext1(buff);
 	}
-	if ((iNoBCs > 0) && (iCurBC < iNoBCs)) {
+	// momo
+	// momo// if ((iNoBCs > 0) && (iCurBC < iNoBCs)) {
+	if (iNoBCs > 0 && iCurBC < iNoBCs && iCurBC >= 0) {
+		// momo
 		outtext1("Active Boundary Set:-");
 		buff.Format(_T("%3i%s ID%i %s"), iCurBC, _T(" : "), BCS[iCurBC]->iLabel, BCS[iCurBC]->sTitle);
 		outtext1(buff);
@@ -22524,7 +22599,10 @@ void ME_Object::ListTSET() {
 		buff.Format(_T("%3i%s ID%i %s"), i, _T(" : "), TSETS[i]->iLabel, TSETS[i]->sTitle);
 		outtext1(buff);
 	}
-	if ((iNoTSets > 0) && (iCurTSet < iNoTSets)) {
+	// momo
+	// momo// if ((iNoTSets > 0) && (iCurTSet < iNoTSets)) {
+	if (iNoTSets > 0 && iCurTSet < iNoTSets && iCurTSet >= 0) {
+		// momo
 		outtext1("Active Temperature Set:-");
 		buff.Format(_T("%3i%s ID%i %s"), iCurTSet, _T(" : "), TSETS[iCurTSet]->iLabel, TSETS[iCurTSet]->sTitle);
 		outtext1(buff);
@@ -22621,7 +22699,10 @@ int ME_Object::CreateBC(int ID, CString sTit) {
 		BCS[iNoBCs]->sTitle = sTit;
 		BCS[iNoBCs]->pParent = this;
 		// if (iCurBC==-1)
-		iCurBC = iNoBCs;
+		// momo
+		if (iCurBC == -1)
+			// momo
+			iCurBC = iNoBCs;
 		irc = iCurBC;
 		iNoBCs++;
 	}
@@ -22839,12 +22920,12 @@ void ME_Object::RelTo(G_Object* pThis, ObjList* pList, int iType) {
 	}
 }
 
-void ME_Object::Serialize(CArchive& ar, int iV) {
+void ME_Object::Serialize(CArchive& ar, int iVer) {
 	int i;
 	int iE;
 	if (ar.IsStoring()) {
 		// TODO: add storing code here
-		G_Object::Serialize(ar, iV);
+		G_Object::Serialize(ar, iVer);
 		ar << sName;
 		ar << iFileNo; // new
 		for (i = 0; i < iFileNo; i++) // new
@@ -22869,17 +22950,17 @@ void ME_Object::Serialize(CArchive& ar, int iV) {
 		ar << TransMat.m_33;
 		ar << iCYS;
 		for (i = 0; i < iCYS; i++) {
-			pSys[i]->Serialize(ar, iV);
+			pSys[i]->Serialize(ar, iVer);
 		}
 		if (sName != "NULL") {
 			ar << iNdNo;
 			for (i = 0; i < iNdNo; i++) {
-				pNodes[i]->Serialize(ar, iV);
+				pNodes[i]->Serialize(ar, iVer);
 			}
 			ar << iElNo;
 			for (i = 0; i < iElNo; i++) {
 				ar << pElems[i]->iType;
-				pElems[i]->Serialize(ar, iV, this);
+				pElems[i]->Serialize(ar, iVer, this);
 			}
 		} else {
 			ar << 0;
@@ -22889,30 +22970,30 @@ void ME_Object::Serialize(CArchive& ar, int iV) {
 		ar << iCurLC;
 		ar << iNoLCs;
 		for (i = 0; i < iNoLCs; i++) {
-			LCS[i]->Serialize(ar, iV, this);
+			LCS[i]->Serialize(ar, iVer, this);
 		}
 		ar << iCurBC;
 		ar << iNoBCs;
 		for (i = 0; i < iNoBCs; i++) {
-			BCS[i]->Serialize(ar, iV, this);
+			BCS[i]->Serialize(ar, iVer, this);
 		}
 		ar << iCurTSet;
 		ar << iNoTSets;
 		for (i = 0; i < iNoTSets; i++) {
-			TSETS[i]->Serialize(ar, iV, this);
+			TSETS[i]->Serialize(ar, iVer, this);
 		}
-		pSOLS->Serialize(ar, iV);
+		pSOLS->Serialize(ar, iVer);
 
 	} else {
-		G_Object::Serialize(ar, iV);
+		G_Object::Serialize(ar, iVer);
 		ar >> sName;
-		if (iV <= -63) {
+		if (iVer <= -63) {
 			ar >> iFileNo; // new
 			for (i = 0; i < iFileNo; i++) // new
 				ar >> sFiles[i]; // new
 		}
-		if (iV <= -62) {
-			if (iV > -76) {
+		if (iVer <= -62) {
+			if (iVer > -76) {
 				int iTemp;
 				ar >> iTemp;
 				iIntID = iTemp;
@@ -22940,7 +23021,7 @@ void ME_Object::Serialize(CArchive& ar, int iV) {
 		ar >> iCYS;
 		for (i = 0; i < iCYS; i++) {
 			pSys[i] = new CoordSys;
-			pSys[i]->Serialize(ar, iV);
+			pSys[i]->Serialize(ar, iVer);
 			pSys[i]->pParent = this;
 		}
 		ar >> iNdNo;
@@ -22949,7 +23030,7 @@ void ME_Object::Serialize(CArchive& ar, int iV) {
 		}
 		for (i = 0; i < iNdNo; i++) {
 			pNodes[i] = new Node;
-			pNodes[i]->Serialize(ar, iV);
+			pNodes[i]->Serialize(ar, iVer);
 			pNodes[i]->pParent = this;
 			if ((TempList != NULL) && (pNodes[i]->iLabel < 99999999)) {
 				TempList->Objs[pNodes[i]->iLabel] = pNodes[i];
@@ -23008,7 +23089,7 @@ void ME_Object::Serialize(CArchive& ar, int iV) {
 					pElems[i] = new E_CellS;
 					break;
 			}
-			pElems[i]->Serialize(ar, iV, this);
+			pElems[i]->Serialize(ar, iVer, this);
 			pElems[i]->pParent = this;
 		}
 		// LOAD AND BOUNDARY SETS
@@ -23017,24 +23098,24 @@ void ME_Object::Serialize(CArchive& ar, int iV) {
 		for (i = 0; i < iNoLCs; i++) {
 			LCS[i] = new cLinkedList();
 			LCS[i]->pParent = this;
-			LCS[i]->Serialize(ar, iV, this);
+			LCS[i]->Serialize(ar, iVer, this);
 		}
 		ar >> iCurBC;
 		ar >> iNoBCs;
 		for (i = 0; i < iNoBCs; i++) {
 			BCS[i] = new cLinkedListB();
 			BCS[i]->pParent = this;
-			BCS[i]->Serialize(ar, iV, this);
+			BCS[i]->Serialize(ar, iVer, this);
 		}
 		ar >> iCurTSet;
 		ar >> iNoTSets;
 		for (i = 0; i < iNoTSets; i++) {
 			TSETS[i] = new cLinkedListT();
 			TSETS[i]->pParent = this;
-			TSETS[i]->Serialize(ar, iV, this);
+			TSETS[i]->Serialize(ar, iVer, this);
 		}
 		// NEW SOLUTION SEQUENCES
-		pSOLS->Serialize(ar, iV);
+		pSOLS->Serialize(ar, iVer);
 	}
 	if (TempList != NULL) {
 		delete (TempList);
@@ -23309,25 +23390,57 @@ void ME_Object::ExportRes(FILE* pFile) {
 }
 
 void ME_Object::ExportNASExec(FILE* pFile, SecTable* pS) {
-	int iC = pSOLS->iCur;
-	if (iC != -1) {
-		if (pSOLS->pSols[iC]->iType == 0) {
+	int iAc = pSOLS->iActive;
+	if (iAc != -1) {
+		// momo
+		fprintf(pFile, "$\n");
+		fprintf(pFile, "$*******************************************************************************\n");
+		fprintf(pFile, "$*******************************************************************************\n");
+		fprintf(pFile, "$******************* EXECUTIVE CONTROL *****************************************\n");
+		fprintf(pFile, "$*******************************************************************************\n");
+		fprintf(pFile, "$*******************************************************************************\n");
+		fprintf(pFile, "$\n");
+		// momo
+		if (pSOLS->pSols[iAc]->iType == 0) {
 			// SOL 101
-			fprintf(pFile, "%s\n", "SOL 101");
-			fprintf(pFile, "%s\n", "CEND");
+			fprintf(pFile, "SOL 101\n");
+			fprintf(pFile, "CEND\n");
 			ExportNASCase101(pFile, pS);
-		} else if (pSOLS->pSols[iC]->iType == 1) {
+		} else if (pSOLS->pSols[iAc]->iType == 1) {
 			// SOL STEADY STATE HEAT
-			fprintf(pFile, "%s\n", "$ERROR NO EXECUTIVE STATEMENT AVAILABLE FOR STEADY STATE HEAT TRANSFUR");
-		} else if (pSOLS->pSols[iC]->iType == 2) {
+			fprintf(pFile, "$ERROR NO EXECUTIVE STATEMENT AVAILABLE FOR STEADY STATE HEAT TRANSFUR\n");
+		} else if (pSOLS->pSols[iAc]->iType == 2) {
 			// SOL 101
-			fprintf(pFile, "%s\n", "SOL 101");
-			fprintf(pFile, "%s\n", "CEND");
+			fprintf(pFile, "SOL 101\n");
+			fprintf(pFile, "CEND\n");
 			ExportNASCase101(pFile, pS);
-		} else if (pSOLS->pSols[iC]->iType == 3) {
-			fprintf(pFile, "%s\n", "SOL 103");
-			fprintf(pFile, "%s\n", "CEND");
-			fprintf(pFile, "%s\n", "$ERROR CASE CONTROL NOT IMPLEMENTED YET");
+			// momo
+			// momo// } else if (pSOLS->pSols[iAc]->iType == 3) {
+		} else if (pSOLS->pSols[iAc]->iType == -3) {
+			// momo
+			fprintf(pFile, "SOL 103\n");
+			fprintf(pFile, "CEND\n");
+			fprintf(pFile, "$ERROR CASE CONTROL NOT IMPLEMENTED YET\n");
+			// momo
+		} else if (pSOLS->pSols[iAc]->iType == 3) {
+			fprintf(pFile, "$ SOL 101 = LINEAR STATIC\n");
+			fprintf(pFile, "SOL 101\n");
+			fprintf(pFile, "CEND\n");
+			ExportNASCase101(pFile, pS);
+		} else if (pSOLS->pSols[iAc]->iType == 4) {
+			fprintf(pFile, "$ SOL 103 = EIGEN - NATURAL FREQUENCY/NORMAL MODES\n");
+			fprintf(pFile, "SOL 103\n");
+			fprintf(pFile, "CEND\n");
+			ExportNASCase101(pFile, pS);
+		} else if (pSOLS->pSols[iAc]->iType == 5) {
+			fprintf(pFile, "$ SOL 105 = EIGEN - BUCKLING\n");
+			fprintf(pFile, "SOL 105\n");
+			fprintf(pFile, "CEND\n");
+			ExportNASCase101(pFile, pS);
+			// momo
+			// 101 LINEAR STATIC;
+			// 103 NATURAL FREQ;
+			// 105 BUCKLING;
 		}
 	}
 }
@@ -23335,83 +23448,211 @@ void ME_Object::ExportNASExec(FILE* pFile, SecTable* pS) {
 void ME_Object::ExportNASCase101(FILE* pFile, SecTable* pS) {
 	int i = 0;
 	int iNoSteps = 0;
-	int iC = pSOLS->iCur;
-	fprintf(pFile, "%s\n", "$******************* CASE CONTROL *************************");
-	fprintf(pFile, "%s\n", "$");
-	fprintf(pFile, "TITLE = %S\n", pSOLS->pSols[iC]->sTitle);
-	fprintf(pFile, "%s\n", "ECHO = NONE");
-	Solution* pSOL = pSOLS->pSols[iC];
+	int iAc = pSOLS->iActive;
+	fprintf(pFile, "$\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$******************* CASE CONTROL **********************************************\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$\n");
+	// momo
+	// momo// fprintf(pFile, "TITLE = %S\n", pSOLS->pSols[iAc]->sTitle);
+	fprintf(pFile, "$MODEL TITLE\n");
+	fprintf(pFile, "TITLE = %S\n", pSOLS->pSols[iAc]->sTitle);
+	fprintf(pFile, "$\n");
+	// momo
+	fprintf(pFile, "ECHO = NONE\n");
+	Solution* pSOL = pSOLS->pSols[iAc];
 	iNoSteps = pSOL->iNo;
 	for (i = 0; i < iNoSteps; i++) {
 		fprintf(pFile, "SUBCASE %i\n", i + 1);
 		fprintf(pFile, "    TITLE = %S\n", pSOL->sStepTitle[i]);
-		if (pSOL->LS[i] > 0) {
-			fprintf(pFile, "    LOAD = %i\n", pSOL->LS[i]);
+		// momo
+		if (pSOL->LS[i] > 0 || pSOL->BS[i] > 0 || pSOL->TS[i] > 0) {
+			fprintf(pFile, "    $\n");
+			fprintf(pFile, "    $*********** SET ID - SPC, LOAD, TEMPERATURE SETS ***********\n");
+			fprintf(pFile, "    $\n");
 		}
+		// momo
 		if (pSOL->BS[i] > 0) {
 			fprintf(pFile, "    SPC  = %i\n", pSOL->BS[i]);
 		}
-		if (pSOL->TS[i] > 0) {
-			fprintf(pFile, "    TEMP = %i\n", pSOL->TS[i]);
+		if (pSOL->LS[i] > 0) {
+			fprintf(pFile, "    LOAD = %i\n", pSOL->LS[i]);
 		}
-		fprintf(pFile, "    %s\n", "DISPLACEMENT(PRINT, PLOT) = ALL");
-		fprintf(pFile, "    %s\n", "FORCE(PRINT, PLOT) = ALL");
-		fprintf(pFile, "    %s\n", "STRESS(PRINT, PLOT, CENTER) = ALL");
-		fprintf(pFile, "    %s\n", "OLOAD(PRINT) = ALL");
+		if (pSOL->TS[i] > 0) {
+			fprintf(pFile, "    TEMPERATURE = %i\n", pSOL->TS[i]);
+		}
+		// momo
+		// fprintf(pFile, "    %s\n", "DISPLACEMENT(PRINT, PLOT) = ALL");
+		// fprintf(pFile, "    %s\n", "FORCE(PRINT, PLOT) = ALL");
+		// fprintf(pFile, "    %s\n", "STRESS(PRINT, PLOT, CENTER) = ALL");
+		// fprintf(pFile, "    %s\n", "OLOAD(PRINT) = ALL");
+		if (pSOL->iType == 4 || pSOL->iType == 5) {
+			fprintf(pFile, "    $\n");
+			fprintf(pFile, "    $The METHOD card is used for SOL 103 and SOL 105\n");
+			fprintf(pFile, "    METHOD =  1\n");
+		}
+		if (pSOL->LS[i] > 0 || pSOL->BS[i] > 0 || pSOL->TS[i] > 0) {
+			fprintf(pFile, "    $\n");
+			fprintf(pFile, "    $*********** OUTPUT REQUESTS ********************************\n");
+			fprintf(pFile, "    $\n");
+		}
+		fprintf(pFile, "    DISPLACEMENT(PRINT, PLOT) = ALL\n");
+		fprintf(pFile, "    FORCE(PRINT, PLOT) = ALL\n");
+		fprintf(pFile, "    GPFORCE(PRINT, PLOT) = ALL\n");
+		fprintf(pFile, "    STRESS(PRINT, PLOT, CORNER) = ALL\n");
+		fprintf(pFile, "    STRAIN(PRINT, PLOT, CORNER) = ALL\n");
+		fprintf(pFile, "    MPCFORCES(PRINT, PLOT) = ALL\n");
+		fprintf(pFile, "    OLOAD(PRINT, PLOT) = ALL\n");
+		fprintf(pFile, "    SPCFORCES(PRINT, PLOT) = ALL\n");
+		fprintf(pFile, "    $\n");
+		fprintf(pFile, "    $PRINT = ASCII FILE (F06), PLOT = BINARY FILE (OP2, OTHER)\n");
+		// momo
 	}
 }
 
 void ME_Object::ExportNAS(FILE* pFile, SecTable* pS, int iFileNo) {
 	int i;
-	fprintf(pFile, "%s\n", "$***************COORDINATE SYSTEMS*************************");
+	fprintf(pFile, "$\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$******************* COORDINATE SYSTEMS ****************************************\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$\n");
+	// momo
+	fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+	// momo
 	for (i = 0; i < iCYS; i++) {
 		if ((iFileNo == -1) || (pSys[i]->iFile == iFileNo))
 			pSys[i]->ExportNAS(pFile);
 	}
 
-	fprintf(pFile, "%s\n", "$********************NODES*********************************");
+	fprintf(pFile, "$\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$******************* NODES *****************************************************\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$\n");
+	// momo
+	fprintf(pFile, "$GRID    GRID ID    CID1   X1(X)   X2(Y)   X3(Z)    CID2      PSPC\n");
+	fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+	// momo
 	for (i = 0; i < iNdNo; i++) {
 		CoordSys* pDef = GetSys(pNodes[i]->DefSys);
 		if ((iFileNo == -1) || (pNodes[i]->iFile == iFileNo))
 			pNodes[i]->ExportNAS(pFile, pDef);
 	}
-	fprintf(pFile, "%s\n", "$*******************ELEMENTS******************************");
+	fprintf(pFile, "$\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$******************* ELEMENTS **************************************************\n");
+	fprintf(pFile, "$*******************************************************************************\n");
+	fprintf(pFile, "$\n");
+	// momo
+	fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+	// momo
 	for (i = 0; i < iElNo; i++) {
 		if ((iFileNo == -1) || (pElems[i]->iFile == iFileNo))
 			pElems[i]->ExportNAS(pFile);
 	}
 }
 
-void ME_Object::ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo) {
+// momo
+// momo// void ME_Object::ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo) {
+void ME_Object::ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo, bool previewMode) {
+	// momo
 	NEList* LCS = new NEList();
 	NEList* BCS = new NEList();
-	;
 	NEList* TS = new NEList();
-	;
 	int i;
-	int iC = pSOLS->iCur;
-	Solution* pSOL = pSOLS->pSols[iC];
+	int iAc = pSOLS->iActive;
+	// momo
+	if (iAc < 0 || iAc > MAX_SOLS) {
+		if (!previewMode) {
+			outtext1(_T("Warning : No Active Solution Sequence. Exporting Sets cannot be performed!"));
+		}
+		return;
+	}
+	// momo
+	Solution* pSOL = pSOLS->pSols[iAc];
 	int iNoSteps = pSOL->iNo;
 	for (i = 0; i < iNoSteps; i++) {
 		if ((pSOL->LS[i] > 0) && (!LCS->IsIn(pSOL->LS[i]))) {
 			LCS->Add(pSOL->LS[i], 1);
 			cLinkedList* pCLC = GetLC(pSOL->LS[i]);
 			if (pCLC != nullptr) {
-				fprintf(pFile, "$%S\n", pCLC->sTitle);
+				fprintf(pFile, "$\n");
+				fprintf(pFile, "$*******************************************************************************\n");
+				fprintf(pFile, "$*********** LOADS - FORCE, MOMENT, PLOAD (Pressure), GRAV (Gravity) ***********\n");
+				//fprintf(pFile, "$***********         ACCELERATION, ROTATIONAL ACCELERATION *********************\n");
+				fprintf(pFile, "$*******************************************************************************\n");
+				fprintf(pFile, "$\n");
+				// momo
+				// fprintf(pFile, "$FORCE    SET ID    NODE   COORD   SCALE   COMP1   COMP2   COMP3\n");
+				// fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+				// fprintf(pFile, "$MOMENT   SET ID    NODE   COORD   SCALE   COMP1   COMP2   COMP3\n");
+				// fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+				fprintf(pFile, "$LOAD Set ID = %i, Name = %S\n", pCLC->iLabel, pCLC->sTitle);
+				// BCLD* pNext;
+				// pNext = (BCLD*) pCLC->Head;
+				// while (pNext != NULL) {
+				//	if ((iFileNo == -1) || (pNext->iFile == iFileNo))
+				//		pNext->ExportNAS(pFile);
+				//	pNext = (BCLD*) pNext->next;
+				//}
+				int objectTypesToCheck[3] = {321, 323, -1};
+				bool firstFind;
+				bool doPrint;
 				BCLD* pNext;
-				pNext = (BCLD*) pCLC->Head;
-				while (pNext != NULL) {
-					if ((iFileNo == -1) || (pNext->iFile == iFileNo))
-						pNext->ExportNAS(pFile);
-					pNext = (BCLD*) pNext->next;
+				for (int i: objectTypesToCheck) {
+					firstFind = true;
+					pNext = (BCLD*) pCLC->Head;
+					while (pNext != NULL) {
+						if ((iFileNo == -1) || (pNext->iFile == iFileNo)) {
+							doPrint = false;
+							if (i == -1) {
+								doPrint = true;
+								for (int j: objectTypesToCheck) {
+									if (pNext->iObjType == j) {
+										doPrint = false;
+										break;
+									}
+								}
+							} else if (pNext->iObjType == i) {
+								doPrint = true;
+							}
+							if (doPrint) {
+								if (firstFind) {
+									firstFind = false;
+									fprintf(pFile, "$\n");
+									if (pNext->iObjType == 321) {
+										fprintf(pFile, "$FORCE    Set ID    NODE   COORD   SCALE   COMP1   COMP2   COMP3\n");
+									} else if (pNext->iObjType == 323) {
+										fprintf(pFile, "$MOMENT   SET ID    NODE   COORD   SCALE   COMP1   COMP2   COMP3\n");
+									}
+									fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+								}
+								pNext->ExportNAS(pFile);
+							}
+						}
+						pNext = (BCLD*) pNext->next;
+					}
 				}
+				// momo
 			}
 		}
 		if ((pSOL->BS[i] > 0) && (!BCS->IsIn(pSOL->BS[i]))) {
 			BCS->Add(pSOL->BS[i], 1);
 			cLinkedList* pCBC = GetBC(pSOL->BS[i]);
 			if (pCBC != nullptr) {
+				fprintf(pFile, "$\n");
+				fprintf(pFile, "$*******************************************************************************\n");
+				fprintf(pFile, "$************** NODAL RESTRAINTS - SINGLE POINT CONSTRAINTS (SPC) **************\n");
+				fprintf(pFile, "$*******************************************************************************\n");
+				fprintf(pFile, "$\n");
 				fprintf(pFile, "$%S\n", pCBC->sTitle);
+				fprintf(pFile, "$\n");
+				fprintf(pFile, "$SPC      SET ID    NODE     DOF     0.0\n");
+				fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
 				BCLD* pNext;
 				pNext = (BCLD*) pCBC->Head;
 				while (pNext != NULL) {
@@ -23425,7 +23666,15 @@ void ME_Object::ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo) {
 			TS->Add(pSOL->TS[i], 1);
 			cLinkedList* pTSET = GetTSET(pSOL->TS[i]);
 			if (pTSET != nullptr) {
+				fprintf(pFile, "$\n");
+				fprintf(pFile, "$*******************************************************************************\n");
+				fprintf(pFile, "$*************** TEMPERATURE - THERMAL LOADS (TEMP AND TEMPD) ******************\n");
+				fprintf(pFile, "$*******************************************************************************\n");
+				fprintf(pFile, "$\n");
 				fprintf(pFile, "$%S\n", pTSET->sTitle);
+				fprintf(pFile, "$\n");
+				fprintf(pFile, "$TEMP     SET ID    NODE    TEMP\n");
+				fprintf(pFile, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
 				BCLD* pNext;
 				pNext = (BCLD*) pTSET->Head;
 				while (pNext != NULL) {
@@ -24570,10 +24819,10 @@ BOOL ME_Object::GetStepCasesLinStat(int& iStep, CString& sSol, CString& sStep, d
 	CString S1;
 	sSol = "NULL";
 	sStep = "NULL";
-	if (pSOLS->iCur != -1) {
-		S1.Format(_T("SOLUTION: %s"), pSOLS->pSols[pSOLS->iCur]->sTitle);
+	if (pSOLS->iActive != -1) {
+		S1.Format(_T("SOLUTION: %s"), pSOLS->pSols[pSOLS->iActive]->sTitle);
 		outtext1(S1);
-		pCSol = pSOLS->pSols[pSOLS->iCur];
+		pCSol = pSOLS->pSols[pSOLS->iActive];
 
 		dTol = pCSol->dTol; // solution tolerence
 		if ((pCSol->iType == 0) || (pCSol->iType == 1) || (pCSol->iType == 2)) {
@@ -24851,7 +25100,7 @@ void ME_Object::ExplicitSolTest(PropTable* PropsT, MatTable* MatT) {
 	Solution* pSol;
 	pSol = pSOLS->GetCurSolution();
 	if (pSol != NULL) {
-		sSol = pSOLS->GetTitleString(pSOLS->iCur);
+		sSol = pSOLS->GetTitleString(pSOLS->iActive);
 		iStep = pSol->GetCurStep();
 		if (iStep != -1) {
 			sStep = pSol->GetStepTitleString(iStep);
@@ -25057,7 +25306,7 @@ void ME_Object::IterSol1dSS(PropTable* PropsT, MatTable* MatT) {
 
 	pSol = pSOLS->GetCurSolution();
 	if (pSol != NULL) {
-		sSol = pSOLS->GetTitleString(pSOLS->iCur);
+		sSol = pSOLS->GetTitleString(pSOLS->iActive);
 		iStep = pSol->GetCurStep();
 		if (iStep != -1) {
 			sStep = pSol->GetStepTitleString(iStep);
@@ -36300,7 +36549,7 @@ PSHELL* PSHELL::Copy() {
 }
 
 void PSHELL::ExportNAS(FILE* pFile) {
-	fprintf(pFile, "$%S\n", sTitle);
+	fprintf(pFile, "$\n$%S\n$\n", sTitle);
 	fprintf(pFile, "%S", ToString());
 }
 
@@ -36640,7 +36889,7 @@ void MAT1::Serialize(CArchive& ar, int iV) {
 }
 
 void MAT1::ExportNAS(FILE* pFile) {
-	fprintf(pFile, "$%S\n", sTitle.GetString());
+	fprintf(pFile, "$\n$%S\n$\n", sTitle.GetString());
 	CString sG = _T("        ");
 	CString sV = _T("        ");
 	CString CTE;
@@ -39877,7 +40126,6 @@ void CoordSys::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 	C3dVector Y;
 	C3dVector Z;
 	C3dVector O;
-
 
 	ME_Object* ME = (ME_Object*) this->pParent;
 	// momo zoom to fit
@@ -51938,6 +52186,9 @@ IMPLEMENT_DYNAMIC(Table, CObject)
 
 Table::Table() {
 	iNo = 0;
+	// momo
+	isTemp = FALSE;
+	// momo
 }
 
 Table::~Table() {
@@ -52657,13 +52908,20 @@ void CColourPickDialog::OnBnClickedCancel() {
 	iSel = -1;
 }
 BEGIN_MESSAGE_MAP(CSETSDialog, CDialog)
-ON_BN_CLICKED(IDCREATE, &CSETSDialog::OnBnClickedCreate)
-ON_STN_CLICKED(IDC_SETLABEL, &CSETSDialog::OnStnClickedSetlabel)
-ON_BN_CLICKED(IDCDELSET, &CSETSDialog::OnBnClickedCdelset)
-ON_BN_CLICKED(IDCSETCUR, &CSETSDialog::OnBnClickedCsetcur)
-ON_BN_CLICKED(IDCSETLIST, &CSETSDialog::OnBnClickedCsetlist)
-ON_EN_CHANGE(IDC_SETID, &CSETSDialog::OnEnChangeSetid)
-ON_BN_CLICKED(IDC_NONEACT, &CSETSDialog::OnBnClickedNoneact)
+ON_BN_CLICKED(IDCREATE, &CSETSDialog::OnBnClickedCSetCreate)
+ON_STN_CLICKED(IDC_SETLABEL, &CSETSDialog::OnStnClickedCSetLabel)
+ON_BN_CLICKED(IDCDELSET, &CSETSDialog::OnBnClickedCSetDelete)
+ON_BN_CLICKED(IDCSETCUR, &CSETSDialog::OnBnClickedCSetActivate)
+ON_BN_CLICKED(IDCSETLIST, &CSETSDialog::OnBnClickedCSetList)
+ON_EN_CHANGE(IDC_SETID, &CSETSDialog::OnEnChangeCSetId)
+ON_BN_CLICKED(IDC_NONEACT, &CSETSDialog::OnBnClickedCSetActivateNone)
+// momo
+ON_LBN_DBLCLK(IDC_LIST1, &CSETSDialog::OnDoubleClickList)
+ON_LBN_SETFOCUS(IDC_LIST1, &CSETSDialog::OnFocusList)
+ON_EN_SETFOCUS(IDC_SETID, &CSETSDialog::OnFocusEditControls)
+ON_EN_SETFOCUS(IDC_TITLE, &CSETSDialog::OnFocusEditControls)
+ON_WM_CTLCOLOR()
+// momo
 END_MESSAGE_MAP()
 //****************************************************************************
 //             BOUNDARY CONDITIONS GENERIC DIALOG BOX
@@ -52672,9 +52930,9 @@ CSETSDialog::CSETSDialog()
     : CDialog(CSETSDialog::IDD, NULL) {
 }
 
-void CSETSDialog::AttachSets(int* iNo, int* iCur) {
+void CSETSDialog::AttachSets(int* iNo, int* iAct) {
 	iNoS = iNo;
-	iCurS = iCur;
+	iActive = iAct;
 }
 
 void CSETSDialog::AddSet(int ind, CString sTit) {
@@ -52699,39 +52957,93 @@ void CSETSDialog::Refresh() {
 		pSets->AddString(SETS[i]);
 	}
 	CStatic* pSt = (CStatic*) GetDlgItem(IDC_CURSET);
-	if (*iNoS > 0)
-		pSt->SetWindowText(SETS[*iCurS]);
-	else
-		pSt->SetWindowText(_T("ERROR: No Sets Defined."));
+	// momo
+	// momo// if (*iNoS > 0)
+	//	pSt->SetWindowText(SETS[*iCurS]);
+	// else
+	//	pSt->SetWindowText(_T("No Sets Defined."));
+	if (*iNoS > 0 && *iActive >= 0) {
+		if (sSET == "BSETCR") {
+			pSt->SetWindowText(_T("SPC ") + SETS[*iActive]);
+		} else if (sSET == "LSETCR") {
+			pSt->SetWindowText(_T("Load ") + SETS[*iActive]);
+		} else if (sSET == "TSETCR") {
+			pSt->SetWindowText(_T("Temp ") + SETS[*iActive]);
+		} else {
+			pSt->SetWindowText(SETS[*iActive]);
+		}
+		SetActiveSetLabelColor(RGB(0, 0, 0));
+	} else {
+		pSt->SetWindowText(_T("No Active Set"));
+		SetActiveSetLabelColor(RGB(255, 0, 0));
+	}
+	// momo
 }
 
 //****************************************************************************
-void CSETSDialog::OnBnClickedCreate() {
+void CSETSDialog::OnBnClickedCSetCreate() {
 	// TODO: Add your control notification handler code here
-	CString cT;
-	CString cI;
+	CString sTitle;
+	CString sID;
 	int iID;
 	CEdit* pTitle = (CEdit*) GetDlgItem(IDC_TITLE);
 	CEdit* pSID = (CEdit*) GetDlgItem(IDC_SETID);
 
-	pTitle->GetWindowText(cT);
-	pSID->GetWindowText(cI);
+	pTitle->GetWindowText(sTitle);
+	pSID->GetWindowText(sID);
+
+	// momo
+	if (sID.IsEmpty()) {
+		AfxMessageBox(_T("Please enter ID."));
+		CWnd* w = GetDlgItem(IDC_SETID);
+		w->SetFocus();
+		return;
+	}
+	iID = _ttoi(sID);
+	if (iID <= 0) {
+		AfxMessageBox(_T("Set ID Must be Greater than 0"));
+		CWnd* w = GetDlgItem(IDC_SETID);
+		w->SetFocus();
+		return;
+	}
+	// if (sTitle.IsEmpty()) {
+	//	AfxMessageBox(_T("Please enter Title."));
+	//	CWnd* w = GetDlgItem(IDC_TITLE);
+	//	w->SetFocus();
+	//	return;
+	// }
+	//  momo
 
 	// CListBox* pSets=(CListBox*) GetDlgItem(IDC_LIST1);
-	// pSets->AddString(cT);
-	iID = _ttoi(cI);
+	// pSets->AddString(sTitle);
+	iID = _ttoi(sID);
 	if (iID > 0) {
 		int iNow = *iNoS - 1;
 		outtextMSG2(sSET);
-		outtextMSG2(cI);
-		outtextMSG2(cT);
+		outtextMSG2(sID);
+		outtextMSG2(sTitle);
 		CString sNew;
 		CListBox* pSets = (CListBox*) GetDlgItem(IDC_LIST1);
-		sNew.Format(_T("%i : %s"), iID, cT);
+		// momo
+		// momo// sNew.Format(_T("%i : %s"), iID, sTitle);
+		sNew.Format(_T("Set ID = %i%s Title = %s"), iID, sSpliter, sTitle);
+		// momo
 		if (iNow == *iNoS - 2) {
 			AddSet(*iNoS - 1, sNew);
 			pSets->AddString(sNew);
+			// momo
+			int iDpSets = pSets->GetCount();
+			if (iDpSets > 0) {
+				pSets->SetCurSel(iDpSets - 1);
+			}
+			Refresh();
+			// momo
 		}
+		// momo
+		else {
+			AfxMessageBox(_T("Set creation failed."));
+		}
+		// momo
 	} else {
 		outtext1("ERROR: Set ID Must be Greater than 0.");
 	}
@@ -52739,20 +53051,57 @@ void CSETSDialog::OnBnClickedCreate() {
 
 BOOL CSETSDialog::OnInitDialog() {
 	CDialog::OnInitDialog();
+	// momo
+	CStatic* pSt = (CStatic*) GetDlgItem(IDC_CURSET);
+	CStatic* pSt2 = (CStatic*) GetDlgItem(IDC_CURSET2);
+	if (pSt) {
+		CFont* pOldFont = pSt->GetFont();
+		LOGFONT lf;
+		pOldFont->GetLogFont(&lf);
+		lf.lfWeight = FW_BOLD;
+		lf.lfHeight = (LONG) (lf.lfHeight * 1.2);
+		m_boldFont.CreateFontIndirect(&lf);
+		pSt->SetFont(&m_boldFont);
+		pSt2->SetFont(&m_boldFont);
+	}
+	m_ActiveSetLabelColor = RGB(0, 0, 0);
+	// momo
 	this->SetWindowText(sTitle);
 	Refresh();
+	// momo
+	CListBox* pSets = (CListBox*) GetDlgItem(IDC_LIST1);
+	int iAct = *iActive;
+	int iCnt = pSets->GetCount();
+	if (iAct >= 0 && iAct <= iCnt - 1) {
+		pSets->SetCurSel(iAct);
+	}
+	LoadToEdits(iAct);
+	if (CEdit* pTitle = (CEdit*) GetDlgItem(IDC_TITLE)) {
+		if (pTitle->m_hWnd)
+			::SendMessage(pTitle->m_hWnd, EM_SETCUEBANNER, FALSE, (LPARAM) L"Optional");
+	}
+	// momo
 	return TRUE; // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CSETSDialog::OnStnClickedSetlabel() {
+void CSETSDialog::OnStnClickedCSetLabel() {
 	// TODO: Add your control notification handler code here
 }
 
-void CSETSDialog::OnBnClickedCdelset() {
+void CSETSDialog::OnBnClickedCSetDelete() {
 	// TODO: Add your control notification handler code here
 	CListBox* pSets = (CListBox*) GetDlgItem(IDC_LIST1);
 	int iSet = pSets->GetCurSel();
+	// momo
+	if (pSets->GetCount() == 0) {
+		AfxMessageBox(_T("There is no Set to delete."));
+		return;
+	} else if (iSet == -1) {
+		AfxMessageBox(_T("Please select a Set."));
+		return;
+	}
+	// momo
 	char sStr[10];
 	_itoa(iSet, sStr, 10);
 	RemoveSet(iSet); // Must do this before its removed
@@ -52761,36 +53110,114 @@ void CSETSDialog::OnBnClickedCdelset() {
 	Refresh();
 }
 
-void CSETSDialog::OnBnClickedCsetcur() {
+void CSETSDialog::OnBnClickedCSetActivate() {
 	// TODO: Add your control notification handler code here
 	CListBox* pSets = (CListBox*) GetDlgItem(IDC_LIST1);
-	int iSet = pSets->GetCurSel();
+	int iAct = pSets->GetCurSel();
 	CString sL;
 	CString sID;
-	pSets->GetText(iSet, sL);
-	int ipos = sL.Find(_T(":"));
-	sID = sL.Left(ipos);
-	sID.Trim(_T(" "));
+	// momo
+	if (pSets->GetCount() == 0) {
+		AfxMessageBox(_T("There is no Set to activate."));
+		return;
+	} else if (iAct == -1) {
+		AfxMessageBox(_T("Please select a Set."));
+		return;
+	}
+	// momo
+	pSets->GetText(iAct, sL);
+	// momo
+	// int ipos = sL.Find(_T(":"));
+	// sID = sL.Left(ipos);
+	// sID.Trim(_T(" "));
+	int len = sSpliter.GetLength();
+	int ipos = sL.Find(sSpliter);
+	CString sL2 = sL.Left(ipos);
+	sID = sL2.Mid(9); // "Set ID = %dsSpliter Title = %s"
+	// momo
 	// char sStr[10];
-	// itoa (iSet,sStr,10);
+	// itoa (iAct,sStr,10);
 	outtextMSG2(sACT);
 	outtextMSG2(sID);
 	Refresh();
+	// momo
+	pSets->SetCurSel(iAct);
+	LoadToEdits(iAct);
+	// momo
 }
 
-void CSETSDialog::OnBnClickedNoneact() {
+void CSETSDialog::OnBnClickedCSetActivateNone() {
 	// TODO: Add your control notification handler code here
 	char sStr[10];
 	_itoa(-1, sStr, 10);
 	outtextMSG2(sACT);
 	outtextMSG2(sStr);
 	Refresh();
+	// momo
+	LoadToEdits(*iActive);
+	// momo
 }
 
-void CSETSDialog::OnBnClickedCsetlist() {
+void CSETSDialog::OnBnClickedCSetList() {
 	// TODO: Add your control notification handler code here
 	outtextMSG2(sLIST);
 }
+
+// momo
+void CSETSDialog::OnDoubleClickList() {
+	int sel = ((CListBox*) GetDlgItem(IDC_LIST1))->GetCurSel();
+	if (sel != LB_ERR) {
+		OnBnClickedCSetActivate();
+	}
+}
+void CSETSDialog::OnFocusList() {
+	SetDefID(IDCSETCUR);
+}
+
+void CSETSDialog::OnFocusEditControls() {
+	SetDefID(IDCREATE);
+}
+
+HBRUSH CSETSDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	if (pWnd->GetDlgCtrlID() == IDC_CURSET) {
+		pDC->SetTextColor(m_ActiveSetLabelColor);
+		pDC->SetBkMode(TRANSPARENT);
+		return hbr;
+	}
+
+	return hbr;
+}
+
+void CSETSDialog::SetActiveSetLabelColor(COLORREF clrNew) {
+	m_ActiveSetLabelColor = clrNew;
+	GetDlgItem(IDC_CURSET)->Invalidate();
+	GetDlgItem(IDC_CURSET)->UpdateWindow();
+}
+
+void CSETSDialog::LoadToEdits(int iList) {
+	CEdit* pTitle = (CEdit*) GetDlgItem(IDC_TITLE);
+	CEdit* pSID = (CEdit*) GetDlgItem(IDC_SETID);
+	if (iList >= 0) {
+		CListBox* pSets = (CListBox*) GetDlgItem(IDC_LIST1);
+		CString sL, sL2;
+		CString sID;
+		pSets->GetText(iList, sL);
+		int len = sSpliter.GetLength();
+		int ipos = sL.Find(sSpliter);
+		sL2 = sL.Left(ipos);
+		sID = sL2.Mid(9); // "Set ID = %dsSpliter Title = %s"
+		sL2 = sL.Mid(ipos + 9 + len);
+		pTitle->SetWindowText(sL2);
+		pSID->SetWindowText(sID);
+	} else {
+		pTitle->SetWindowText(_T(""));
+		pSID->SetWindowText(_T(""));
+	}
+	// momo
+}
+// momo
 
 //****************************************************************************
 //                        SOLUTION SEQUENCE DIALOG BOX
@@ -52806,81 +53233,247 @@ void CSOLDialog::Refresh() {
 	CListBox* pSol = (CListBox*) GetDlgItem(IDC_SOL_LST);
 	pSol->ResetContent();
 	for (i = 0; i < pSOL->iNo; i++) {
-		OutT.Format(_T("%i : %s"), i, pSOL->pSols[i]->sTitle);
+		// momo
+		// momo// OutT.Format(_T("%i : %s"), i, pSOL->pSols[i]->sTitle);
+		if (pSOL->pSols[i]->iType <= 2) {
+			OutT.Format(_T("%s%s Model Title = %s%s TOL = %g"), SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], sSpliter, pSOL->pSols[i]->sTitle, sSpliter, pSOL->pSols[i]->dTol);
+		} else if (pSOL->pSols[i]->iType == 3) {
+			OutT.Format(_T("%s%s Model Title = %s"), SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], sSpliter, pSOL->pSols[i]->sTitle);
+		} else if (pSOL->pSols[i]->iType == 4 || pSOL->pSols[i]->iType == 5) {
+			OutT.Format(_T("%s%s Model Title = %s%s EIGEN = %s"), SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], sSpliter, pSOL->pSols[i]->sTitle, sSpliter, pSOL->pSols[i]->sEigenCard);
+		}
+		// OutT.Format(_T("%i: %s, Title = %s"), i, SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], pSOL->pSols[i]->GetSolutionTitleString());
+		// momo
 		pSol->AddString(OutT);
 	}
-	if (pSOL->iCur != -1) {
-		OutT.Format(_T("%g"), pSOL->pSols[pSOL->iCur]->dTol);
-		pSol->SetCurSel(pSOL->iCur);
+	if (pSOL->iActive != -1) {
+		OutT.Format(_T("%g"), pSOL->pSols[pSOL->iActive]->dTol);
+		pSol->SetCurSel(pSOL->iActive);
 		CEdit* pTol = (CEdit*) GetDlgItem(IDC_TOL_TXT);
-		pTol->SetWindowText(OutT);
+		// momo
+		// momo// pTol->SetWindowText(OutT);
+		if (pSOL->pSols[pSOL->iActive]->iType > 2) {
+			pTol->SetWindowText(_T(""));
+		} else {
+			pTol->SetWindowText(OutT);
+		}
+		// momo
 		CComboBox* pType = (CComboBox*) GetDlgItem(IDC_TYPE_CBO);
-		pType->SetCurSel(pSOL->pSols[pSOL->iCur]->iType);
+		// momo
+		// momo// pType->SetCurSel(pSOL->pSols[pSOL->iActive]->iType);
+		pType->SetCurSel(SolutionTypeNumbers[pSOL->pSols[pSOL->iActive]->iType]);
+		// momo
 		CEdit* pTit = (CEdit*) GetDlgItem(IDC_TITLE_TXT);
-		pTit->SetWindowText(pSOL->pSols[pSOL->iCur]->sTitle);
+		pTit->SetWindowText(pSOL->pSols[pSOL->iActive]->sTitle);
 		CStatic* pSt = (CStatic*) GetDlgItem(IDC_STATIC_SOL_ACT);
-		OutT.Format(_T("%i : %s"), pSOL->iCur, pSOL->pSols[pSOL->iCur]->sTitle);
-
-		ss = pSOL->pSols[pSOL->iCur]->GetSolutionTitleString();
+		// momo
+		// momo// OutT.Format(_T("%i : %s"), pSOL->iActive, pSOL->pSols[pSOL->iActive]->sTitle);
+		SetActiveSolutionLabelColor(RGB(0, 0, 0));
+		CEdit* pEig = (CEdit*) GetDlgItem(IDC_EIGEN_TXT);
+		pEig->SetWindowText(pSOL->pSols[pSOL->iActive]->sEigenCard);
+		// momo
+		ss = pSOL->pSols[pSOL->iActive]->GetSolutionTitleString();
 		pSt->SetWindowText(ss);
+		// momo
+		UpdateUIByInputModel(CurrentInputModel());
+		// momo
 
 	} else {
 		CEdit* pTit = (CEdit*) GetDlgItem(IDC_TITLE_TXT);
 		pTit->SetWindowText(_T(""));
 		CStatic* pSt = (CStatic*) GetDlgItem(IDC_STATIC_SOL_ACT);
-		pSt->SetWindowText(_T("No Solution Active."));
+		pSt->SetWindowText(_T("No Active Solution"));
+		// momo
+		CEdit* pTol = (CEdit*) GetDlgItem(IDC_TOL_TXT);
+		pTol->SetWindowText(_T(""));
+		CEdit* pEig = (CEdit*) GetDlgItem(IDC_EIGEN_TXT);
+		pEig->SetWindowText(_T(""));
+		SetActiveSolutionLabelColor(RGB(255, 0, 0));
+		CComboBox* pType = (CComboBox*) GetDlgItem(IDC_TYPE_CBO);
+		if (pType)
+			pType->SetCurSel(0);
+		UpdateUIByInputModel(CurrentInputModel());
+		// momo
 	}
 }
 
 BOOL CSOLDialog::OnInitDialog() {
 	CDialog::OnInitDialog();
+	// momo
+	CStatic* pSt = (CStatic*) GetDlgItem(IDC_STATIC_SOL_ACT);
+	if (pSt) {
+		CFont* pOldFont = pSt->GetFont();
+		LOGFONT lf;
+		pOldFont->GetLogFont(&lf);
+		lf.lfWeight = FW_BOLD;
+		lf.lfHeight = (LONG) (lf.lfHeight * 1.2);
+		m_boldFont.CreateFontIndirect(&lf);
+		pSt->SetFont(&m_boldFont);
+	}
+	GetDlgItem(IDC_TITLE_TXT)->GetWindowRect(&m_rcTitleInit);
+	ScreenToClient(&m_rcTitleInit);
+	CStatic* pStLable = (CStatic*) GetDlgItem(IDC_STATIC_SOL_LAB);
+	pStLable->SetFont(&m_boldFont);
+	// momo
 	this->SetWindowText(sTitle);
 	CComboBox* pT = (CComboBox*) GetDlgItem(IDC_TYPE_CBO);
 	pT->ResetContent();
-	pT->AddString(CA2T("0: Lin Static"));
-	pT->AddString(CA2T("1: SS Heat"));
-	pT->AddString(CA2T("2: Sparse"));
+	if (CEdit* pTitle = (CEdit*) GetDlgItem(IDC_TITLE_TXT)) {
+		if (pTitle->m_hWnd)
+			::SendMessage(pTitle->m_hWnd, EM_SETCUEBANNER, FALSE, (LPARAM) L"Optional");
+	}
+	// momo
+	// pT->AddString(CA2T("0: Lin Static"));
+	// pT->AddString(CA2T("1: SS Heat"));
+	// pT->AddString(CA2T("2: Sparse"));
+	for (const auto& s: SolutionTypeNames) {
+		pT->AddString(s);
+	}
+	pT->SetCurSel(0);
+	// momo
 	CEdit* pTol = (CEdit*) GetDlgItem(IDC_TOL_TXT);
-	CString str;
-	str.Format(_T("%g"), gDEF_SOL_TOL);
-	pTol->SetWindowText(str);
+	m_ActiveSolutionLabelColor = RGB(0, 0, 0);
+	// momo
+	// CString str;
+	// str.Format(_T("%g"), gDEF_SOL_TOL);
+	// pTol->SetWindowText(str);
+	// momo
 	Refresh();
+	// momo
+	if (CEdit* pEig = (CEdit*) GetDlgItem(IDC_EIGEN_TXT)) {
+		if (pEig->m_hWnd)
+			::SendMessage(pEig->m_hWnd, EM_SETCUEBANNER, FALSE, (LPARAM) L"Required - See Solver Manual");
+	}
+	UpdateUIByInputModel(CurrentInputModel());
+	// momo
 
 	return TRUE; // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 BEGIN_MESSAGE_MAP(CSOLDialog, CDialog)
-ON_BN_CLICKED(ID_CR, &CSOLDialog::OnBnClickedCr)
-ON_BN_CLICKED(ID_ACT, &CSOLDialog::OnBnClickedAct)
-ON_BN_CLICKED(ID_DEL, &CSOLDialog::OnBnClickedDel)
-ON_BN_CLICKED(IDOK, &CSOLDialog::OnBnClickedOk)
+ON_BN_CLICKED(ID_CR, &CSOLDialog::OnBnClickedSolutionCreate)
+ON_BN_CLICKED(ID_ACT, &CSOLDialog::OnBnClickedSolutionActivate)
+ON_BN_CLICKED(ID_DEL, &CSOLDialog::OnBnClickedSolutionDelete)
+ON_BN_CLICKED(IDOK, &CSOLDialog::OnBnClickedSolutionOk)
+// momo
+ON_CBN_SELCHANGE(IDC_TYPE_CBO, &CSOLDialog::OnSelChangeType)
+ON_LBN_DBLCLK(IDC_SOL_LST, &CSOLDialog::OnDoubleClickList)
+ON_LBN_SETFOCUS(IDC_SOL_LST, &CSOLDialog::OnFocusList)
+ON_CBN_SETFOCUS(IDC_TYPE_CBO, &CSOLDialog::OnFocusEditControls)
+ON_EN_SETFOCUS(IDC_TITLE_TXT, &CSOLDialog::OnFocusEditControls)
+ON_EN_SETFOCUS(IDC_TOL_TXT, &CSOLDialog::OnFocusEditControls)
+ON_EN_SETFOCUS(IDC_EIGEN_TXT, &CSOLDialog::OnFocusEditControls)
+ON_WM_CTLCOLOR()
+// momo
 END_MESSAGE_MAP()
 
-void CSOLDialog::OnBnClickedCr() {
+// momo
+// void CSOLDialog::OnBnClickedCr() {
+//	CString sTitle;
+//	CString sTol;
+//	CString S1;
+//	// TODO: Add your control notification handler code here
+//	CEdit* pTitle = (CEdit*) GetDlgItem(IDC_TITLE_TXT);
+//	// IDC_TYPE_CBO
+//	CComboBox* pCT = (CComboBox*) GetDlgItem(IDC_TYPE_CBO);
+//	int iT = pCT->GetCurSel();
+//	CEdit* pTol = (CEdit*) GetDlgItem(IDC_TOL_TXT);
+//	pTitle->GetWindowText(sTitle);
+//	pTol->GetWindowText(sTol);
+//	outtextMSG2("SOLCR");
+//	outtextMSG2(sTitle);
+//	S1.Format(_T("%i"), iT);
+//	outtextMSG2(S1);
+//	outtextMSG2(sTol);
+//	Refresh();
+//}
+void CSOLDialog::OnBnClickedSolutionCreate() {
 	CString sTitle;
 	CString sTol;
-	CString S1;
-	// TODO: Add your control notification handler code here
-	CEdit* pTitle = (CEdit*) GetDlgItem(IDC_TITLE_TXT);
-	// IDC_TYPE_CBO
+	CString sEigen;
 	CComboBox* pCT = (CComboBox*) GetDlgItem(IDC_TYPE_CBO);
-	int iT = pCT->GetCurSel();
-	CEdit* pTol = (CEdit*) GetDlgItem(IDC_TOL_TXT);
-	pTitle->GetWindowText(sTitle);
-	pTol->GetWindowText(sTol);
+	int iSelType = pCT->GetCurSel();
+	CString sSelType;
+	if (iSelType == CB_ERR) {
+		iSelType = 0;
+	}
+	sSelType.Format(_T("%d"), iSelType);
+	GetDlgItemText(IDC_TITLE_TXT, sTitle);
+	GetDlgItemText(IDC_TOL_TXT, sTol);
+	GetDlgItemText(IDC_EIGEN_TXT, sEigen);
+	// if (sTitle.IsEmpty()) {
+	//	AfxMessageBox(_T("Please enter Title."));
+	//	CWnd* w = GetDlgItem(IDC_TITLE_TXT);
+	//	w->SetFocus();
+	//	return;
+	// }
+	double m_dTol = _tstof(sTol);
+	int iModel;
+	switch (CurrentInputModel()) {
+		case EInputModel::InputModel1:
+			iModel = 1;
+			// if (sTol.IsEmpty()) {
+			//	AfxMessageBox(_T("Please enter Tolerance."));
+			//	CWnd* w = GetDlgItem(IDC_TOL_TXT);
+			//	w->SetFocus();
+			//	return;
+			// }
+			if (m_dTol < 0.0 || m_dTol >= 0.1) {
+				AfxMessageBox(_T("Invalid input: Tolerance must be >= 0 and < 0.1"));
+				CWnd* w = GetDlgItem(IDC_TOL_TXT);
+				static_cast<CEdit*>(w)->SetSel(0, -1);
+				w->SetFocus();
+				return;
+			}
+			sTol.Format(_T("%.6g"), m_dTol);
+			break;
+		case EInputModel::InputModel2:
+			iModel = 2;
+			sTol = _T("0");
+			break;
+		case EInputModel::InputModel3:
+			iModel = 3;
+			if (sEigen.IsEmpty()) {
+				AfxMessageBox(_T("Please enter Eigen card."));
+				CWnd* w = GetDlgItem(IDC_EIGEN_TXT);
+				w->SetFocus();
+				return;
+			}
+			sTol = _T("0");
+			break;
+		default:
+			break;
+	}
 	outtextMSG2("SOLCR");
+	// momo
+	// outtextMSG2(sTitle);
+	// outtextMSG2(sSelType);
+	outtextMSG2(sSelType);
 	outtextMSG2(sTitle);
-	S1.Format(_T("%i"), iT);
-	outtextMSG2(S1);
-	outtextMSG2(sTol);
+	// momo
+	if (iModel == 1) {
+		outtextMSG2(sTol);
+	} else if (iModel == 3) {
+		outtextMSG2(sEigen);
+	}
 	Refresh();
 }
+// momo
 
-void CSOLDialog::OnBnClickedAct() {
+void CSOLDialog::OnBnClickedSolutionActivate() {
 	// TODO: Add your control notification handler code here
 	CListBox* pSol = (CListBox*) GetDlgItem(IDC_SOL_LST);
 	int iSol = pSol->GetCurSel();
+	// momo
+	if (pSol->GetCount() == 0) {
+		AfxMessageBox(_T("There is no Solution to activate."));
+		return;
+	} else if (iSol == -1) {
+		AfxMessageBox(_T("Please select a Solution."));
+		return;
+	}
+	// momo
 	char sStr[10];
 	_itoa(iSol, sStr, 10);
 	outtextMSG2("SOLACT");
@@ -52888,17 +53481,26 @@ void CSOLDialog::OnBnClickedAct() {
 	Refresh();
 }
 
-void CSOLDialog::OnBnClickedDel() {
+void CSOLDialog::OnBnClickedSolutionDelete() {
 	// TODO: Add your control notification handler code here
 	int iDel;
 	int i;
 	CListBox* pSol = (CListBox*) GetDlgItem(IDC_SOL_LST);
 	iDel = pSol->GetCurSel();
+	// momo
+	if (pSol->GetCount() == 0) {
+		AfxMessageBox(_T("There is no Solution to delete."));
+		return;
+	} else if (iDel == -1) {
+		AfxMessageBox(_T("Please select a Solution."));
+		return;
+	}
+	// momo
 	if (pSOL->iNo > -1) {
-		if (pSOL->iCur == iDel)
-			pSOL->iCur = -1;
-		else if (pSOL->iCur > iDel)
-			pSOL->iCur--;
+		if (pSOL->iActive == iDel)
+			pSOL->iActive = -1;
+		else if (pSOL->iActive > iDel)
+			pSOL->iActive--;
 		delete (pSOL->pSols[iDel]);
 		for (i = iDel; i < pSOL->iNo - 1; i++) {
 			pSOL->pSols[i] = pSOL->pSols[i + 1];
@@ -52907,6 +53509,99 @@ void CSOLDialog::OnBnClickedDel() {
 	}
 	Refresh();
 }
+
+void CSOLDialog::OnBnClickedSolutionOk() {
+	// TODO: Add your control notification handler code here
+	OnOK();
+}
+
+// momo
+CSOLDialog::EInputModel CSOLDialog::CurrentInputModel() const {
+	const CComboBox* p = (const CComboBox*) GetDlgItem(IDC_TYPE_CBO);
+	int i = p ? p->GetCurSel() : 0;
+	if (i < 0)
+		i = 0;
+	i = SolutionTypeNumbers[i];
+	// 0,1,2: InputModel1, 3: InputModel2, 4,5: InputModel3
+	if (i <= 2)
+		return EInputModel::InputModel1;
+	if (i == 3)
+		return EInputModel::InputModel2;
+	return EInputModel::InputModel3;
+}
+
+void CSOLDialog::UpdateUIByInputModel(EInputModel t) {
+	auto Show = [&](UINT id, BOOL on) { if (CWnd* w = GetDlgItem(id)) w->ShowWindow(on ? SW_SHOW : SW_HIDE); };
+	auto Ena = [&](UINT id, BOOL on) { if (CWnd* w = GetDlgItem(id)) w->EnableWindow(on); };
+	Show(IDC_EIGEN_TXT, FALSE);
+	Show(IDC_STATIC_EIGEN, FALSE);
+	Show(IDC_TOL_TXT, FALSE);
+	Show(IDC_STATIC_TOL, FALSE);
+	int iModel;
+	switch (t) {
+		case EInputModel::InputModel1:
+			iModel = 1;
+			Show(IDC_TOL_TXT, TRUE);
+			Show(IDC_STATIC_TOL, TRUE);
+			Ena(IDC_TOL_TXT, TRUE);
+			break;
+
+		case EInputModel::InputModel2:
+			iModel = 2;
+			break;
+
+		case EInputModel::InputModel3:
+			iModel = 3;
+			Show(IDC_STATIC_EIGEN, TRUE);
+			Show(IDC_EIGEN_TXT, TRUE);
+			Ena(IDC_EIGEN_TXT, TRUE);
+			break;
+	}
+	// Change Title width:
+	CRect rc = m_rcTitleInit;
+	static const int kWidthDLU[3] = {200, 283, 110};
+	CRect dlu(0, 0, kWidthDLU[iModel - 1], rc.Height());
+	MapDialogRect(&dlu);
+	rc.right = rc.left + dlu.Width();
+	GetDlgItem(IDC_TITLE_TXT)->MoveWindow(rc, TRUE);
+}
+
+void CSOLDialog::OnSelChangeType() {
+	UpdateUIByInputModel(CurrentInputModel());
+}
+
+void CSOLDialog::OnDoubleClickList() {
+	int sel = ((CListBox*) GetDlgItem(IDC_SOL_LST))->GetCurSel();
+	if (sel != LB_ERR) {
+		OnBnClickedSolutionActivate();
+	}
+}
+void CSOLDialog::OnFocusList() {
+	SetDefID(ID_ACT);
+}
+
+void CSOLDialog::OnFocusEditControls() {
+	SetDefID(ID_CR);
+}
+
+HBRUSH CSOLDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_SOL_ACT) {
+		pDC->SetTextColor(m_ActiveSolutionLabelColor);
+		pDC->SetBkMode(TRANSPARENT);
+		return hbr;
+	}
+
+	return hbr;
+}
+
+void CSOLDialog::SetActiveSolutionLabelColor(COLORREF clrNew) {
+	m_ActiveSolutionLabelColor = clrNew;
+	GetDlgItem(IDC_STATIC_SOL_ACT)->Invalidate();
+	GetDlgItem(IDC_STATIC_SOL_ACT)->UpdateWindow();
+}
+// momo
 
 //****************************************************************************
 //                        SOLUTION SETS DIALOG BOX
@@ -52984,11 +53679,30 @@ void CSTEPSDialog::Refresh() {
 
 	CStatic* pSolTit = (CStatic*) GetDlgItem(IDC_CURSOL_TXT);
 	CStatic* pSt = (CStatic*) GetDlgItem(IDC_STATIC_STEP_ACT);
-	if (pSOL->iCur == -1) {
-		pSolTit->SetWindowText(_T("ERROR: No Active Solution Sequence!"));
-		pSt->SetWindowText(_T("ERROR."));
+	if (pSOL->iActive == -1) {
+		pSolTit->SetWindowText(_T("No Active Solution Sequence!"));
+		// momo
+		// momo// pSt->SetWindowText(_T("No Active Step"));
+		SetActiveSolStepLabelColor(RGB(255, 0, 0));
+		// SetActiveStepLabelColor(RGB(255, 0, 0));
+		//  momo
 	} else
-		pSolTit->SetWindowText(pSOL->pSols[pSOL->iCur]->sTitle);
+	// momo
+	// momo// pSolTit->SetWindowText(pSOL->pSols[pSOL->iActive]->sTitle);
+	{
+		CString stActive;
+		i = pSOL->iActive;
+		if (pSOL->pSols[i]->iType <= 2) {
+			stActive.Format(_T("Active Solution = %s%s Model Title = %s%s TOL = %g"), SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], sSpliter, pSOL->pSols[i]->sTitle, sSpliter, pSOL->pSols[i]->dTol);
+		} else if (pSOL->pSols[i]->iType == 3) {
+			stActive.Format(_T("Active Solution = %s%s Model Title = %s"), SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], sSpliter, pSOL->pSols[i]->sTitle);
+		} else if (pSOL->pSols[i]->iType == 4 || pSOL->pSols[i]->iType == 5) {
+			stActive.Format(_T("Active Solution = %s%s Model Title = %s%s EIGEN = %s"), SolutionTypeNames[SolutionTypeNumbers[pSOL->pSols[i]->iType]], sSpliter, pSOL->pSols[i]->sTitle, sSpliter, pSOL->pSols[i]->sEigenCard);
+		}
+		pSolTit->SetWindowText(stActive);
+		SetActiveSolStepLabelColor(RGB(0, 0, 0));
+	}
+	// momo
 	CComboBox* pLC = (CComboBox*) GetDlgItem(IDC_LC_DD);
 	pLC->ResetContent();
 	for (i = 0; i < iNoLC; i++) {
@@ -53006,36 +53720,137 @@ void CSTEPSDialog::Refresh() {
 	}
 	CComboBox* pRS = (CComboBox*) GetDlgItem(IDC_RS_DD);
 	pRS->ResetContent();
-	pRS->AddString(CA2T("NO"));
-	pRS->AddString(CA2T("YES"));
+	pRS->AddString(_T("NO"));
+	pRS->AddString(_T("YES"));
 	// Sol seq
 	CListBox* pSol = (CListBox*) GetDlgItem(IDC_STEP_LBX);
 	pSol->ResetContent();
 	Solution* pS;
 	if (pSOL != NULL) {
-		if (pSOL->iCur != -1) {
-			pS = pSOL->pSols[pSOL->iCur];
+		if (pSOL->iActive != -1) {
+			pS = pSOL->pSols[pSOL->iActive];
 			for (i = 0; i < pS->iNo; i++) {
-				// S1.Format(_T("STEP: %i LC: %i BC: %i TSET: %i RS: %i %s"),i,pS->LS[i],pS->BS[i],pS->TS[i],pS->RS[i],pS->sStepTitle[i]);
 				pSol->AddString((LPCTSTR) pSOL->GetCurSolution()->GetStepTitleString(i));
 			}
 		}
 	}
 
-	if ((pSOL->iCur > -1) && (pSOL->iCur < pSOL->iNo)) {
+	// momo
+	CEdit* pTitle = (CEdit*) GetDlgItem(IDC_STPTIT_TB);
+	// momo
+	if ((pSOL->iActive > -1) && (pSOL->iActive < pSOL->iNo)) {
 		int iC;
 		iC = pSOL->GetCurStep();
+		// momo
+		if (iC == -1 && pSol->GetCount() > 0) {
+			iC = pSol->GetCount() - 1;
+			char sStr[10];
+			_itoa(iC, sStr, 10);
+			outtextMSG2("STEPACT");
+			outtextMSG2(sStr);
+		}
+		// momo
 		if (iC > -1) {
 			pSol->SetCurSel(iC);
-			pSt->SetWindowText(pSOL->GetCurSolution()->GetStepTitleString(iC));
+			// momo
+			// momo// pSt->SetWindowText(pSOL->GetCurSolution()->GetStepTitleString(iC));
+			// if(pSol->GetCount() == 1){
+			// pSt->SetWindowText(pSOL->GetCurSolution()->GetStepTitleString(iC));
+			//	pSt->SetWindowText(_T("For a Single Case, SUBCASE 1 is Used"));
+			//}else{
+			//	pSt->SetWindowText(_T("All SUBCASES are for the Active Solution"));
+			//}
+			SetActiveStepLabelColor(RGB(0, 0, 0));
+			CString controlSt, sRow;
+			if (pSOL->pSols[pSOL->iActive]->LS[iC] == -1) {
+				controlSt = _T("");
+			} else {
+				controlSt.Format(_T("%i"), pSOL->pSols[pSOL->iActive]->LS[iC]);
+				for (int i = 0; i <= pLC->GetCount() - 1; i++) {
+					pLC->GetLBText(i, sRow);
+					if (_ttoi(sRow) == pSOL->pSols[pSOL->iActive]->LS[iC]) {
+						controlSt = sRow;
+						pLC->SetCurSel(i);
+						break;
+					}
+				}
+			}
+			pLC->SetWindowText(controlSt);
+			if (pSOL->pSols[pSOL->iActive]->BS[iC] == -1) {
+				controlSt = _T("");
+			} else {
+				controlSt.Format(_T("%i"), pSOL->pSols[pSOL->iActive]->BS[iC]);
+				for (int i = 0; i <= pBC->GetCount() - 1; i++) {
+					pBC->GetLBText(i, sRow);
+					if (_ttoi(sRow) == pSOL->pSols[pSOL->iActive]->BS[iC]) {
+						controlSt = sRow;
+						pBC->SetCurSel(i);
+						break;
+					}
+				}
+			}
+			pBC->SetWindowText(controlSt);
+			if (pSOL->pSols[pSOL->iActive]->TS[iC] == -1) {
+				controlSt = _T("");
+			} else {
+				controlSt.Format(_T("%i"), pSOL->pSols[pSOL->iActive]->TS[iC]);
+				for (int i = 0; i <= pTC->GetCount() - 1; i++) {
+					pTC->GetLBText(i, sRow);
+					if (_ttoi(sRow) == pSOL->pSols[pSOL->iActive]->TS[iC]) {
+						controlSt = sRow;
+						pTC->SetCurSel(i);
+						break;
+					}
+				}
+			}
+			pTC->SetWindowText(controlSt);
+			if (pSOL->pSols[pSOL->iActive]->RS[iC]) {
+				controlSt.Format(_T("YES"));
+			} else {
+				controlSt.Format(_T("NO"));
+			}
+			pRS->SetWindowText(controlSt);
+			controlSt.Format(_T("%s"), pSOL->pSols[pSOL->iActive]->sStepTitle[iC]);
+			pTitle->SetWindowText(controlSt);
+			// momo
 		} else {
-			pSt->SetWindowText(_T("ERROR: No Step Active."));
+			// pSt->SetWindowText(_T("No Active Step"));
+			//  momo
+			//  SetActiveStepLabelColor(RGB(255, 0, 0));
+			pLC->SetWindowText(_T(""));
+			pBC->SetWindowText(_T(""));
+			pTC->SetWindowText(_T(""));
+			pRS->SetWindowText(_T(""));
+			pTitle->SetWindowText(_T(""));
+			// momo
 		}
 	}
 }
 
 BOOL CSTEPSDialog::OnInitDialog() {
 	CDialog::OnInitDialog();
+	// momo
+	CStatic* pSolTit = (CStatic*) GetDlgItem(IDC_CURSOL_TXT);
+	CStatic* pSt = (CStatic*) GetDlgItem(IDC_STATIC_STEP_ACT);
+	CStatic* pStLabel = (CStatic*) GetDlgItem(IDC_STATIC_STEPLAB1);
+	if (pSolTit) {
+		CFont* pOldFont = pSolTit->GetFont();
+		LOGFONT lf;
+		pOldFont->GetLogFont(&lf);
+		lf.lfWeight = FW_BOLD;
+		lf.lfHeight = (LONG) (lf.lfHeight * 1.2);
+		m_boldFont.CreateFontIndirect(&lf);
+		pSolTit->SetFont(&m_boldFont);
+		pSt->SetFont(&m_boldFont);
+		pStLabel->SetFont(&m_boldFont);
+	}
+	SetActiveSolStepLabelColor(RGB(0, 0, 0));
+	SetActiveStepLabelColor(RGB(0, 0, 0));
+	if (CEdit* pTitle = (CEdit*) GetDlgItem(IDC_STPTIT_TB)) {
+		if (pTitle->m_hWnd)
+			::SendMessage(pTitle->m_hWnd, EM_SETCUEBANNER, FALSE, (LPARAM) L"Optional");
+	}
+	// momo
 	this->SetWindowText(sTitle);
 	Refresh();
 	return TRUE; // return TRUE unless you set the focus to a control
@@ -53045,10 +53860,23 @@ BOOL CSTEPSDialog::OnInitDialog() {
 BEGIN_MESSAGE_MAP(CSTEPSDialog, CDialog)
 ON_WM_CREATE()
 ON_LBN_SELCHANGE(IDC_STEP_LBX, &CSTEPSDialog::OnLbnSelchangeStepLbx)
-ON_BN_CLICKED(IDC_CREATE, &CSTEPSDialog::OnBnClickedCreate)
-ON_BN_CLICKED(IDC_ACT_STEP, &CSTEPSDialog::OnBnClickedActStep)
-ON_BN_CLICKED(IDOK, &CSTEPSDialog::OnBnClickedOk)
-ON_BN_CLICKED(IDC_STEP_DEL, &CSTEPSDialog::OnBnClickedStepDel)
+ON_BN_CLICKED(IDC_CREATE, &CSTEPSDialog::OnBnClickedStepCreate)
+// momo
+// momo// ON_BN_CLICKED(IDC_ACT_STEP, &CSTEPSDialog::OnBnClickedStepActivate)
+// momo
+ON_BN_CLICKED(IDOK, &CSTEPSDialog::OnBnClickedStepOk)
+ON_BN_CLICKED(IDC_STEP_DEL, &CSTEPSDialog::OnBnClickedStepDelete)
+// momo
+ON_LBN_DBLCLK(IDC_STEP_LBX, &CSTEPSDialog::OnDoubleClickList)
+ON_LBN_SETFOCUS(IDC_STEP_LBX, &CSTEPSDialog::OnFocusList)
+ON_CBN_SETFOCUS(IDC_LC_DD, &CSTEPSDialog::OnFocusEditControls)
+ON_CBN_SETFOCUS(IDC_BC_DD, &CSTEPSDialog::OnFocusEditControls)
+ON_CBN_SETFOCUS(IDC_TC_DD, &CSTEPSDialog::OnFocusEditControls)
+ON_CBN_SETFOCUS(IDC_RS_DD, &CSTEPSDialog::OnFocusEditControls)
+ON_CBN_SETFOCUS(IDC_STPTIT_TB, &CSTEPSDialog::OnFocusEditControls)
+ON_EN_SETFOCUS(IDC_STPTIT_TB, &CSTEPSDialog::OnFocusEditControls)
+ON_WM_CTLCOLOR()
+// momo
 END_MESSAGE_MAP()
 
 int CSTEPSDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) {
@@ -53098,7 +53926,7 @@ void CSTEPSDialog::OnLbnSelchangeStepLbx() {
 	//  pRS->SetCurSel(1);
 }
 
-void CSTEPSDialog::OnBnClickedCreate() {
+void CSTEPSDialog::OnBnClickedStepCreate() {
 	// TODO: Add your control notification handler code here
 	CString sTitle;
 	int iRS;
@@ -53120,27 +53948,92 @@ void CSTEPSDialog::OnBnClickedCreate() {
 	pCB = (CComboBox*) GetDlgItem(IDC_RS_DD);
 	iRS = pCB->GetCurSel();
 
+	// momo
+	if (pSOL->iActive == -1) {
+		AfxMessageBox(_T("No Active Solution Sequence!"));
+		return;
+	}
+	// if (iLSet == -1) {
+	//	AfxMessageBox(_T("Please select a Load Set."));
+	//	CWnd* w = GetDlgItem(IDC_LC_DD);
+	//	w->SetFocus();
+	//	return;
+	// }
+	// if (iBSet == -1) {
+	//	AfxMessageBox(_T("Please select a Boundary Set."));
+	//	CWnd* w = GetDlgItem(IDC_BC_DD);
+	//	w->SetFocus();
+	//	return;
+	// }
+	// if (iTSet == -1) {
+	//	AfxMessageBox(_T("Please select a Temperature Set."));
+	//	CWnd* w = GetDlgItem(IDC_TC_DD);
+	//	w->SetFocus();
+	//	return;
+	// }
+	// if (iRS == -1) {
+	//	AfxMessageBox(_T("Please select YES/NO for Restart."));
+	//	CWnd* w = GetDlgItem(IDC_RS_DD);
+	//	w->SetFocus();
+	//	return;
+	// }
+	//  momo
+
 	outtextMSG2("STEPCR");
 	outtextMSG2(sTitle);
-	S1.Format(_T("%i"), iLC[iLSet]);
-	outtextMSG2(S1);
-	S1.Format(_T("%i"), iBC[iBSet]);
-	outtextMSG2(S1);
-	if (iTSet != -1) {
-		S1.Format(_T("%i"), iTC[iTSet]);
-		outtextMSG2(S1);
+	// momo
+	// S1.Format(_T("%i"), iLC[iLSet]);
+	// outtextMSG2(S1);
+	// S1.Format(_T("%i"), iBC[iBSet]);
+	// outtextMSG2(S1);
+	// if (iTSet != -1) {
+	//	S1.Format(_T("%i"), iTC[iTSet]);
+	//	outtextMSG2(S1);
+	//} else {
+	//	outtextMSG2("");
+	//}
+	// S1.Format(_T("%i"), iRS);
+	if (iLSet == -1) {
+		S1 = _T("-1");
 	} else {
-		outtextMSG2("");
+		S1.Format(_T("%i"), iLC[iLSet]);
 	}
-	S1.Format(_T("%i"), iRS);
+	outtextMSG2(S1);
+	if (iBSet == -1) {
+		S1 = _T("-1");
+	} else {
+		S1.Format(_T("%i"), iBC[iBSet]);
+	}
+	outtextMSG2(S1);
+	if (iTSet == -1) {
+		S1 = _T("-1");
+	} else {
+		S1.Format(_T("%i"), iTC[iTSet]);
+	}
+	outtextMSG2(S1);
+	if (iRS == -1 || iRS == 0) {
+		S1 = _T("0");
+	} else {
+		S1 = _T("1");
+	}
+	// momo
 	outtextMSG2(S1);
 	Refresh();
 }
 
-void CSTEPSDialog::OnBnClickedActStep() {
+void CSTEPSDialog::OnBnClickedStepActivate() {
 	// TODO: Add your control notification handler code here
 	CListBox* pStep = (CListBox*) GetDlgItem(IDC_STEP_LBX);
 	int iStep = pStep->GetCurSel();
+	// momo
+	if (pStep->GetCount() == 0) {
+		AfxMessageBox(_T("There is no Step to activate."));
+		return;
+	} else if (iStep == -1) {
+		AfxMessageBox(_T("Please select a Step."));
+		return;
+	}
+	// momo
 	char sStr[10];
 	_itoa(iStep, sStr, 10);
 	outtextMSG2("STEPACT");
@@ -53148,23 +54041,27 @@ void CSTEPSDialog::OnBnClickedActStep() {
 	Refresh();
 }
 
-void CSTEPSDialog::OnBnClickedOk() {
+void CSTEPSDialog::OnBnClickedStepOk() {
 	// TODO: Add your control notification handler code here
 	OnOK();
 }
 
-void CSOLDialog::OnBnClickedOk() {
-	// TODO: Add your control notification handler code here
-	OnOK();
-}
-
-void CSTEPSDialog::OnBnClickedStepDel() {
+void CSTEPSDialog::OnBnClickedStepDelete() {
 	// TODO: Add your control notification handler code here
 	int iDel;
 	Solution* pS = NULL;
 
 	CListBox* pSol = (CListBox*) GetDlgItem(IDC_STEP_LBX);
 	iDel = pSol->GetCurSel();
+	// momo
+	if (pSol->GetCount() == 0) {
+		AfxMessageBox(_T("There is no Step to delete."));
+		return;
+	} else if (iDel == -1) {
+		AfxMessageBox(_T("Please select a Step."));
+		return;
+	}
+	// momo
 	pS = pSOL->GetCurSolution();
 	if (pS != NULL)
 		pS->DelStep(iDel);
@@ -53172,7 +54069,7 @@ void CSTEPSDialog::OnBnClickedStepDel() {
 	Refresh();
 }
 
-void CSETSDialog::OnEnChangeSetid() {
+void CSETSDialog::OnEnChangeCSetId() {
 	// TODO:  If this is a RICHEDIT control, the control will not
 	// send this notification unless you override the CDialog::OnInitDialog()
 	// function and call CRichEditCtrl().SetEventMask()
@@ -53180,6 +54077,51 @@ void CSETSDialog::OnEnChangeSetid() {
 
 	// TODO:  Add your control notification handler code here
 }
+
+// momo
+HBRUSH CSTEPSDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	if (pWnd->GetDlgCtrlID() == IDC_CURSOL_TXT) {
+		pDC->SetTextColor(m_ActiveSolStepLabelColor);
+		pDC->SetBkMode(TRANSPARENT);
+		return hbr;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_STEP_ACT) {
+		pDC->SetTextColor(m_ActiveStepLabelColor);
+		pDC->SetBkMode(TRANSPARENT);
+		return hbr;
+	}
+
+	return hbr;
+}
+
+void CSTEPSDialog::SetActiveSolStepLabelColor(COLORREF clrNew) {
+	m_ActiveSolStepLabelColor = clrNew;
+	GetDlgItem(IDC_CURSOL_TXT)->Invalidate();
+	GetDlgItem(IDC_CURSOL_TXT)->UpdateWindow();
+}
+
+void CSTEPSDialog::SetActiveStepLabelColor(COLORREF clrNew) {
+	m_ActiveStepLabelColor = clrNew;
+	GetDlgItem(IDC_STATIC_STEP_ACT)->Invalidate();
+	GetDlgItem(IDC_STATIC_STEP_ACT)->UpdateWindow();
+}
+
+void CSTEPSDialog::OnDoubleClickList() {
+	int sel = ((CListBox*) GetDlgItem(IDC_STEP_LBX))->GetCurSel();
+	if (sel != LB_ERR) {
+		// OnBnClickedStepActivate();
+	}
+}
+void CSTEPSDialog::OnFocusList() {
+	SetDefID(0);
+}
+
+void CSTEPSDialog::OnFocusEditControls() {
+	SetDefID(IDC_CREATE);
+}
+// momo
 
 //*****************************************************************
 // The Entity Editor dialog box

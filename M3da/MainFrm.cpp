@@ -11,6 +11,7 @@
 #include <afxstr.h>
 #include <vector>
 #include "AppSettings.h"
+#include <algorithm>
 // MoMo_End
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,7 +45,7 @@ ON_WM_CREATE()
 ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
 ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
 ON_WM_SIZE()
-// ON_UPDATE_COMMAND_UI(ID_INDC_LC, &CMainFrame::OnUpdatePage)
+// ON_UPDATE_COMMAND_UI(ID_INDICATOR_LC, &CMainFrame::OnUpdatePage)
 //  ON_COMMAND(ID_MESH_FREETRIMESH, &CMainFrame::OnMeshFreetrimesh)
 // ON_COMMAND(ID_TOOLS_ELEMENTMASSSUMMATION, &CMainFrame::OnToolsElementmasssummation)
 // momo
@@ -56,12 +57,18 @@ END_MESSAGE_MAP()
 static UINT indicators[] =
     {
         ID_SEPARATOR, // status line indicator
-        ID_INDC_LC,
-        ID_INDC_BC,
+        // momo
+        // ID_INDICATOR_LC,
+        // ID_INDICATOR_BC,
+        // ID_INDICATOR_TS,
+        ID_INDICATOR_MODEL_NAME,
+        ID_INDICATOR_BC,
+        ID_INDICATOR_LC,
         ID_INDICATOR_TS,
+        // momo
 };
-// ID_INDC_LC,
-// ID_INDC_BC,
+// ID_INDICATOR_LC,
+// ID_INDICATOR_BC,
 //  CMainFrame construction/destruction
 
 CMainFrame::CMainFrame() {
@@ -85,21 +92,21 @@ CMainFrame::~CMainFrame() {
 // momo
 // int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 //	int iIDR;
-//	iIDR = IDR_DRAW_TOOLBAR;
+//	iIDR = IDR_VIEW_TOOLBAR;
 //	// momo on off button and menu
 //	iIDR = IDR_SHOWHIDE_TOOLBAR;
-//	iIDR = IDR_SELECT_TOOLBAR;
+//	iIDR = IDR_SELECTOPTIONS_TOOLBAR;
 //	// momo on off button and menu
 //	iIDR = IDR_CREATE_TOOLBAR;
-//	iIDR = IDR_EDIT_TOOLBAR;
+//	iIDR = IDR_TOOLS_TOOLBAR;
 //	iIDR = IDR_FINITEELEMENS_TOOLBAR;
 //	iIDR = IDR_GROUP_TOOLBAR;
 //	iIDR = IDR_BOUNDARYCONDITIONS_TOOLBAR;
 //	iIDR = IDR_SETELEMENT_TOOLBAR;
 //	iIDR = IDR_POSTPROCESSING_TOOLBAR;
-//	iIDR = IDR_PROJECTION_TOOLBAR;
+//	iIDR = IDR_ORIENTATION_TOOLBAR;
 //	iIDR = IDR_UTILITIES_TOOLBAR;
-//	iIDR = IDR_SELECTFILTERQUICK_TOOLBAR;
+//	iIDR = IDR_SELECTFILTER_TOOLBAR;
 //	// Esp_Mod_Experimental_Toolbar_4_10_2025_Start: experimental toolbar
 //	iIDR = IDR_EXPERIMENTAL_TOOLBAR;
 //	// Esp_Mod_Experimental_Toolbar_4_10_2025_End
@@ -141,7 +148,7 @@ CMainFrame::~CMainFrame() {
 //	// each new added tool bar requires a new ID
 //	// specified on the following line
 //	if (!m_Draw.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 2) ||
-//	    !m_Draw.LoadToolBar(IDR_DRAW_TOOLBAR)) {
+//	    !m_Draw.LoadToolBar(IDR_VIEW_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -154,7 +161,7 @@ CMainFrame::~CMainFrame() {
 //	}
 //
 //	if (!m_Selection.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 4) ||
-//	    !m_Selection.LoadToolBar(IDR_SELECT_TOOLBAR)) {
+//	    !m_Selection.LoadToolBar(IDR_SELECTOPTIONS_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -167,7 +174,7 @@ CMainFrame::~CMainFrame() {
 //	}
 //
 //	if (!m_Edit.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 6) ||
-//	    !m_Edit.LoadToolBar(IDR_EDIT_TOOLBAR)) {
+//	    !m_Edit.LoadToolBar(IDR_TOOLS_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -196,8 +203,8 @@ CMainFrame::~CMainFrame() {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
-//	if (!m_Projection.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 12) ||
-//	    !m_Projection.LoadToolBar(IDR_PROJECTION_TOOLBAR)) {
+//	if (!m_Orientation.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 12) ||
+//	    !m_Orientation.LoadToolBar(IDR_ORIENTATION_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -207,13 +214,13 @@ CMainFrame::~CMainFrame() {
 //		return -1; // fail to create
 //	}
 //	if (!m_QFilter.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 14) ||
-//	    !m_QFilter.LoadToolBar(IDR_SELECTFILTERQUICK_TOOLBAR)) {
+//	    !m_QFilter.LoadToolBar(IDR_SELECTFILTER_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
 //
 //	if (!m_DIMS.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC, CRect(1, 1, 1, 1), AFX_IDW_MENUBAR + 15) ||
-//	    !m_DIMS.LoadToolBar(IDR_DIMENSION_TOOLBAR)) {
+//	    !m_DIMS.LoadToolBar(IDR_DIMENSIONTOOLS_TOOLBAR)) {
 //		TRACE0("Failed to create toolbar\n");
 //		return -1; // fail to create
 //	}
@@ -301,7 +308,7 @@ CMainFrame::~CMainFrame() {
 //	m_EXP.SetWindowText("Experimental");
 //	// Esp_Mod_Experimental_Toolbar_4_10_2025_Start: END
 //
-//	m_Projection.SetWindowText("Project");
+//	m_Orientation.SetWindowText("Orientation");
 //	m_Utils.SetWindowText("Utils");
 //	m_QFilter.SetWindowText("Quick Filter");
 //	m_DIMS.SetWindowText("Dimension");
@@ -326,7 +333,7 @@ CMainFrame::~CMainFrame() {
 //	m_BC.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	m_ELTYPE.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	m_POST.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
-//	m_Projection.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
+//	m_Orientation.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	m_Utils.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	m_QFilter.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 //	m_DIMS.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
@@ -397,7 +404,7 @@ CMainFrame::~CMainFrame() {
 //	m_BC.EnableDocking(CBRS_ALIGN_ANY);
 //	m_ELTYPE.EnableDocking(CBRS_ALIGN_ANY);
 //	m_POST.EnableDocking(CBRS_ALIGN_ANY);
-//	m_Projection.EnableDocking(CBRS_ALIGN_ANY);
+//	m_Orientation.EnableDocking(CBRS_ALIGN_ANY);
 //	m_Utils.EnableDocking(CBRS_ALIGN_ANY);
 //	m_QFilter.EnableDocking(CBRS_ALIGN_ANY);
 //	m_DIMS.EnableDocking(CBRS_ALIGN_ANY);
@@ -427,7 +434,7 @@ CMainFrame::~CMainFrame() {
 //	DockPane(&m_BC);
 //	DockPane(&m_ELTYPE);
 //	DockPane(&m_POST);
-//	DockPane(&m_Projection);
+//	DockPane(&m_Orientation);
 //	DockPane(&m_Utils);
 //	DockPane(&m_QFilter);
 //	DockPane(&m_DIMS);
@@ -484,6 +491,7 @@ CMainFrame::~CMainFrame() {
 //}
 // momo
 
+// momo
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -501,7 +509,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	CMFCPopupMenu::SetForceMenuFocus(FALSE);
 	m_MenuBar.EnableDocking(CBRS_ALIGN_TOP);
 
-	if (!p_Input.Create(_T("Input Panel"), this, CRect(0, 0, 100, 150), FALSE, IDD_INPUT, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI)) {
+	if (!p_Input.Create(_T("Input/Info Panel"), this, CRect(0, 0, 100, 150), FALSE, IDD_INPUT, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI)) {
 		TRACE0("Failed to create input window\n");
 		return FALSE;
 	}
@@ -515,36 +523,37 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	p_Input.EnableDocking(CBRS_ALIGN_ANY);
 
 	// Hidden:
-	toolbars[0] = {&MenuCommandsToolbar, IDR_MENUCOMMANDS_TOOLBAR, false, 0, 0};
+	toolbars[0] = {&MenuCommandsToolbar, IDR_MENUCOMMANDS_TOOLBAR, false, 0, 0, true, 20};
 	// Top Row 1:
 	// &m_MenuBar
 	// Top Row 2:
-	toolbars[1] = {&ExperimentalToolbar, IDR_EXPERIMENTAL_TOOLBAR, true, 0, 1};
-	toolbars[2] = {&DimensionToolbar, IDR_DIMENSION_TOOLBAR, true, 0, 2};
-	toolbars[3] = {&UtilitiesToolbar, IDR_UTILITIES_TOOLBAR, true, 0, 2};
-	toolbars[4] = {&GroupToolbar, IDR_GROUP_TOOLBAR, true, 0, 2};
-	toolbars[5] = {&FileToolbar, IDR_FILE_TOOLBAR, true, 0, 2};
+	toolbars[1] = {&ExperimentalToolbar, IDR_EXPERIMENTAL_TOOLBAR, true, 0, 1, false, 19};
+	toolbars[2] = {&DimensionToolsToolbar, IDR_DIMENSIONTOOLS_TOOLBAR, true, 0, 2, false, 13};
+	toolbars[3] = {&UtilitiesToolbar, IDR_UTILITIES_TOOLBAR, true, 0, 2, true, 10};
+	toolbars[4] = {&GroupToolbar, IDR_GROUP_TOOLBAR, true, 0, 2, false, 9};
+	toolbars[5] = {&FileToolbar, IDR_FILE_TOOLBAR, true, 0, 2, true, 1};
 	// Top Row 3:
-	toolbars[6] = {&DrawToolbar, IDR_DRAW_TOOLBAR, true, 0, 1};
-	toolbars[7] = {&ProjectionToolbar, IDR_PROJECTION_TOOLBAR, true, 0, 2};
+	toolbars[6] = {&ViewToolbar, IDR_VIEW_TOOLBAR, true, 0, 1, false, 2};
+	toolbars[7] = {&OrientationToolbar, IDR_ORIENTATION_TOOLBAR, true, 0, 2, false, 3};
 	// Top Row 4:
-	toolbars[8] = {&SelectFilterQuickToolbar, IDR_SELECTFILTERQUICK_TOOLBAR, true, 0, 1};
-	toolbars[9] = {&SelectToolbar, IDR_SELECT_TOOLBAR, true, 0, 2};
+	toolbars[8] = {&SelectFilterToolbar, IDR_SELECTFILTER_TOOLBAR, true, 0, 1, false, 5};
+	toolbars[9] = {&SelectOptionsToolbar, IDR_SELECTOPTIONS_TOOLBAR, true, 0, 2, false, 4};
 	// Top Row 5:
-	toolbars[10] = {&ElementVisibilityToolbar, IDR_ELEMENTVISIBILITY_TOOLBAR, true, 0, 1};
-	toolbars[11] = {&GeomVisibilityToolbar, IDR_GEOMVISIBILITY_TOOLBAR, true, 0, 2};
-	toolbars[12] = {&ShowHideToolbar, IDR_SHOWHIDE_TOOLBAR, true, 0, -2};
+	toolbars[10] = {&ElementVisibilityToolbar, IDR_ELEMENTVISIBILITY_TOOLBAR, true, 0, 1, false, 8};
+	toolbars[11] = {&GeomVisibilityToolbar, IDR_GEOMVISIBILITY_TOOLBAR, true, 0, 2, false, 7};
+	toolbars[12] = {&ShowHideToolbar, IDR_SHOWHIDE_TOOLBAR, true, 0, -2, false, 6};
 	// Center:
 	// &p_Input
 	// Left:
-	toolbars[13] = {&CreateToolbar, IDR_CREATE_TOOLBAR, true, 2, 1};
-	toolbars[14] = {&EditToolbar, IDR_EDIT_TOOLBAR, true, 2, 1};
+	toolbars[13] = {&PointCurveToolsToolbar, IDR_POINTCURVETOOLS_TOOLBAR, true, 2, 1, false, 11};
+	toolbars[14] = {&SurfaceToolsToolbar, IDR_SURFACETOOLS_TOOLBAR, true, 2, 1, false, 12};
+	toolbars[15] = {&ToolsToolbar, IDR_TOOLS_TOOLBAR, true, 2, 1, true, 14};
 	// Right:
-	toolbars[15] = {&PostProcessingToolbar, IDR_POSTPROCESSING_TOOLBAR, true, 1, 1};
+	toolbars[16] = {&PostProcessingToolbar, IDR_POSTPROCESSING_TOOLBAR, true, 1, 1, true, 18};
 	// Bottom:
-	toolbars[16] = {&BoundaryConditionsToolbar, IDR_BOUNDARYCONDITIONS_TOOLBAR, true, 4, 1};
-	toolbars[17] = {&FiniteElementsToolbar, IDR_FINITEELEMENS_TOOLBAR, true, 4, 2};
-	toolbars[18] = {&SetElementToolbar, IDR_SETELEMENT_TOOLBAR, true, 4, 2};
+	toolbars[17] = {&BoundaryConditionsToolbar, IDR_BOUNDARYCONDITIONS_TOOLBAR, true, 4, 1, false, 17};
+	toolbars[18] = {&FiniteElementsToolbar, IDR_FINITEELEMENS_TOOLBAR, true, 4, 2, false, 16};
+	toolbars[19] = {&SetElementToolbar, IDR_SETELEMENT_TOOLBAR, true, 4, 2, false, 15};
 
 	CString strCustomize;
 	BOOL bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
@@ -589,7 +598,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 		tb.pToolbar->SetWindowText(strToolBarName);
 		if (tb.isVisible) {
 			tb.pToolbar->EnableDocking(dwDockStyleDocking);
-			tb.pToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
+			tb.pToolbar->EnableCustomizeButton(TRUE, ID_VIEW_TOOLBARS_MENU, strCustomize);
 			tb.pToolbar->ShowPane(TRUE, FALSE, TRUE);
 		} else {
 			tb.pToolbar->EnableDocking(0);
@@ -656,6 +665,78 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	// sizeCbar();
 	return 0;
 }
+
+BOOL CMainFrame::OnShowPopupMenu(CMFCPopupMenu* pMenuPopup) {
+	if (pMenuPopup == NULL || pMenuPopup->GetMenuBar()->CommandToIndex(ID_VIEW_CUSTOMIZE) < 0) {
+		return CFrameWndEx::OnShowPopupMenu(pMenuPopup);
+	}
+	CMFCPopupMenuBar* pMenuBar = pMenuPopup->GetMenuBar();
+	CMap<UINT, UINT, CMFCToolBarMenuButton*, CMFCToolBarMenuButton*> mapButtons;
+	CMFCToolBarMenuButton* pBtnCustomizeCopy = NULL;
+	int nCount = pMenuBar->GetCount();
+	for (int i = 0; i < nCount; i++) {
+		CMFCToolBarButton* pBtn = pMenuBar->GetButton(i);
+		if (pBtn->m_nStyle & TBBS_SEPARATOR)
+			continue;
+		UINT nID = pBtn->m_nID;
+		CString strText = pBtn->m_strText;
+		UINT nStyle = pBtn->m_nStyle;
+		int iImage = pBtn->GetImage();
+		CMFCToolBarMenuButton* pNewBtn = new CMFCToolBarMenuButton(nID, NULL, iImage, strText);
+		pNewBtn->m_nStyle = nStyle;
+		if (nID == ID_VIEW_CUSTOMIZE) {
+			pBtnCustomizeCopy = pNewBtn;
+		} else {
+			mapButtons.SetAt(nID, pNewBtn);
+		}
+	}
+	pMenuBar->RemoveAllButtons();
+	std::vector<ToolBarInfo*> sortedToolbars;
+	for (int i = 0; i < std::size(toolbars); ++i) {
+		sortedToolbars.push_back(&toolbars[i]);
+	}
+	std::sort(sortedToolbars.begin(), sortedToolbars.end(),
+	          [](ToolBarInfo* a, ToolBarInfo* b) {
+		          return a->MenuOrder < b->MenuOrder;
+	          });
+
+	for (size_t i = 0; i < sortedToolbars.size() - 1; ++i) {
+		ToolBarInfo* pInfo = sortedToolbars[i];
+		if (pInfo->pToolbar == NULL || pInfo->pToolbar->GetSafeHwnd() == NULL)
+			continue;
+		UINT nToolbarID = pInfo->pToolbar->GetDlgCtrlID();
+		CMFCToolBarMenuButton* pBtn = NULL;
+		if (mapButtons.Lookup(nToolbarID, pBtn) && pBtn != NULL) {
+			pMenuBar->InsertButton(*pBtn);
+		}
+		if (pInfo->HasSeparator) {
+			pMenuBar->InsertSeparator();
+		}
+	}
+
+	CMFCToolBarMenuButton* pBtnInput = NULL;
+	if (mapButtons.Lookup(IDD_INPUT, pBtnInput) && pBtnInput != NULL) {
+		pMenuBar->InsertSeparator();
+		pMenuBar->InsertButton(*pBtnInput);
+	}
+	if (pBtnCustomizeCopy != NULL) {
+		pMenuBar->InsertSeparator();
+		pMenuBar->InsertButton(*pBtnCustomizeCopy);
+	}
+	POSITION pos = mapButtons.GetStartPosition();
+	while (pos != NULL) {
+		UINT nID;
+		CMFCToolBarMenuButton* pPtr = NULL;
+		mapButtons.GetNextAssoc(pos, nID, pPtr);
+		if (pPtr != NULL)
+			delete pPtr;
+	}
+	mapButtons.RemoveAll();
+	if (pBtnCustomizeCopy != NULL)
+		delete pBtnCustomizeCopy;
+	return TRUE;
+}
+// momo
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
 	if (!CFrameWndEx::PreCreateWindow(cs))
@@ -948,14 +1029,14 @@ CFont* CreatePointFont(int pointSize, LPCTSTR fontName, int weight, BOOL italic)
 
 // momo change command box color
 void CheckCommandEditColor(bool bForceToCheck) {
-	if (CommIsActive.NewState != CommIsActive.CurrentState || bForceToCheck) {
-		CommIsActive.CurrentState = CommIsActive.NewState;
+	if (CommandLineState.NewStateIsActive != CommandLineState.CurrentStateIsActive || bForceToCheck) {
+		CommandLineState.CurrentStateIsActive = CommandLineState.NewStateIsActive;
 		CMainFrame* pMainFrame = DYNAMIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 		if (pMainFrame) {
-			if (CommIsActive.CurrentState) {
+			if (CommandLineState.CurrentStateIsActive) {
 				pMainFrame->p_Input.Edit3.SetBgColor(RGB(191, 242, 206));
 				SetFocus();
-				if (CommIsActive.ChangeEdit1) {
+				if (CommandLineState.AlsoChangeEdit1Color) {
 					pMainFrame->p_Input.Edit1.SetBgColor(RGB(191, 242, 206));
 				} else {
 					pMainFrame->p_Input.Edit1.SetBgColor(RGB(255, 255, 255));

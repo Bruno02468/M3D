@@ -356,15 +356,18 @@ void CM3daView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		// momo// ReleaseDC(pDC);
 		// momo gdi to og
 	} else if (m_iFuncKey == 4) {
-		// MoMo_Start
-		if (!SeedVals.IsSeedMode) {
-			// MoMo_End
-			outtextMSG2("D");
-			// MoMo_Start
-		} else {
-			outtextMSG2("Done");
-		}
-		// MoMo_End
+		// momo
+		//// MoMo_Start
+		//if (!SeedVals.IsSeedMode) {
+		//	// MoMo_End
+		//	outtextMSG2("D");
+		//	// MoMo_Start
+		//} else {
+		//	outtextMSG2("Done");
+		//}
+		//// MoMo_End
+		OnDoneClicked();
+		// momo
 	} else if (m_iFuncKey == 5) {
 		// MoMo_Start
 		if (!SeedVals.IsSeedMode) {

@@ -32,6 +32,9 @@ class zMnu {
 		virtual int DoMenu(CString CInMsg, CPoint Pt);
 		virtual int ExtractPt(CString mCInMsg, C3dVector* ReturnPt);
 		BOOL isNULL();
+		// momo
+		int nMode;
+		// momo
 };
 
 class zELTYPE_Mnu: public zMnu {
@@ -725,6 +728,21 @@ class zLABENTOff_Mnu: public zMnu {
 	public:
 		virtual int DoMenu(CString CInMsg, CPoint Pt);
 };
+
+class zDEFMODELNAME_Mnu: public zMnu {
+	public:
+		virtual int DoMenu(CString CInMsg, CPoint Pt);
+};
+
+class zSHOWMODELNAME_Mnu: public zMnu {
+	public:
+		virtual int DoMenu(CString CInMsg, CPoint Pt);
+};
+
+class zADDDECK_Mnu: public zMnu {
+	public:
+		virtual int DoMenu(CString CInMsg, CPoint Pt);
+};
 // momo
 
 class zELMOPID_Mnu: public zMnu {
@@ -1290,6 +1308,9 @@ class zSOLCR_Mnu: public zMnu {
 	public:
 		int iSol;
 		CString sT;
+		// momo
+		CString sE;
+		// momo
 		double dT;
 		virtual int DoMenu(CString CInMsg, CPoint Pt);
 };
@@ -1303,7 +1324,10 @@ class zSTEPCR_Mnu: public zMnu {
 		BOOL bRS;
 		CString sT;
 
+		// momo
 		virtual int DoMenu(CString CInMsg, CPoint Pt);
+		// momo// virtual int DoMenu(CString &CInMsg, CPoint Pt);
+		// momo
 };
 
 class zPRLISTALL_Mnu: public zMnu {
@@ -1886,3 +1910,7 @@ class zMODLAYNO_Mnu: public zMnu {
 	public:
 		virtual int DoMenu(CString CInMsg, CPoint Pt);
 };
+
+// momo
+void ShowC3dVector123456(int nMode,C3dVector GetPt1,C3dVector GetPt2);
+// momo

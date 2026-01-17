@@ -126,6 +126,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnUpdateTC(CCmdUI* pCmdUI); // ADDED BY ME
 		// momo
 		// momo// afx_msg void OnViewDisplayall();
+		afx_msg void OnUpdateModelName(CCmdUI* pCmdUI); // ADDED BY ME
 		// momo
 		afx_msg void OnEditDes();
 		afx_msg void OnEditInformation();
@@ -294,22 +295,55 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnSelectFullBody();
 		afx_msg void OnSelectPartOfBody();
 		afx_msg void OnSelectCenterOfBody();
-		afx_msg void OnSolverNastranMystran();
+		afx_msg void OnSolverChangeModelName();
+		afx_msg void OnShowModelName();
+		afx_msg void OnIndentHeader();
 		afx_msg void OnSolverCreateDeck();
 		afx_msg void OnSolverCreateDeckSolve();
 		afx_msg void OnSolverCreateDeckSolveReadResults();
 		afx_msg void OnDeckModsExecuticeControlAsIs();
+		afx_msg void OnUpdateDeckModsExecuticeControlAsIs(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsExecuticeControlReplaceTxt();
+		afx_msg void OnUpdateDeckModsExecuticeControlReplaceTxt(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsExecuticeControlReplaceConfig();
+		afx_msg void OnUpdateDeckModsExecuticeControlReplaceConfig(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsExecuticeControlShowCurrent();
 		afx_msg void OnDeckModsCaseControlAsIs();
+		afx_msg void OnUpdateDeckModsCaseControlAsIs(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsCaseControlReplaceTxt();
+		afx_msg void OnUpdateDeckModsCaseControlReplaceTxt(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsCaseControlReplaceConfig();
+		afx_msg void OnUpdateDeckModsCaseControlReplaceConfig(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsCaseControlShowCurrent();
 		afx_msg void OnDeckModsBulkDataAsIs();
+		afx_msg void OnUpdateDeckModsBulkDataAsIs(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsBulkDataAddTxt();
+		afx_msg void OnUpdateDeckModsBulkDataAddTxt(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsBulkDataAddConfig();
+		afx_msg void OnUpdateDeckModsBulkDataAddConfig(CCmdUI* pCmdUI);
 		afx_msg void OnDeckModsBulkDataShowCurrent();
+		afx_msg void OnDeckModsParamBailout1();
+		afx_msg void OnUpdateDeckModsParamBailout1(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamBailoutMinus1();
+		afx_msg void OnUpdateDeckModsParamBailoutMinus1(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamAutoSpcNo();
+		afx_msg void OnUpdateDeckModsParamAutoSpcNo(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamAutoSpcYes();
+		afx_msg void OnUpdateDeckModsParamAutoSpcYes(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamPost1();
+		afx_msg void OnUpdateDeckModsParamPost1(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamPostMinus1();
+		afx_msg void OnUpdateDeckModsParamPostMinus1(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamFilesNo();
+		afx_msg void OnUpdateDeckModsParamFilesNo(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamFilesYes();
+		afx_msg void OnUpdateDeckModsParamFilesYes(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamQuad4typMin4();
+		afx_msg void OnUpdateDeckModsParamQuad4typMin4(CCmdUI* pCmdUI);
+		afx_msg void OnDeckModsParamQuad4typMitc4Plus();
+		afx_msg void OnUpdateDeckModsParamQuad4typMitc4Plus(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateSolverChangeModelName(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateShowModelName(CCmdUI* pCmdUI);
 		// momo
 
 	protected:
@@ -370,7 +404,10 @@ class CM3daDoc: public CDocument, public CUndo {
 
 	public:
 		afx_msg void OnToolsListallproperties();
-		afx_msg void OnExportCurrentmesttonas();
+		afx_msg void OnExportCurrentMesToNastran();
+		// momo
+		afx_msg void OnExportCurrentMesToNastranPreview();
+		// momo
 		afx_msg void OnNodemodifyDefinitioncoordsys();
 		afx_msg void OnElementtypeRigid();
 		afx_msg void OnListAllmaterials();
@@ -407,6 +444,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnElementsVisibilityTet();
 		afx_msg void OnElementsVisibilityWedge();
 		afx_msg void OnElementsVisibilityBrick();
+		afx_msg void OnIndentNoJob();
 		// momo
 
 	protected:
@@ -455,7 +493,6 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnUpdateVisabilitySurfacesOn(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityCoordson(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityNodeon(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateVisabilityElementon(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateVisabilityBoundaryConditions(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateDisplayShellThickness(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateDisplayElementCoordSys(CCmdUI* pCmdUI);
@@ -557,7 +594,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnLoadsbcCreatethermalnettfluxload();
 		afx_msg void OnLoadsbcCreatethermaltempbc();
 		afx_msg void OnSolutionListsolutionsequences();
-		afx_msg void OnSolutionCreatesolutionsequence();
+		afx_msg void OnSolutionCreateSolutionSequence();
 		afx_msg void OnSolutionCreate();
 		afx_msg void OnLoadsbcListloadsets();
 		afx_msg void OnLoadsbcListboundarysets();
@@ -629,7 +666,10 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnManipulationEnvelopemaximum();
 		afx_msg void OnManipulationEnvelopeminimum();
 		afx_msg void OnManipulationScale();
-		afx_msg void OnEditToggleon();
+		afx_msg void OnEditToggleOn();
+		// momo
+		afx_msg void OnUpdateEditToggleOn(CCmdUI* pCmdUI);
+		// momo
 		afx_msg void OnPropertyBeamT2();
 		afx_msg void OnPropertyBeamChan2();
 		afx_msg void OnPropertyBeamI2();
@@ -730,14 +770,10 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnUpdateSelectModeCircle(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateSelectModeColor(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateSelectModeCircleAndColor(CCmdUI* pCmdUI);
-		afx_msg void OnViewAxisOriginOn();
-		afx_msg void OnViewAxisOriginOff();
-		afx_msg void OnViewAxisCornerOn();
-		afx_msg void OnViewAxisCornerOff();
-		afx_msg void OnUpdateAxisOriginOn(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateAxisOriginOff(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateAxisCornerOn(CCmdUI* pCmdUI);
-		afx_msg void OnUpdateAxisCornerOff(CCmdUI* pCmdUI);
+		afx_msg void OnViewAxisOriginShow();
+		afx_msg void OnViewAxisCornerShow();
+		afx_msg void OnUpdateAxisOriginShow(CCmdUI* pCmdUI);
+		afx_msg void OnUpdateAxisCornerShow(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateElementsVisibilityAll(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateElementsVisibility0D(CCmdUI* pCmdUI);
 		afx_msg void OnUpdateElementsVisibilityMass(CCmdUI* pCmdUI);

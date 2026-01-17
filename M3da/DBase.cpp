@@ -48,6 +48,7 @@ int gCUR_RES = 36;
 const double dTol = 0.00000001; // unsed for Surface tolerance
 // momo
 // momo// const double Pi = 3.1415926535;
+#define MAX_PATH 260
 // momo
 #define D2R 0.01745329251994
 #define R2D 57.2957795130931
@@ -372,21 +373,133 @@ void DBase::PrintTime(CString cS) {
 	outtext1(s1);
 }
 
-void DBase::ExporttoNAS(int iFileNo) {
-	outtext1("EXPORTING NASTRAN DECK");
+// momo
+// void DBase::ExporttoNAS(int iFileNo) {
+// outtext1("EXPORTING NASTRAN DECK");
+// FILE* pFile;
+// CFileDialog FDia(FALSE, _T("dat"), _T("*.dat"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, NULL);
+// FDia.DoModal();
+// CString sPath = FDia.GetPathName();
+// CString sFile = FDia.GetFileName();
+// if (sFile != "") {
+//	pFile = _tfopen(sPath, _T("w"));
+//	if (pFile != NULL) {
+//		ExportMeshNAS(pFile, iFileNo);
+//		fclose(pFile);
+//	}
+//}
+void DBase::ExporttoNAS(int iFileNo, CString* tempFilePath) {
+	*tempFilePath = _T("");
 	FILE* pFile;
-	CFileDialog FDia(FALSE, _T("dat"), _T("*.dat"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, NULL);
-	FDia.DoModal();
-	CString sPath = FDia.GetPathName();
-	CString sFile = FDia.GetFileName();
+	CString sPath;
+	CString sFile;
+	if (iFileNo == -2) {
+		if (!CreateDeckPreviewFile(sPath)) {
+			return;
+		}
+		sFile = sPath;
+	} else {
+		CFileDialog FDia(FALSE, _T("dat"), _T("*.dat"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, NULL);
+		FDia.DoModal();
+		sPath = FDia.GetPathName();
+		sFile = FDia.GetFileName();
+	}
 	if (sFile != "") {
+		if (iFileNo != -2) {
+			outtext1("EXPORTING NASTRAN DECK");
+		}
 		pFile = _tfopen(sPath, _T("w"));
 		if (pFile != NULL) {
-			ExportMeshNAS(pFile, iFileNo);
+			bool previewMode = false;
+			if (iFileNo == -2) {
+				previewMode = true;
+				*tempFilePath = sPath;
+			}
+			iFileNo = -1;
+			ExportMeshNAS(pFile, iFileNo, previewMode);
 			fclose(pFile);
+		} else {
+			AfxMessageBox(_T("Failed to open the output file for writing."), MB_ICONERROR);
 		}
 	}
 }
+
+// momo
+bool DBase::FileExists(LPCTSTR path) {
+	DWORD a = GetFileAttributes(path);
+	return (a != INVALID_FILE_ATTRIBUTES) && !(a & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+// Tries to create DeckPreview file (DeckPreview.dat .. DeckPreview100.dat)
+// Returns TRUE if file successfully created, FALSE otherwise.
+BOOL DBase::TryCreateDeckFile(const CString& dir, const CString& base, const CString& ext, CString& outFull) {
+	for (int i = 0; i <= 100; ++i) {
+		CString name;
+		if (i == 0)
+			name = base + ext;
+		else
+			name.Format(_T("%s%d%s"), base.GetString(), i, ext.GetString());
+
+		CString fullPath;
+		fullPath.Format(_T("%s\\%s"), dir.GetString(), name.GetString());
+
+		if (!FileExists(fullPath)) {
+			CFile file;
+			if (file.Open(fullPath, CFile::modeCreate | CFile::modeWrite)) {
+				file.Close();
+				outFull = fullPath;
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
+// Creates or uses <exe-folder>\Temporary.
+// Generates DeckPreview.dat or DeckPreview1.dat..100.dat.
+// If none available, asks user to clear the folder.
+BOOL DBase::CreateDeckPreviewFile(CString& sPathOut) {
+	CM3daApp* pApp = (CM3daApp*) AfxGetApp();
+	CString tempDir = pApp->ExeFolderPath() + _T("\\Temporary");
+
+	if (!pApp->PrepareAndCheckFolder(tempDir)) {
+		return FALSE;
+	}
+	const CString dir = tempDir;
+	const CString base = _T("DeckPreview");
+	const CString ext = _T(".dat");
+	// 3) First attempt without cleanup
+	if (TryCreateDeckFile(dir, base, ext, sPathOut))
+		return TRUE;
+	// 4) Ask user to clean up
+	CString q;
+	q.Format(_T("All names %s.dat to %s100.dat are taken or cannot be created in the 'Temporary' folder.\r\n")
+	         _T("Do you want to delete all '%s*.dat' files in the 'Temporary' folder and retry?"),
+	         base.GetString(), base.GetString(), base.GetString());
+	int ret = AfxMessageBox(q, MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2);
+	if (ret != IDYES)
+		return FALSE; // user declined
+	// 5) Delete all DeckPreview*.dat in Temporary
+	CString pattern;
+	pattern.Format(_T("%s\\%s*.dat"), dir.GetString(), base.GetString());
+	CFileFind ff;
+	BOOL bWorking = ff.FindFile(pattern);
+	while (bWorking) {
+		bWorking = ff.FindNextFile();
+		if (!ff.IsDots() && !ff.IsDirectory()) {
+			::DeleteFile(ff.GetFilePath());
+		}
+	}
+	ff.Close();
+	// 6) Retry after cleanup
+	if (TryCreateDeckFile(dir, base, ext, sPathOut))
+		return TRUE;
+	// 7) Still failed
+	AfxMessageBox(_T("Operation failed: Unable to create DeckPreview file in 'Temporary' even after cleanup."),
+	              MB_ICONERROR);
+	return FALSE;
+}
+// momo
 
 int DBase::GetFileByNo(CString sF) {
 	int irc = -1;
@@ -665,7 +778,10 @@ void DBase::AnalysisLoadsets() {
 	Dlg.sLIST = "LSETLIST";
 	if (pCurrentMesh != NULL) {
 		for (i = 0; i < pCurrentMesh->iNoLCs; i++) {
-			OutT.Format(_T("%i : %s"), pCurrentMesh->LCS[i]->iLabel, pCurrentMesh->LCS[i]->sTitle);
+			// momo
+			// momo// OutT.Format(_T("%i : %s"), pCurrentMesh->LCS[i]->iLabel, pCurrentMesh->LCS[i]->sTitle);
+			OutT.Format(_T("Set ID = %i%s Title = %s"), pCurrentMesh->LCS[i]->iLabel, sSpliter, pCurrentMesh->LCS[i]->sTitle);
+			// momo
 			Dlg.AddSet(i, OutT);
 		}
 		Dlg.DoModal();
@@ -678,7 +794,10 @@ void DBase::AnalysisBCsets() {
 	int i;
 	CSETSDialog Dlg;
 	CString OutT;
-	Dlg.sTitle = "Boundary Condition Sets";
+	// momo
+	// momo// Dlg.sTitle = "Boundary Condition Sets";
+	Dlg.sTitle = "SPC Sets (Single Point Constraints)";
+	// momo
 	Dlg.AttachSets(&pCurrentMesh->iNoBCs, &pCurrentMesh->iCurBC);
 	Dlg.sSET = "BSETCR";
 	Dlg.sDEL = "BSETDEL";
@@ -686,7 +805,10 @@ void DBase::AnalysisBCsets() {
 	Dlg.sLIST = "BSETLIST";
 	if (pCurrentMesh != NULL) {
 		for (i = 0; i < pCurrentMesh->iNoBCs; i++) {
-			OutT.Format(_T("%i : %s"), pCurrentMesh->BCS[i]->iLabel, pCurrentMesh->BCS[i]->sTitle);
+			// momo
+			// momo// OutT.Format(_T("%i : %s"), pCurrentMesh->BCS[i]->iLabel, pCurrentMesh->BCS[i]->sTitle);
+			OutT.Format(_T("Set ID = %d%s Title = %s"), pCurrentMesh->BCS[i]->iLabel, sSpliter, pCurrentMesh->BCS[i]->sTitle);
+			// momo
 			Dlg.AddSet(i, OutT);
 		}
 		Dlg.DoModal();
@@ -707,7 +829,10 @@ void DBase::AnalysisTEMPsets() {
 	Dlg.sLIST = "TSETLIST";
 	if (pCurrentMesh != NULL) {
 		for (i = 0; i < pCurrentMesh->iNoTSets; i++) {
-			OutT.Format(_T("%i : %s"), pCurrentMesh->TSETS[i]->iLabel, pCurrentMesh->TSETS[i]->sTitle);
+			// momo
+			// momo// OutT.Format(_T("%i : %s"), pCurrentMesh->TSETS[i]->iLabel, pCurrentMesh->TSETS[i]->sTitle);
+			OutT.Format(_T("Set ID = %d%s Title = %s"), pCurrentMesh->TSETS[i]->iLabel, sSpliter, pCurrentMesh->TSETS[i]->sTitle);
+			// momo
 			Dlg.AddSet(i, OutT);
 		}
 		Dlg.DoModal();
@@ -769,7 +894,10 @@ void DBase::CreateTSET(int ID, CString sTit) {
 
 void DBase::AnalysisSolution() {
 	CSOLDialog Dlg;
-	Dlg.sTitle = "Solutions.";
+	// momo
+	// momo// Dlg.sTitle = "Solutions.";
+	Dlg.sTitle = "Solutions (Executive Control - SOL 101, SOL 103, SOL105)";
+	// momo
 	if (pCurrentMesh != NULL) {
 		Dlg.pSOL = pCurrentMesh->pSOLS;
 		Dlg.DoModal();
@@ -807,7 +935,7 @@ void DBase::DefaultDisplays() {
 	DspFlagsMain.DSP_ELEMENTCOORDSYS = false;
 	outtext1("5-Surface Direction Markers Visibility OFF");
 	DspFlagsMain.DSP_SURFACEDIRECTIONMARKERS = false;
-	outtext1("6-Finite Elements Visibility ON");
+	outtext1("6-Finite Element Visibility ON");
 	ButtonPush.AllFiniteOn = true;
 	DspFlagsMain.DSP_NODES = true;
 	DspFlagsMain.DSP_ELEMENTS_ALL = true;
@@ -860,8 +988,8 @@ void DBase::DefaultDisplays() {
 	DspFlagsMain.DSP_RESULTSLABLES = true;
 	outtext1("18-Deformed Results Visibility ON");
 	DspFlagsMain.DSP_DEFORMEDRESULTS = true;
-	outtext1("19-Material Direction Visibility ON");
-	DspFlagsMain.DSP_MATERIALDIRECTION = true;
+	outtext1("19-Material Direction Visibility OFF");
+	DspFlagsMain.DSP_MATERIALDIRECTION = false;
 	outtext1("20-Stop Animation Results");
 	DspFlagsMain.DSP_ANIMATERESULTS = false;
 	outtext1("21-Positive/Negative Animation is OFF");
@@ -874,41 +1002,98 @@ void DBase::DefaultDisplays() {
 	outtextMultiLine(_T("════════════════════\r\n"), 1);
 }
 
-void DBase::ResteFileSettings(bool bMode) {
-	ZoomToBaseScale();
-	WPSize = 10.0;
-	if (!bMode) {
+void DBase::ResetConfigFileSettings(const CString sMode) {
+	if (sMode == _T("Base")) {
+		ZoomToBaseScale();
+		WPSize = 10.0;
 		gDOUBLEBUFF = true;
-		gBACKGRD_COL = 0;
-		gZOOM_SCL = 1.0;
-		gPT_SIZE = 10.0;
-		gND_SIZE = 10.0;
-		gLM_SIZE = 20.0;
-		gEL_SIZE = 2.0;
-		gED_SIZE = 5.0;
-		gFC_SIZE = 3.0;
-		gWP_SIZE = 2.0; // Workplane Line Weight
-		gBM_SIZE = 2.0;
-		gTXT_SIZE = 2.0;
-		gDIM_SCALE = 1.0;
-		gDIM_FILSZ = 0.1;
-		gDIM_OFFSZ = 0.1;
-		gTXT_HEIGHT = 0.5;
-		gDIM_RADSZ = 0.5;
-		gDIM_SIZE = 0.5;
-		gCUR_RES = 36;
-		gDRILL_KS = 1.0;
-		gRIGID_MULTIPLIER = 1e4;
-		gVSTIFF_KS = 1e10;
-		gDEF_E = 7e10;
-		gDEF_V = 0.33;
-		gDEF_DEN = 2750.;
-		gDEF_COND = 237.0;
-		gSTIFF_BDIA = 0.1;
-		gDEF_CTE = 2.3e-5;
-		gDEF_THERM_LNK = 1e9;
-		gDEF_SOL_TOL = 1e-9;
-		gDIM_PREC = 2;
+	} else if (sMode == _T("Color")) {
+			gBACKGRD_COL = 0;
+	} else if (sMode == _T("ColorPicked")) {
+	} else if (sMode == _T("Material")) {
+			gDEF_E = 7e10;
+			gDEF_V = 0.33;
+			gDEF_DEN = 2750.;
+			gDEF_COND = 237.0;
+			gDEF_CTE = 2.3e-5;
+			gDEF_THERM_LNK = 1e9;
+	} else if (sMode == _T("Dimension")) {
+			gDIM_SCALE = 1.0;
+			gDIM_PREC = 2;
+			gDIM_SIZE = 0.5;
+	} else if (sMode == _T("General")) {
+			gZOOM_SCL = 1.0;
+			gDIM_FILSZ = 0.1;
+			gDIM_OFFSZ = 0.1;
+			gTXT_HEIGHT = 0.5;
+			gDIM_RADSZ = 0.5;
+			gDIM_CVORD = 2;
+			gCUR_RES = 36;
+			gDRILL_KS = 1.0;
+			gRIGID_MULTIPLIER = 1e4;
+			gVSTIFF_KS = 1e10;
+			gSTIFF_BDIA = 0.1;
+			gDEF_SOL_TOL = 1e-9;
+	} else if (sMode == _T("LineWeights")) {
+			gWP_SIZE = 2.0; // Workplane Line Weight
+	} else if (sMode == _T("Size")) {
+			gPT_SIZE = 10.0;
+			gND_SIZE = 10.0;
+			gLM_SIZE = 20.0;
+			gEL_SIZE = 2.0;
+			gED_SIZE = 5.0;
+			gFC_SIZE = 3.0;
+			gBM_SIZE = 2.0;
+			gTXT_SIZE = 2.0;
+	} else if (sMode == _T("Solve")) {
+		CM3daApp* pApp = (CM3daApp*) AfxGetApp();
+		if (!pApp->PrepareAndCheckFolder(DataPath)) {
+			DataPath = _T("%MyExeFolder%\\M3D_Runs");
+			pApp->ReplaceWindowsDirectories(DataPath);
+			if (!pApp->PrepareAndCheckFolder(DataPath)) {
+				DataPath = _T("");
+			}
+		}
+		CString try1, try2;
+		if (DataPath.IsEmpty()) {
+			try1 = _T("%SystemDrive%\\M3D_Runs");
+			pApp->ReplaceWindowsDirectories(try1);
+			try2 = _T("%MyExeFolder%\\M3D_Runs");
+			pApp->ReplaceWindowsDirectories(try2);
+			outtext1(_T("Warning: The program tried to create the following folders to use as variable \"solve_dat_path\":"));
+			outtext1(_T("\"") + try1 + _T("\""));
+			outtext1(_T("\"") + try2 + _T("\""));
+			outtext1(_T("But this was not successful."));
+			outtext1(_T("Please fix this problem or use config_solve.txt to set it manually."));
+		}
+	} else if (sMode == _T("Viewer")) {
+		CM3daApp* pApp = (CM3daApp*) AfxGetApp();
+		if (!pApp->TheFileExists(TextViewerExe)) {
+			TextViewerExe = _T("%MyExeFolder%\\Notepad++\\notepad++.exe");
+			pApp->ReplaceWindowsDirectories(TextViewerExe);
+			if (!pApp->TheFileExists(TextViewerExe)) {
+				TextViewerExe = _T("%windir%\\system32\\notepad.exe");
+				pApp->ReplaceWindowsDirectories(TextViewerExe);
+				if (!pApp->TheFileExists(TextViewerExe)) {
+					TextViewerExe = _T("");
+				}
+			}
+		}
+		CString try1, try2, try3;
+		if (TextViewerExe.IsEmpty()) {
+			try1 = _T("%ProgramFiles%\\Notepad++\\notepad++.exe");
+			pApp->ReplaceWindowsDirectories(try1);
+			try2 = _T("%MyExeFolder%\\Notepad++\\notepad++.exe");
+			pApp->ReplaceWindowsDirectories(try2);
+			try3 = _T("%windir%\\system32\\notepad.exe");
+			pApp->ReplaceWindowsDirectories(try3);
+			outtext1(_T("Warning: The program searched for the following files to use as variable \"text_viewer_exe\":"));
+			outtext1(_T("\"") + try1 + _T("\""));
+			outtext1(_T("\"") + try2 + _T("\""));
+			outtext1(_T("\"") + try3 + _T("\""));
+			outtext1(_T("But this was not successful."));
+			outtext1(_T("Please fix this problem or use config_viewer.txt to set it manually."));
+		}
 	}
 }
 // momo change Display Flags Method
@@ -958,7 +1143,10 @@ void DBase::AnalysisLoadStep() {
 	int i;
 	CSTEPSDialog Dlg;
 	CString OutT;
-	Dlg.sTitle = "Solution Steps.";
+	// momo
+	// momo// Dlg.sTitle = "Solution Steps";
+	Dlg.sTitle = "Subcases (Case Control - Loads, Boundary Conditions, Temperature)";
+	// momo
 
 	// Dlg.AttachSets(&pCurrentMesh->iNoLCs,&pCurrentMesh->iCurLC);
 	//  Dlg.sSET="LSETCR";
@@ -1229,14 +1417,89 @@ void DBase::Serialize(CArchive& ar) {
 	int iType;
 	int iSecondaryType;
 	// momo save by old versions
-	if (MakingNewFile) {
-		MakingNewFile = false;
+	if (ResetVariables) {
+		ResetVariables = false;
 		CFileFind finder;
-		if (finder.FindFile(_T("config.txt"))) {
-			theApp.LoadConfiguration();
-			ResteFileSettings(true);
+		CM3daApp* pApp = (CM3daApp*) AfxGetApp();
+
+		CString configGeneralPath = pApp->ExeFolderPath() + _T("\\config_general.txt");
+		bool configGeneralExists = pApp->TheFileExists(configGeneralPath);
+		ResetConfigFileSettings(_T("Base"));
+		if (configGeneralExists) {
+			theApp.LoadConfigFile(configGeneralPath, _T("General"));
 		} else {
-			ResteFileSettings(false);
+			ResetConfigFileSettings(_T("General"));
+		}
+
+		CString configColorPath = pApp->ExeFolderPath() + _T("\\config_color.txt");
+		bool configColorExists = pApp->TheFileExists(configColorPath);
+		if (configColorExists) {
+			theApp.LoadConfigFile(configColorPath, _T("Color"));
+		} else {
+			ResetConfigFileSettings(_T("Color"));
+		}
+
+		CString configColorPickedPath = pApp->ExeFolderPath() + _T("\\config_color_picked.txt");
+		bool configColorPickedExists = pApp->TheFileExists(configColorPickedPath);
+		if (configColorPickedExists) {
+			theApp.LoadConfigFile(configColorPickedPath, _T("ColorPicked"));
+		} else {
+			ResetConfigFileSettings(_T("ColorPicked"));
+		}
+
+		CString configMaterialPath = pApp->ExeFolderPath() + _T("\\config_default_material.txt");
+		bool configMaterialExists = pApp->TheFileExists(configMaterialPath);
+		if (configMaterialExists) {
+			theApp.LoadConfigFile(configMaterialPath, _T("Material"));
+		} else {
+			ResetConfigFileSettings(_T("Material"));
+		}
+
+		CString configDimensionPath = pApp->ExeFolderPath() + _T("\\config_dimension.txt");
+		bool configDimensionExists = pApp->TheFileExists(configDimensionPath);
+		if (configDimensionExists) {
+			theApp.LoadConfigFile(configDimensionPath, _T("Dimension"));
+		} else {
+			ResetConfigFileSettings(_T("Dimension"));
+		}
+
+		CString configLineWeightsPath = pApp->ExeFolderPath() + _T("\\config_line_weights.txt");
+		bool configLineWeightsExists = pApp->TheFileExists(configLineWeightsPath);
+		if (configLineWeightsExists) {
+			theApp.LoadConfigFile(configLineWeightsPath, _T("LineWeights"));
+		} else {
+			ResetConfigFileSettings(_T("LineWeights"));
+		}
+
+		CString configSizePath = pApp->ExeFolderPath() + _T("\\config_size.txt");
+		bool configSizeExists = pApp->TheFileExists(configSizePath);
+		if (configSizeExists) {
+			theApp.LoadConfigFile(configSizePath, _T("Size"));
+		} else {
+			ResetConfigFileSettings(_T("Size"));
+		}
+
+		CString configSolvePath = pApp->ExeFolderPath() + _T("\\config_solve.txt");
+		bool configSolveExists = pApp->TheFileExists(configSolvePath);
+		DataPath = _T("%SystemDrive%\\M3D_Runs");
+		ModelFileName = _T("Untitled");
+		ModelFileNameChanged = false;
+		DatFileOverwritePrompt = true;
+		pApp->ReplaceWindowsDirectories(DataPath);
+		if (configSolveExists) {
+			theApp.LoadConfigFile(configSolvePath, _T("Solve"));
+		} else {
+			ResetConfigFileSettings(_T("Solve"));
+		}
+
+		CString configViewerPath = pApp->ExeFolderPath() + _T("\\config_viewer.txt");
+		bool configViewerExists = pApp->TheFileExists(configViewerPath);
+		TextViewerExe = _T("%ProgramFiles%\\Notepad++\\notepad++.exe");
+		pApp->ReplaceWindowsDirectories(TextViewerExe);
+		if (configViewerExists) {
+			theApp.LoadConfigFile(configViewerPath, _T("Viewer"));
+		} else {
+			ResetConfigFileSettings(_T("Viewer"));
 		}
 	}
 	// momo save by old versions
@@ -1246,6 +1509,20 @@ void DBase::Serialize(CArchive& ar) {
 		// momo// ar << VERSION_NO;
 		iVER = VERSIONS[FileFormatIndex - 1];
 		ar << iVER;
+		bool haveWarning = false;
+		CString msgWarning;
+		msgWarning.Format(_T("\r\nWARNING: The following items cannot be saved with version %.1f\r\n"), abs(iVER / 10.0));
+		if (iVER > -79) {
+			haveWarning = true;
+			msgWarning += _T(" - Mesh Seed information (requires version 7.9 or higher)\r\n");
+		}
+		if (iVER > -80) {
+			haveWarning = true;
+			msgWarning += _T(" - Eigen Card information (requires version 8.0 or higher)\r\n");
+		}
+		if (haveWarning) {
+			outtextMultiLine(msgWarning, 1);
+		}
 		// momo save by old versions
 		ar << pModelMat.m_00;
 		ar << pModelMat.m_01;
@@ -1324,6 +1601,11 @@ void DBase::Serialize(CArchive& ar) {
 			DB_Obj[i]->Serialize(ar, iVER); // all
 		}
 		SaveGps(ar);
+		// momo
+		if (iVER <= -80) {
+			ar << ModelFileName;
+		}
+		// momo
 	} else {
 		// MoMo_Start
 		if (iVER != 0)
@@ -1340,7 +1622,7 @@ void DBase::Serialize(CArchive& ar) {
 		// momo save by old versions
 		// MoMo_Start
 		CString S1;
-		outtextSprintf(_T("Version of Loaded File = %.2f"), 0, abs(iVER / 10.0), false, 1);
+		outtextSprintf(_T("Version of Loaded File = %.1f"), 0, abs(iVER / 10.0), false, 1);
 		// MoMo_End
 		if (iVER <= -66) {
 			C3dMatrix mT;
@@ -1618,6 +1900,11 @@ void DBase::Serialize(CArchive& ar) {
 		outtext1(S1);
 		S1.Format(_T("%s%i"), _T("Maximum Part Label: "), iPartLabCnt);
 		outtext1(S1);
+		// momo
+		if (iVER <= -80) {
+			ar >> ModelFileName;
+		}
+		// momo
 	}
 }
 
@@ -9934,13 +10221,13 @@ void DBase::Solve() {
 	//    oldMemState.Checkpoint();
 	// #endif
 	if (pCurrentMesh != NULL) {
-		int iC = pCurrentMesh->pSOLS->iCur;
-		if (iC != -1) {
-			if (pCurrentMesh->pSOLS->pSols[iC]->iType == 0)
+		int iAc = pCurrentMesh->pSOLS->iActive;
+		if (iAc != -1) {
+			if (pCurrentMesh->pSOLS->pSols[iAc]->iType == 0)
 				pCurrentMesh->IterSol3dLin(PropsT, MatT);
-			else if (pCurrentMesh->pSOLS->pSols[iC]->iType == 1)
+			else if (pCurrentMesh->pSOLS->pSols[iAc]->iType == 1)
 				pCurrentMesh->IterSol1dSS(PropsT, MatT);
-			else if (pCurrentMesh->pSOLS->pSols[iC]->iType == 2)
+			else if (pCurrentMesh->pSOLS->pSols[iAc]->iType == 2)
 				pCurrentMesh->Test(PropsT, MatT); // pCurrentMesh->ExplicitSolTest(PropsT, MatT);
 		} else {
 			outtext1("ERROR: No Solution is Active.");
@@ -9975,10 +10262,16 @@ void DBase::ListSolutions() {
 	}
 }
 
-void DBase::AddSolutions(CString sT, int iSol, double dT) {
+// momo
+// momo// void DBase::AddSolutions(CString sT, int iSol, double dT) {
+void DBase::AddSolutions(int iSol, CString sT, CString sE, double dT) {
+	// momo
 	if (pCurrentMesh != NULL) {
 		if (pCurrentMesh->pSOLS != NULL) {
-			pCurrentMesh->pSOLS->AddSolution(iSol, sT, dT);
+			// momo
+			// momo// pCurrentMesh->pSOLS->AddSolution(iSol, sT, dT);
+			pCurrentMesh->pSOLS->AddSolution(iSol, sT, sE, dT);
+			// momo
 		}
 	}
 }
@@ -11209,13 +11502,16 @@ void DBase::DrawSelectCircles() {
 			if ((iHLimit > -1) && (iHLimit < iHC))
 				iHC = iHLimit;
 			for (iDB_I = 0; iDB_I < iHC; iDB_I++) {
-				S_Buff[iDB_I]->SetToScr(&pModelMat, &pScrMat);
-				S_Buff[iDB_I]->HighLight();
+				if (S_Buff[iDB_I]->isFitable) {
+					S_Buff[iDB_I]->SetToScr(&pModelMat, &pScrMat);
+					S_Buff[iDB_I]->HighLight();
+				}
 			}
 		}
 		if (SeedVals.IsSeedMode && DB_BuffCount > 0) {
 			int iLastPen = 0;
 			for (iDB_I = 0; iDB_I < DB_BuffCount; iDB_I++) {
+				// if(DB_PtBuff[iDB_I]->isFitable){
 				if (DB_PtBuff[iDB_I].tempSeedId > 0) {
 					glColor3f(1, 0, 0);
 				} else {
@@ -11224,12 +11520,15 @@ void DBase::DrawSelectCircles() {
 				vPt = DB_PtBuff[iDB_I];
 				vPt.SetToScr(&pModelMat, &pScrMat);
 				DrawCircle(vPt, 4.5, 1.5, 96);
+				//}
 			}
 		} else {
 			for (iDB_I = 0; iDB_I < DB_BuffCount; iDB_I++) {
+				// if(DB_PtBuff[iDB_I]->isFitable){
 				vPt = DB_PtBuff[iDB_I];
 				vPt.SetToScr(&pModelMat, &pScrMat);
 				DrawCircle(vPt, 8.0, 1.5, 96);
+				//}
 			}
 		}
 		if (OTemp->iNo > 0) {
@@ -11237,7 +11536,9 @@ void DBase::DrawSelectCircles() {
 			if ((iHLimit > -1) && (iHLimit < iHC))
 				iHC = iHLimit;
 			for (iDB_I = 0; iDB_I < iHC; iDB_I++) {
-				OTemp->Objs[iDB_I]->HighLight();
+				if (OTemp->Objs[iDB_I]->isFitable) {
+					OTemp->Objs[iDB_I]->HighLight();
+				}
 			}
 		}
 		if (OTemp2->iNo > 0) {
@@ -11245,7 +11546,9 @@ void DBase::DrawSelectCircles() {
 			if ((iHLimit > -1) && (iHLimit < iHC))
 				iHC = iHLimit;
 			for (iDB_I = 0; iDB_I < iHC; iDB_I++) {
-				OTemp2->Objs[iDB_I]->HighLight();
+				if (OTemp2->Objs[iDB_I]->isFitable) {
+					OTemp2->Objs[iDB_I]->HighLight();
+				}
 			}
 		}
 	}
@@ -15386,7 +15689,10 @@ void DBase::ExportRes(FILE* pFile2) {
 	fclose(pFile2);
 }
 
-void DBase::ExportMeshNAS(FILE* pFile2, int iFile) {
+// momo
+// momo// void DBase::ExportMeshNAS(FILE* pFile2, int iFile) {
+void DBase::ExportMeshNAS(FILE* pFile2, int iFile, bool previewMode) {
+	// momo
 	if (this->pCurrentMesh != NULL) {
 		COleDateTime timeStart;
 		timeStart = COleDateTime::GetCurrentTime();
@@ -15399,27 +15705,114 @@ void DBase::ExportMeshNAS(FILE* pFile2, int iFile) {
 		int Sec = timeStart.GetSecond();
 
 		if (Year < 3000) {
-			fprintf(pFile2, "%s\n", "$**********************************************************");
-			fprintf(pFile2, "%s\n", "$      NASTRAN DECK EXPORTED FROM M3D");
-			fprintf(pFile2, "%s\n", "$      VERSION 7.2");
-			fprintf(pFile2, "%s\n", "$      www.M3dFea.com");
-			fprintf(pFile2, "%s %i:%i:%i\n", "$      DATE", Day, Mon, Year);
-			fprintf(pFile2, "%s %i:%i:%i\n", "$      TIME", Hour, Min, Sec);
-			fprintf(pFile2, "%s\n", "$**********************************************************");
+			fprintf(pFile2, "$*******************************************************************************\n");
+			fprintf(pFile2, "$\n");
+			fprintf(pFile2, "$      NASTRAN/MYSTRAN DECK EXPORTED FROM M3D\n");
+			fprintf(pFile2, "$      VERSION 7.9\n");
+			fprintf(pFile2, "$      www.M3Dfea.com and www.github.com/ClassicalFEA/M3D\n");
+			fprintf(pFile2, "$      DATE %i-%i-%i (YYYY-MM-DD)\n", Year, Mon, Day);
+			fprintf(pFile2, "$      TIME %02i:%02i:%02i\n", Hour, Min, Sec);
 			if (pCurrentMesh->pSOLS != NULL)
 				pCurrentMesh->ExportNASExec(pFile2, pSecs);
 			if (iFile == -1) {
+				// momo
+				fprintf(pFile2, "$\n");
+				fprintf(pFile2, "$*******************************************************************************\n");
+				fprintf(pFile2, "$*******************************************************************************\n");
+				fprintf(pFile2, "$******************* BULK DATA *************************************************\n");
+				fprintf(pFile2, "$*******************************************************************************\n");
+				fprintf(pFile2, "$*******************************************************************************\n");
+				fprintf(pFile2, "$\n");
+				// momo
 				fprintf(pFile2, "%s\n", "BEGIN BULK");
-				fprintf(pFile2, "%s\n", "PARAM,POST,-1");
+				// momo
+				int iAc = pCurrentMesh->pSOLS->iActive;
+				Solution* pSOL = pCurrentMesh->pSOLS->pSols[iAc];
+				if (pSOL->iType == 4 || pSOL->iType == 5) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$*******************************************************************************\n");
+					fprintf(pFile2, "$******************* SOL 103 AND SOL 105 EIGEN CARD ****************************\n");
+					fprintf(pFile2, "$*******************************************************************************\n");
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$The following line was added via the M3D Solution Type Eigen Entry\n");
+					fprintf(pFile2, "%S\n", pSOL->sEigenCard);
+				}
+				bool parametersShowed = false;
+				if (DeckModsParamBailout == -1 || DeckModsParamAutoSpc == 0 || DeckModsParamPost == -1 || DeckModsParamFiles == 1 || DeckModsParamQuad4typ == 1) {
+					parametersShowed = true;
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$*******************************************************************************\n");
+					fprintf(pFile2, "$******************* PARAMETERS ************************************************\n");
+					fprintf(pFile2, "$*******************************************************************************\n");
+				}
+				if (DeckModsParamPost == -1) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$The following param is used to create the OP2 binary file for results.\n");
+					fprintf(pFile2, "PARAM, POST, -1\n");
+				}
+				if (DeckModsParamBailout == -1 || DeckModsParamAutoSpc == 0 || DeckModsParamFiles == 1 || DeckModsParamQuad4typ == 1) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$The following parameters are not the defaults.\n");
+					fprintf(pFile2, "$Added via the M3D \"Deck - Master Overrides\" menu.\n");
+				}
+				if (DeckModsParamBailout == -1) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$The bailout param is turned on. This may be used to identify model errors.\n");
+					fprintf(pFile2, "PARAM, BAILOUT, -1\n");
+				}
+				if (DeckModsParamAutoSpc == 0) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "PARAM, AUTOSPC, NO\n");
+				}
+				if (DeckModsParamFiles == 1) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$The following param is MYSTRAN specific. This will request all file types\n");
+					fprintf(pFile2, "$to be created. All possible outputs will be included.\n");
+					fprintf(pFile2, "PARAM, FILES, YES\n");
+				}
+				if (DeckModsParamQuad4typ == 1) {
+					fprintf(pFile2, "$\n");
+					fprintf(pFile2, "$The following param is MYSTRAN specific. The MITC4+ quad element formulation\n");
+					fprintf(pFile2, "$will be used.\n");
+					fprintf(pFile2, "PARAM, QUAD4TYP, MITC4+\n");
+				}
+				if (parametersShowed) {
+					// fprintf(pFile2, "$\n");
+				}
+				// momo
 			}
-			fprintf(pFile2, "%s\n", "$******************** MATERIALS ***************************");
+			fprintf(pFile2, "$\n");
+			fprintf(pFile2, "$*******************************************************************************\n");
+			fprintf(pFile2, "$******************* MATERIALS *************************************************\n");
+			fprintf(pFile2, "$*******************************************************************************\n");
+			fprintf(pFile2, "$\n");
+			// momo
+			fprintf(pFile2, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+			// momo
 			MatT->ExportNAS(pFile2, iFile);
-			fprintf(pFile2, "%s\n", "$******************* PROPERTIES ***************************");
+			fprintf(pFile2, "$\n");
+			fprintf(pFile2, "$*******************************************************************************\n");
+			fprintf(pFile2, "$******************* PROPERTIES ************************************************\n");
+			fprintf(pFile2, "$*******************************************************************************\n");
+			fprintf(pFile2, "$\n");
+			// momo
+			fprintf(pFile2, "$--1---><--2---><--3---><--4---><--5---><--6---><--7---><--8---><--9---><--10-->\n");
+			// momo
 			PropsT->ExportNAS(pFile2, iFile);
 			pCurrentMesh->ExportNAS(pFile2, pSecs, iFile);
-			pCurrentMesh->ExportNAS_SETS(pFile2, pSecs, iFile);
+			// momo
+			// momo// pCurrentMesh->ExportNAS_SETS(pFile2, pSecs, iFile);
+			pCurrentMesh->ExportNAS_SETS(pFile2, pSecs, iFile, previewMode);
+			// momo
 			if (iFile == -1)
-				fprintf(pFile2, "%s\n", "ENDDATA");
+			// momo
+			// momo// fprintf(pFile2, "$\n%s\n", "ENDDATA");
+			{
+				fprintf(pFile2, "$\n");
+				fprintf(pFile2, "$*******************************************************************************\n");
+				fprintf(pFile2, "ENDDATA\n");
+			}
+			// momo
 		} else {
 			outtext1("Nastran Export Expired.");
 		}
@@ -15441,13 +15834,13 @@ void DBase::ExportToText(FILE* pFile2) {
 		int Sec = timeStart.GetSecond();
 
 		if (Year < 2030) {
-			fprintf(pFile2, "%s\n", "$**********************************************************");
-			fprintf(pFile2, "%s\n", "$      NASTRAN DECK EXPORTED FROM M3D");
-			fprintf(pFile2, "%s\n", "$      VERSION 6.1");
-			fprintf(pFile2, "%s\n", "$      WWW.M3d.org.uk");
-			fprintf(pFile2, "%s %i:%i:%i\n", "$      DATE", Day, Mon, Year);
-			fprintf(pFile2, "%s %i:%i:%i\n", "$      TIME", Hour, Min, Sec);
-			fprintf(pFile2, "%s\n", "$**********************************************************");
+			fprintf(pFile2, "$*******************************************************************************\n");
+			fprintf(pFile2, "$\n");
+			fprintf(pFile2, "$      NASTRAN/MYSTRAN DECK EXPORTED FROM M3D\n");
+			fprintf(pFile2, "$      VERSION 7.9\n");
+			fprintf(pFile2, "$      www.M3Dfea.com and www.github.com/ClassicalFEA/M3D\n");
+			fprintf(pFile2, "$      DATE %i-%i-%i (YYYY-MM-DD)\n", Year, Mon, Day);
+			fprintf(pFile2, "$      TIME %02i:%02i:%02i\n", Hour, Min, Sec);
 			int iCO;
 			CString OutS;
 
@@ -15593,7 +15986,7 @@ void DBase::KnotInsertion(NCurve* pC, C3dVector vPt) {
 			InvalidateOGL();
 			ReDraw();
 		} else {
-			outtext1("ERROR: No Projection onto Curve.");
+			outtext1("ERROR: No Orientation onto Curve.");
 		}
 	} else {
 		outtext1("ERROR: No Curve Selected.");
@@ -15682,7 +16075,7 @@ void DBase::CurveSplit(NCurve* pC, C3dVector vPt) {
 				pCir->we = pC->we;
 				pC->we = dU;
 			} else {
-				outtext1("ERROR: No Projection onto Circle.");
+				outtext1("ERROR: No Orientation onto Circle.");
 			}
 		} else {
 			outtext1("Curve found for knot insertion.");
@@ -18404,7 +18797,10 @@ void DBase::ImportNASTRAN_SOL(CString inName, ME_Object* pME) {
 			if ((sLine.Find(sKeyWrd) > -1) && (sLine.Find(_T("101")) > -1) && hasNoCharactersBeforeKeyword(sLine, sKeyWrd)) {
 				// Linear static solve
 				bSOL101 = TRUE;
-				pME->pSOLS->AddSolution(0, _T("SOL 101 STATICS"), gDEF_SOL_TOL);
+				// momo
+				// momo// pME->pSOLS->AddSolution(0, _T("SOL 101 STATICS"), gDEF_SOL_TOL);
+				pME->pSOLS->AddSolution(0, _T("SOL 101 STATICS"), _T(""), gDEF_SOL_TOL);
+				// momo
 				outtext1("Solution Added and Set as Active.");
 			}
 
@@ -19537,9 +19933,9 @@ void DBase::EditMat(int MID, BOOL bPID, bool& materialIDFound)
 		Dlg.pEnt = M;
 		// MoMo_Material_FormKeysBugV1_05_22_2025_Start
 		if (Dlg.pEnt->iType == 1) {
-			Dlg.FormCaption = "Isotropic Material";
+			Dlg.FormCaption = "Isotropic Material - MAT1";
 		} else {
-			Dlg.FormCaption = "Orthotropic Material";
+			Dlg.FormCaption = "2D Orthotropic Materiaal - MAT8";
 		}
 		// MoMo_Material_FormKeysBugV1_05_22_2025_End
 		Dlg.DoModal();

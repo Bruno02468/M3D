@@ -318,10 +318,10 @@ void DrawPixelCircleAt3D(const C3dVector& pt, const float* rgb) {
 }
 
 float GetPixelSizeInX() {
-	GLdouble modelview[16], projection[16];
+	GLdouble modelview[16], orientation[16];
 	GLint viewport[4];
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetDoublev(GL_PROJECTION_MATRIX, orientation);
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
 	GLint cx = viewport[0] + viewport[2] / 2;
@@ -332,12 +332,12 @@ float GetPixelSizeInX() {
 
 	GLdouble worldX1, worldY1, worldZ1;
 	gluUnProject((GLdouble) cx, (GLdouble) cy, (GLdouble) winZ,
-	             modelview, projection, viewport,
+	             modelview, orientation, viewport,
 	             &worldX1, &worldY1, &worldZ1);
 
 	GLdouble worldX2, worldY2, worldZ2;
 	gluUnProject((GLdouble) (cx + 1), (GLdouble) cy, (GLdouble) winZ,
-	             modelview, projection, viewport,
+	             modelview, orientation, viewport,
 	             &worldX2, &worldY2, &worldZ2);
 
 	return (float) (worldX2 - worldX1);
@@ -1252,7 +1252,7 @@ class CSETSDialog: public CDialog {
 	public:
 		enum { IDD = IDD_SETS };
 		int* iNoS;
-		int* iCurS;
+		int* iActive;
 		CString sTitle;
 		CString sSET;
 		CString sDEL;
@@ -1260,19 +1260,33 @@ class CSETSDialog: public CDialog {
 		CString sACT;
 		CString SETS[1000];
 		CSETSDialog();
-		void AttachSets(int* iNo, int* iCur);
+		void AttachSets(int* iNo, int* iAct);
 		void AddSet(int ind, CString sTit);
 		void RemoveSet(int ind);
 		void Refresh();
+		// momo
+		void CSETSDialog::LoadToEdits(int iList);
+
+	public:
+		void SetActiveSetLabelColor(COLORREF clrNew);
+	protected:
+		CFont m_boldFont;
+		COLORREF m_ActiveSetLabelColor;
+		afx_msg void OnDoubleClickList();
+		afx_msg void OnFocusList();
+		afx_msg void OnFocusEditControls();
+		afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+		// momo
+
 		DECLARE_MESSAGE_MAP()
-		afx_msg void OnBnClickedCreate();
+		afx_msg void OnBnClickedCSetCreate();
 		virtual BOOL OnInitDialog();
-		afx_msg void OnStnClickedSetlabel();
-		afx_msg void OnBnClickedCdelset();
-		afx_msg void OnBnClickedCsetcur();
-		afx_msg void OnBnClickedCsetlist();
-		afx_msg void OnEnChangeSetid();
-		afx_msg void OnBnClickedNoneact();
+		afx_msg void OnStnClickedCSetLabel();
+		afx_msg void OnBnClickedCSetDelete();
+		afx_msg void OnBnClickedCSetActivate();
+		afx_msg void OnBnClickedCSetList();
+		afx_msg void OnEnChangeCSetId();
+		afx_msg void OnBnClickedCSetActivateNone();
 };
 
 class CSTEPSDialog: public CDialog {
@@ -1296,13 +1310,28 @@ class CSTEPSDialog: public CDialog {
 		virtual BOOL OnInitDialog();
 		void AddSet(int iID, CString sTXT, int iT);
 		void Refresh();
+		// momo
+	public:
+		void SetActiveSolStepLabelColor(COLORREF clrNew);
+		void SetActiveStepLabelColor(COLORREF clrNew);
+	protected:
+		CFont m_boldFont;
+		COLORREF m_ActiveSolStepLabelColor;
+		COLORREF m_ActiveStepLabelColor;
+		// momo
 		DECLARE_MESSAGE_MAP()
 		afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 		afx_msg void OnLbnSelchangeStepLbx();
-		afx_msg void OnBnClickedCreate();
-		afx_msg void OnBnClickedActStep();
-		afx_msg void OnBnClickedOk();
-		afx_msg void OnBnClickedStepDel();
+		afx_msg void OnBnClickedStepCreate();
+		afx_msg void OnBnClickedStepActivate();
+		afx_msg void OnBnClickedStepOk();
+		afx_msg void OnBnClickedStepDelete();
+		// momo
+		afx_msg void OnDoubleClickList();
+		afx_msg void OnFocusList();
+		afx_msg void OnFocusEditControls();
+		afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+		// momo
 };
 
 class CSOLDialog: public CDialog {
@@ -1325,11 +1354,31 @@ class CSOLDialog: public CDialog {
 		// int GetTCInd(int ID);
 		virtual BOOL OnInitDialog();
 		void Refresh();
+
+		// momo
+	public:
+		void SetActiveSolutionLabelColor(COLORREF clrNew);
+	protected:
+		CFont m_boldFont;
+		CRect m_rcTitleInit;
+		COLORREF m_ActiveSolutionLabelColor;
+		enum class EInputModel { InputModel1 = 0,
+			                      InputModel2 = 1,
+			                      InputModel3 = 2 };
+		EInputModel CurrentInputModel() const;
+		void UpdateUIByInputModel(EInputModel t);
+		afx_msg void OnSelChangeType();
+		afx_msg void OnDoubleClickList();
+		afx_msg void OnFocusList();
+		afx_msg void OnFocusEditControls();
+		afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+		// momo
+
 		DECLARE_MESSAGE_MAP()
-		afx_msg void OnBnClickedCr();
-		afx_msg void OnBnClickedAct();
-		afx_msg void OnBnClickedDel();
-		afx_msg void OnBnClickedOk();
+		afx_msg void OnBnClickedSolutionCreate();
+		afx_msg void OnBnClickedSolutionActivate();
+		afx_msg void OnBnClickedSolutionDelete();
+		afx_msg void OnBnClickedSolutionOk();
 };
 
 class CResSelDialog: public CDialog {
@@ -3305,7 +3354,7 @@ class E_Object: public G_Object {
 		virtual void GetPinFlags(Vec<int>& PDOFS, int& iNoPINs);
 		virtual void PinFlgsToKE(Mat& KEL); // release DOF
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 };
 
@@ -3328,7 +3377,7 @@ class E_Object38: public E_Object {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		virtual C3dMatrix GetElSys();
@@ -3374,7 +3423,7 @@ class E_Object36: public E_Object {
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		virtual C3dMatrix GetElSys();
@@ -3426,7 +3475,7 @@ class E_Object2: public E_Object {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		void SetUpVec(C3dVector vIn);
@@ -3495,7 +3544,7 @@ class E_Object2R: public E_Object2 {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		void SetUpVec(C3dVector vIn);
@@ -3617,7 +3666,7 @@ class E_Object3: public E_Object {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual int GetfaceList(eFace* Faces[6]);
 		virtual C3dVector Get_Centroid();
@@ -3724,7 +3773,7 @@ class E_Object4: public E_Object {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		// virtual void SetToScr(C3dMatrix* pModMat,C3dMatrix* pScrTran);
 		// virtual void HighLight(CDC* pDC);
@@ -3829,7 +3878,7 @@ class E_Object34: public E_Object {
 		virtual int GetLinkList(eEdge* Links[200]);
 		virtual G_Object* GetNode(int i);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual C3dVector GetNodalCoords(int i);
 		virtual void Reverse();
@@ -3926,7 +3975,7 @@ class E_ObjectR: public E_Object {
 		virtual void OglDraw(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		virtual void OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2);
 		// momo zoom to fit
-		virtual void GetPt_Point(int iPoint,C3dVector* vPt,bool* havePtPoint);
+		virtual void GetPt_Point(int iPoint, C3dVector* vPt, bool* havePtPoint);
 		// momo zoom to fit
 		virtual C3dVector Get_Centroid();
 		virtual void ExportUNV(FILE* pFile);
@@ -4000,7 +4049,7 @@ class Table: public CObject {
 		Entity* pEnts[MAX_ENTS];
 		int iNo;
 		// MoMo_Material_SaveBugV1_05_20_2025_Start
-		bool isTemp = FALSE;
+		bool isTemp;
 		// MoMo_Material_SaveBugV1_05_20_2025_End
 		virtual void DeleteAll();
 		void Delete(Entity* pO);
@@ -4050,6 +4099,9 @@ class Solution: public CObject {
 		int iType;
 		int iCur;
 		CString sTitle;
+		// momo
+		CString sEigenCard;
+		// momo
 		int iNo;
 		double dTol; // Solution accuracy
 		int LS[MAX_STEPS];
@@ -4058,7 +4110,11 @@ class Solution: public CObject {
 		CString sStepTitle[MAX_STEPS];
 		BOOL RS[MAX_STEPS];
 		Solution();
+		// momo
+		// momo// Solution(int iT, CString sTit, double dT);
 		Solution(int iT, CString sTit, double dT);
+		Solution(int iT, CString sTit, CString sEigen, double dT);
+		// momo
 		~Solution();
 		void AddStep(CString sT, int idLS, int idBS, int idTS, BOOL bRS);
 		void DelStep(int ind);
@@ -4073,18 +4129,21 @@ class Solution: public CObject {
 class SolSets: public CObject {
 		DECLARE_DYNAMIC(SolSets)
 	public:
-		int iCur;
+		int iActive;
 		int iNo;
 		CString sTitle;
 		Solution* pSols[MAX_SOLS];
 		Solution* GetCurSolution();
-		BOOL SetCurSol(int iC);
-		BOOL SetCurStep(int iC);
+		BOOL SetCurSol(int iAc);
+		BOOL SetCurStep(int iAc);
 		int GetCurStep();
 		SolSets();
 		SolSets(CString sTitle);
 		~SolSets();
-		void AddSolution(int iT, CString sTit, double dT);
+		// momo
+		// momo// void AddSolution(int iT, CString sTit, double dT);
+		void AddSolution(int iT, CString sTit, CString sEigen, double dT);
+		// momo
 		void DelSolution(int ind);
 		void Serialize(CArchive& ar, int iV);
 		void AddStep(CString sT, int idLS, int idBS, int idTS, BOOL bRS);
@@ -4273,7 +4332,10 @@ class ME_Object: public G_Object {
 		void ImportSTL(CString sFileName);
 		void ExportNASExec(FILE* pFile, SecTable* pS);
 		void ExportNASCase101(FILE* pFile, SecTable* pS);
-		void ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo);
+		// momo
+		// momo// void ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo);
+		void ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo, bool previewMode);
+		// momo
 		void ExportNAS(FILE* pFile, SecTable* pS, int iFileNo);
 		void ExportRes(FILE* pFile);
 		void ExportSec(FILE* pFile, int id, CString Name, double w, double h, double t);

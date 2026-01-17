@@ -9,8 +9,8 @@
 // so we can maintain compatability with older files
 // MoMo_Start
 // MoMo// const int VERSION_NO = -78;
-const int nVERSIONS = 2;
-const int VERSIONS[] = {-79, -78};
+const int nVERSIONS = 3;
+const int VERSIONS[] = {-80, -79, -78};
 // MoMo_End
 const int MAX_GPS = 1000;
 const int MAX_TEMPGRP = 10000;
@@ -25,7 +25,13 @@ class DBase: public CCmdTarget {
 		int iFileNo = 0;
 		CString sFiles[200];
 		int GetFileByNo(CString sF);
-		void ExporttoNAS(int iFileNo);
+		// momo
+		// momo// void ExporttoNAS(int iFileNo);
+		void ExporttoNAS(int iFileNo, CString* tempFilePath = nullptr);
+		BOOL DBase::TryCreateDeckFile(const CString& dir, const CString& base, const CString& ext, CString& outFull);
+		BOOL CreateDeckPreviewFile(CString& sPathOut);
+		static bool FileExists(LPCTSTR path);
+		// momo
 		void ModIncludeNo(int iF);
 		void ModLayerNo(int iF);
 		void Ortho();
@@ -149,7 +155,7 @@ class DBase: public CCmdTarget {
 		void SetActSol(int iD);
 		// momo change Display Flags Method
 		void DefaultDisplays();
-		void ResteFileSettings(bool bMode);
+		void ResetConfigFileSettings(const CString sMode);
 		// momo change Display Flags Method
 		// momo
 		void DBase::ZoomToBaseScale();
@@ -323,7 +329,10 @@ class DBase: public CCmdTarget {
 		//              SOLUTION    SET     MANAGEMENT
 		//*********************************************************************
 		void ListSolutions();
-		void AddSolutions(CString sT, int iSol, double dT);
+		// momo
+		// momo// void AddSolutions(CString sT, int iSol, double dT);
+		void AddSolutions(int iSol, CString sT, CString sE, double dT);
+		// momo
 		void AddStep(CString sT, int iLC, int iBC, int iTC, BOOL bRS);
 		BOOL isValidLCid(int iLC);
 		BOOL isValidBCid(int iLC);
@@ -720,7 +729,10 @@ class DBase: public CCmdTarget {
 		void ImportDXF(CString sFile);
 		void ExportDXF(FILE* pFile2);
 		void ExportRes(FILE* pFile2);
-		void ExportMeshNAS(FILE* pFile2, int iFile); // iFile is include file no or -1 all
+		// momo
+		// momo// void ExportMeshNAS(FILE* pFile2, int iFile); // iFile is include file no or -1 all
+		void ExportMeshNAS(FILE* pFile2, int iFile, bool previewMode); // iFile is include file no or -1 all
+		// momo
 		void ExportToText(FILE* pFile2);
 		void ExportViewMat(FILE* pFile2);
 		void ImportViewMat(FILE* pFile);
