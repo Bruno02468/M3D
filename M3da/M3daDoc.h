@@ -420,9 +420,9 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnElementmodifiyBeamoffset();
 		afx_msg void OnElementmodifiyBeamupvectors();
 		afx_msg void OnPropertyBeam();
-		afx_msg void OnPropertyBeambar();
-		afx_msg void OnPropertyBeamtube();
-		afx_msg void OnPropertyBeambox();
+		afx_msg void OnPropertyBeamBar();
+		afx_msg void OnPropertyBeamTube();
+		afx_msg void OnPropertyBeamBox();
 		afx_msg void OnPropertyShell();
 		afx_msg void OnElementmodifiyShelloffset();
 		afx_msg void OnMaterialIsentropic();
@@ -533,7 +533,7 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnPostSelectdeformedresults();
 		afx_msg void OnPropertySolid();
 		afx_msg void OnOptionsDeformationscale();
-		afx_msg void OnProperty2dplainstress();
+		afx_msg void OnProperty2DPlainStress();
 		afx_msg void OnElementtypeRod();
 		afx_msg void OnPropertyRod();
 		afx_msg void OnViewDisplayElementCoordSys();
@@ -603,13 +603,13 @@ class CM3daDoc: public CDocument, public CUndo {
 		afx_msg void OnElementtypeTranslationalspring();
 		afx_msg void OnElementtypeRotationalspring();
 		afx_msg void OnElementmodifiySpringcoordsystem();
-		afx_msg void OnPropertyRotationalspring();
-		afx_msg void OnPropertyTranslationalspring();
+		afx_msg void OnPropertyRotationalSpring();
+		afx_msg void OnPropertyTranslationalSpring();
 		afx_msg void OnChecksNegativevolumeelements();
 		afx_msg void OnChecksCheckshellelementaspectration();
 		afx_msg void OnChecksChecktetcollapse();
 		afx_msg void OnElementtypeMass();
-		afx_msg void OnPropertyLumpedmass();
+		afx_msg void OnPropertyLumpedMass();
 		afx_msg void OnVisabilityWorkPlane();
 		afx_msg void OnToolsMeasureangle();
 		afx_msg void OnLoadsbcCreaterotationalbodyload();
@@ -658,10 +658,10 @@ class CM3daDoc: public CDocument, public CUndo {
 		//  afx_msg void OnFileOpen();
 		virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 		afx_msg void OnCurvetoolsText();
-		afx_msg void OnPropertyPcomp();
+		afx_msg void OnPropertyPComp();
 		afx_msg void OnMaterialOrthotropic();
 		afx_msg void OnPropertyDisplaylaminatestack();
-		afx_msg void OnPropertyPbush();
+		afx_msg void OnPropertyPBush();
 		afx_msg void OnManipulationDivideinto();
 		afx_msg void OnManipulationEnvelopemaximum();
 		afx_msg void OnManipulationEnvelopeminimum();
@@ -685,7 +685,7 @@ class CM3daDoc: public CDocument, public CUndo {
 
 		afx_msg void OnFemtoolsSweepnodestobeams33361();
 		afx_msg void OnFemtoolsSweepnodestoshells33362();
-		afx_msg void OnViewHighlightlimit();
+		afx_msg void OnViewHighlightLimit();
 		afx_msg void OnSelectionRbecentrenodes();
 		afx_msg void OnChecksCountf();
 		afx_msg void OnCurvemodifySplitatpoint();

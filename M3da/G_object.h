@@ -750,6 +750,9 @@ class Prop: public CObject {
 class Entity: public CObject {
 		DECLARE_DYNAMIC(Entity)
 	public:
+		// momo
+		CString sSecType;
+		// momo
 		CString sTitle;
 		int iFile;
 		int iID;
@@ -960,7 +963,9 @@ class PBARL: public Property {
 		double J;
 		double ybar;
 		double zbar;
-		CString sSecType;
+		// momo
+		// momo// CString sSecType;
+		// momo
 		CString sGROUP;
 		double dDIMs[8];
 		int iNoDims;
@@ -991,7 +996,9 @@ class PROD: public Property {
 		int iMID;
 		double A;
 		double J;
-		CString sSecType;
+		// momo
+		// momo// CString sSecType;
+		// momo
 		CString sGROUP;
 		BSec DspSec;
 
@@ -1470,7 +1477,6 @@ class CEntEditDialog: public CDialog {
 		// MoMo// int m_iItemBeingEdited;
 		int m_iItemBeingEdited = -1;
 		bool ShiftDown = false;
-		CString FormCaption = _T("");
 		// MoMo_Material_FormKeysBugV1_05_22_2025_End
 		int iNo = 0;
 		int iNo2 = 0;
@@ -4048,9 +4054,6 @@ class Table: public CObject {
 		~Table();
 		Entity* pEnts[MAX_ENTS];
 		int iNo;
-		// MoMo_Material_SaveBugV1_05_20_2025_Start
-		bool isTemp;
-		// MoMo_Material_SaveBugV1_05_20_2025_End
 		virtual void DeleteAll();
 		void Delete(Entity* pO);
 		virtual void AddItem(Entity* pIn);

@@ -514,6 +514,7 @@ class DBase: public CCmdTarget {
 		void MeshSurfAF(ObjList* pSurfs, double dSz);
 		// MoMo_Start
 		void MeshSurfAF_EXP04();
+		void MeshSurfAF2_EXP04();
 		// MoMo_End
 		//***************************************************************************
 		//                      EXPERIMENTAL QMORPH
@@ -851,13 +852,16 @@ class DBase: public CCmdTarget {
 		// momo
 		C3dVector PickPointToGlobal2Exact(C3dVector Pt);
 		// momo
-		void ListMat(int MID, BOOL bPID);
+		void ListMaterial(int MID, BOOL bPID);
 		// MoMo_Material_FormKeysBugV1_05_22_2025_Start
-		// MoMo// void EditMat(int MID, BOOL bPID);
-		void EditMat(int MID, BOOL bPID, bool& materialIDFound);
+		// MoMo// void EditMaterial(int MID, BOOL bPID);
+		void EditMaterial(int MID, BOOL bPID, bool& materialIDFound);
 		// MoMo_Material_FormKeysBugV1_05_22_2025_End
-		void EditProp(int PID);
-		void ListProp(int PID);
+		// momo
+		// momo// void EditProperty(int PID);
+		void EditProperty(int PID, bool& propertyIDFound);
+		// momo
+		void ListProperty(int PID);
 		void EditObject();
 		void EditGlobals();
 		void lMeasure(C3dVector v1, C3dVector v2);

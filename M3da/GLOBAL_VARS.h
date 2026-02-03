@@ -80,6 +80,11 @@ extern int DeckModsParamFiles;
 extern int DeckModsParamQuad4typ;
 extern CString TemporaryDeckFilePath;
 // momo
+// MoMo_Material_SaveBugV1_05_20_2025_Start
+extern bool EntitySaved;
+extern CString EntityName; // 1:Material 2:Property
+extern int EntityKind; // 1:Material 2:Property
+// MoMo_Material_SaveBugV1_05_20_2025_End
 // momo change command box color
 struct CommandLine_State {
 		bool CurrentStateIsActive;

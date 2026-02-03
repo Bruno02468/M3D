@@ -1622,7 +1622,7 @@ void DBase::Serialize(CArchive& ar) {
 		// momo save by old versions
 		// MoMo_Start
 		CString S1;
-		outtextSprintf(_T("Version of Loaded File = %.1f"), 0, abs(iVER / 10.0), false, 1);
+		outtextSprintf(_T("Version of Loaded File = %.1f"), 0, abs(iVER / 10.0), _T(""), 2, 1);
 		// MoMo_End
 		if (iVER <= -66) {
 			C3dMatrix mT;
@@ -10246,7 +10246,7 @@ void DBase::Solve() {
 }
 
 void DBase::ListAllProps() {
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	if (pCurrentMesh != NULL) {
 		PropsT->ListAll();
 	}
@@ -19912,8 +19912,8 @@ void DBase::SelCursbyLAY(int iLAY) {
 }
 
 // MoMo_Material_FormKeysBugV1_05_22_2025_Start
-// MoMo// void DBase::EditMat(int MID, BOOL bPID)
-void DBase::EditMat(int MID, BOOL bPID, bool& materialIDFound)
+// MoMo// void DBase::EditMaterial(int MID, BOOL bPID)
+void DBase::EditMaterial(int MID, BOOL bPID, bool& materialIDFound)
 // MoMo_Material_FormKeysBugV1_05_22_2025_End
 {
 	Property* P = NULL;
@@ -19931,21 +19931,14 @@ void DBase::EditMat(int MID, BOOL bPID, bool& materialIDFound)
 	if (M != NULL) {
 		CEntEditDialog Dlg;
 		Dlg.pEnt = M;
-		// MoMo_Material_FormKeysBugV1_05_22_2025_Start
-		if (Dlg.pEnt->iType == 1) {
-			Dlg.FormCaption = "Isotropic Material - MAT1";
-		} else {
-			Dlg.FormCaption = "2D Orthotropic Materiaal - MAT8";
-		}
-		// MoMo_Material_FormKeysBugV1_05_22_2025_End
 		Dlg.DoModal();
 		// MoMo_Material_SaveBugV1_05_20_2025_Start
 		// MoMo// if (Dlg.bDel == TRUE)
 		// MoMo//	 MatT->Delete(M);
-		if (Dlg.bDel == TRUE || MatT->isTemp == true) {
+		if (Dlg.bDel == TRUE || EntitySaved == false) {
 			MatT->Delete(M);
-			if (MatT->isTemp == false) {
-				outtextSprintf(_T("\r\nMaterial ID %i Deleted!"), iMID, 0.0, true, 1);
+			if (EntitySaved == true) {
+				outtextSprintf(_T("\r\n%s ID %i Deleted!"), iMID, 0.0, EntityName, 31, 1);
 			}
 		}
 		materialIDFound = true;
@@ -19957,7 +19950,10 @@ void DBase::EditMat(int MID, BOOL bPID, bool& materialIDFound)
 	}
 }
 
-void DBase::EditProp(int PID) {
+// momo
+// momo// void DBase::EditProperty(int PID) {
+void DBase::EditProperty(int PID, bool& propertyIDFound) {
+// momo
 	Property* P = NULL;
 	P = PropsT->GetItem(PID);
 	if (P != NULL) {
@@ -19966,14 +19962,28 @@ void DBase::EditProp(int PID) {
 		if (Dlg != NULL) {
 			Dlg->pEnt = P;
 			Dlg->DoModal();
-			if (Dlg->bDel == TRUE)
+			// momo
+			//if (Dlg->bDel == TRUE)
+			//	PropsT->Delete(P);
+			if (Dlg->bDel == TRUE || EntitySaved == false) {
 				PropsT->Delete(P);
+				if (EntitySaved == true) {
+					outtextSprintf(_T("\r\n%s ID %i Deleted!"), PID, 0.0, EntityName, 31, 1);
+				}
+			}
+			// momo
 			delete (Dlg);
 			Dlg = NULL;
 			InvalidateOGL();
 			ReGen();
 		}
+		// momo
+		propertyIDFound = true;
+		// momo
 	} else {
+		// momo
+		propertyIDFound = false;
+		// momo
 	}
 }
 
@@ -20031,7 +20041,7 @@ void DBase::EditGlobals() {
 	}
 }
 
-void DBase::ListMat(int MID, BOOL bPID) {
+void DBase::ListMaterial(int MID, BOOL bPID) {
 	Property* P = NULL;
 	Material* M = NULL;
 	int iMID = -1;
@@ -20048,7 +20058,7 @@ void DBase::ListMat(int MID, BOOL bPID) {
 		M->Info();
 }
 
-void DBase::ListProp(int PID) {
+void DBase::ListProperty(int PID) {
 	Property* P = PropsT->GetItem(PID);
 	if (P != NULL) {
 		P->List();
@@ -21106,7 +21116,12 @@ void DBase::CreatePrBar(CString sT, int iPID, int iMID, double dW, double dH) {
 	pBar->dDIMs[1] = dH;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New BAR Section Created.");
+	// momo
+	// momo// outtext1("New BAR Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrShell(CString sT, int iPID, int iMID, double dT, double dNSM) {
@@ -21120,7 +21135,12 @@ void DBase::CreatePrShell(CString sT, int iPID, int iMID, double dT, double dNSM
 	pShell->dNSM = dNSM;
 
 	PropsT->AddItem(pShell);
-	outtext1("New Shell Property Created.");
+	// momo
+	// momo// outtext1("New Shell Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pShell->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 // iP ith to extract
@@ -21168,7 +21188,12 @@ void DBase::CreatePrPCOMP(CString sT, int iPID, double dNSM, int iNoLay, CString
 		pC->AddLayer(iMID, dThk, dTheta, 0);
 	}
 	PropsT->AddItem(pC);
-	outtext1("New PCOMP Property Created.");
+	// momo
+	// momo// outtext1("New PCOMP Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pC->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrSpringT(CString sT, int iPID, double dkx, double dky, double dkz, double dkt) {
@@ -21180,7 +21205,12 @@ void DBase::CreatePrSpringT(CString sT, int iPID, double dkx, double dky, double
 	pST->dkz = dkz;
 	pST->dkcoeff = dkt;
 	PropsT->AddItem(pST);
-	outtext1("New Translational Spring Property Created.");
+	// momo
+	// momo// outtext1("New Translational Spring Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pST->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrBUSH(CString sT, int iPID, double dk1, double dk2, double dk3, double dk4, double dk5, double dk6) {
@@ -21194,7 +21224,12 @@ void DBase::CreatePrBUSH(CString sT, int iPID, double dk1, double dk2, double dk
 	pST->dK5 = dk5;
 	pST->dK6 = dk6;
 	PropsT->AddItem(pST);
-	outtext1("New Nastran PBUSH Property Created.");
+	// momo
+	// momo// outtext1("New Nastran PBUSH Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pST->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrLumpedMass(CString sT, int iPID, double dM) {
@@ -21203,7 +21238,12 @@ void DBase::CreatePrLumpedMass(CString sT, int iPID, double dM) {
 	pST->iID = iPID;
 	pST->dM = dM;
 	PropsT->AddItem(pST);
-	outtext1("New Lumped Mass Property Created.");
+	// momo
+	// momo// outtext1("New Lumped Mass Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pST->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrSpringR(CString sT, int iPID, double dkx, double dky, double dkz, double dkt) {
@@ -21215,7 +21255,12 @@ void DBase::CreatePrSpringR(CString sT, int iPID, double dkx, double dky, double
 	pST->dkz = dkz;
 	pST->dkcoeff = dkt;
 	PropsT->AddItem(pST);
-	outtext1("New Rotational Spring Property Created.");
+	// momo
+	// momo// outtext1("New Rotational Spring Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pST->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrSolid(CString sT, int iPID, int iMID) {
@@ -21226,7 +21271,12 @@ void DBase::CreatePrSolid(CString sT, int iPID, int iMID) {
 	pSolid->iID = iPID;
 
 	PropsT->AddItem(pSolid);
-	outtext1("New Solid Property Created.");
+	// momo
+	// momo// outtext1("New Solid Property Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pSolid->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::ChkShellAspect(ObjList* Elems, double dT, BOOL bList) {
@@ -21505,8 +21555,8 @@ void DBase::CreateMat1(CString sT, int iMID, double dE, double dV, double dDen, 
 	MatT->AddItem(pMat);
 	// MoMo_Material_SaveBugV1_05_20_2025_Start
 	// MoMo// outtext1("New Material Created.");
-	if (MatT->isTemp == false) {
-		outtextSprintf(_T("\r\nMaterial ID %i Created."), MatT->pEnts[MatT->iNo - 1]->iID, 0.0, true, 1);
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pMat->iID, 0.0, EntityName, 31, 1);
 	}
 	// MoMo_Material_SaveBugV1_05_20_2025_End
 }
@@ -21539,8 +21589,8 @@ void DBase::CreateMat8(CString sInTit,
 	MatT->AddItem(pMat);
 	// MoMo_Material_FormKeysBugV1_05_22_2025_Start
 	// MoMo// outtext1("New Material Created.");
-	if (MatT->isTemp == false) {
-		outtextSprintf(_T("\r\nMaterial ID %i Created."), MatT->pEnts[MatT->iNo - 1]->iID, 0.0, true, 1);
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pMat->iID, 0.0, EntityName, 31, 1);
 	}
 	// MoMo_Material_FormKeysBugV1_05_22_2025_End
 }
@@ -21558,7 +21608,12 @@ void DBase::CreatePrBox(CString sT, int iPID, int iMID, double dW, double dH, do
 	pBar->dDIMs[3] = dHT;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New BAR Section Created.");
+	// momo
+	// momo// outtext1("New BAR Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrL(CString sT, int iPID, int iMID, double dW, double dH, double dWT, double dHT) {
@@ -21576,7 +21631,12 @@ void DBase::CreatePrL(CString sT, int iPID, int iMID, double dW, double dH, doub
 	pBar->dDIMs[3] = dHT;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New BAR Section Created.");
+	// momo
+	// momo// outtext1("New BAR Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrT2(CString sT, int iPID, int iMID, double dW, double dH, double dWT, double dHT) {
@@ -21592,7 +21652,12 @@ void DBase::CreatePrT2(CString sT, int iPID, int iMID, double dW, double dH, dou
 	pBar->dDIMs[3] = dHT;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New T2 Beam Section Created.");
+	// momo
+	// momo// outtext1("New T2 Beam Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrCHAN2(CString sT, int iPID, int iMID, double dW, double dH, double dWT, double dHT) {
@@ -21608,7 +21673,12 @@ void DBase::CreatePrCHAN2(CString sT, int iPID, int iMID, double dW, double dH, 
 	pBar->dDIMs[3] = dW;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New CHAN2 Beam Section Created.");
+	// momo
+	// momo// outtext1("New CHAN2 Beam Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrI2(CString sT, int iPID, int iMID, double d1, double d2, double d3, double d4, double d5, double d6) {
@@ -21626,7 +21696,12 @@ void DBase::CreatePrI2(CString sT, int iPID, int iMID, double d1, double d2, dou
 	pBar->dDIMs[5] = d6;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New I2 Beam Section Created.");
+	// momo
+	// momo// outtext1("New I2 Beam Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrTube(CString sT, int iPID, int iMID, double dR, double dr) {
@@ -21640,7 +21715,12 @@ void DBase::CreatePrTube(CString sT, int iPID, int iMID, double dR, double dr) {
 	pBar->dDIMs[1] = dr;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New TUBE Section Created.");
+	// momo
+	// momo// outtext1("New TUBE Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePrRod(CString sT, int iPID, int iMID, double dR) {
@@ -21655,7 +21735,12 @@ void DBase::CreatePrRod(CString sT, int iPID, int iMID, double dR) {
 	pBar->CalcProps();
 	PropsT->AddItem(pBar);
 	pBar->CreateSec();
-	outtext1("New BAR Section Created.");
+	// momo
+	// momo// outtext1("New BAR Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePRBar2(CString sT, int iPID, int iMID, double dA, double dI1, double dI2, double dJ) {
@@ -21669,7 +21754,12 @@ void DBase::CreatePRBar2(CString sT, int iPID, int iMID, double dA, double dI1, 
 	pS->dJ = dJ;
 	pS->CreateSec();
 	PropsT->AddItem(pS);
-	outtext1("New BAR Section Created.");
+	// momo
+	// momo// outtext1("New BAR Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pS->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 void DBase::CreatePRod(CString sT, int iPID, int iMID, double dA, double dJ) {
@@ -21682,7 +21772,12 @@ void DBase::CreatePRod(CString sT, int iPID, int iMID, double dA, double dJ) {
 	pBar->J = dJ;
 	pBar->CreateSec();
 	PropsT->AddItem(pBar);
-	outtext1("New ROD Section Created.");
+	// momo
+	// momo// outtext1("New ROD Section Created.");
+	if (EntitySaved == true) {
+		outtextSprintf(_T("\r\n%s ID %i Created."), pBar->iID, 0.0, EntityName, 31, 1);
+	}
+	// momo
 }
 
 //************************************************
@@ -24458,6 +24553,239 @@ void DBase::MeshSurfAF_EXP04() {
 // MoMo_End
 
 // MoMo_Start
+//*****************************************************************************
+//                2D SURFACE ADVANCING MESHING ALGORITHM
+//*****************************************************************************
+void DBase::MeshSurfAF2_EXP04() {
+	double dSz = SeedVals.InputedMeshElementSize;
+	// MoMo// char S1[80];
+	outtext1("**** STARTING AFM GEN 2D ****");
+	PrintTime(_T("START TIME: "));
+	BOOL bNinT;
+	int iNoEls;
+	bool bExitFail = FALSE;
+	C2dVector t1(0, 0);
+	C2dVector t2(1, 0);
+	C2dVector t3(0, 1);
+	C2dVector vTPt(1, 1);
+	bNinT = NodeInTri(t1, t2, t3, vTPt);
+	C3dVector v;
+	double dMinDst;
+	int iNodeLab = 1;
+	int iSegLab = 1;
+	int i;
+	int j;
+	// int iCO;
+	NSurf* pS;
+	double RR;
+	double RRF;
+
+	// MoMo_Start
+	double dsNew;
+	// MoMo_End
+	BOOL bIs;
+	eFaceList* pTesselation;
+	ObjList* Pts = new ObjList();
+	cLinkedList* Segs = new cLinkedList(); // The FRONT
+	ObjList* pCandidateSegs = new ObjList();
+	ObjList* pFrontNodes = new ObjList();
+	ObjList* pEls = new ObjList();
+	// AddObj(Segs); //If this is left in can save and reload model
+	BOOL bExit = TRUE;
+	c2dParPt* pPt;
+	c2dParPt* pPtN = new c2dParPt();
+	cSeg* pSeg;
+	C2dVector pTmp;
+	C2dVector pC;
+	C2dVector vD;
+	C3dVector p3d;
+	C3dVector dSSpc1;
+	C3dVector dSSpc2;
+	double dMinR;
+	int iID;
+	c2dParPt* pbFNd;
+	BOOL isNewNd;
+	int iDBCnt;
+	double dSclU;
+	double dSclV;
+	double dSclPU;
+	double dSclPV;
+	double dS;
+	dS = dSz;
+	Matrix<C3dVector> der;
+	C3dVector v1;
+	C3dVector v2;
+	for (int iObjList = 0; iObjList < iDspLstCount; iObjList++) {
+		if (Dsp_List[iObjList]->iObjType == 15 && Dsp_List[iObjList]->seedChanged) {
+			// for (iCO = 0; iCO < pSurfs->iNo; iCO++)
+			//	{
+			//		if (pSurfs->Objs[iCO]->iObjType == 15)
+			//		{
+
+			bExitFail = FALSE;
+			pS = (NSurf*) Dsp_List[iObjList]; // pSurfs->Objs[iObjList];
+			// if (pS->iLabel == 87)
+			//	pS->iLabel = 87;
+			if (pS->dSSize > 0)
+				dS = pS->dSSize;
+			CreateBSegs_EXP04(Pts, Segs, dS, pS);
+			Pts->GenIDS(iNodeLab);
+			Segs->GenIDS(iSegLab);
+			// Display the initial front
+			// GenPts(pS, Pts);
+			i = 0;
+			j = 0;
+			iDBCnt = DB_ObjectCount;
+			// Calulate element size in parametric ordinates
+			// U only at present
+			pSeg = (cSeg*) Segs->Head;
+			//**********Need to CHECK***********
+
+			//**********************************
+			do {
+				if (j == 30)
+					j = j;
+				pSeg = (cSeg*) Segs->Head;
+				// Calculate a node position away from seg
+				if (pSeg != NULL) {
+					// local scale factor
+					pS->deriveAt(pSeg->MpT.x, pSeg->MpT.y, 1, der);
+					v1 = der(1, 0);
+					dSclPU = v1.Mag();
+					v2 = der(0, 1);
+					dSclPV = v2.Mag();
+					C3dVector v3 = der(0, 0);
+					C3dVector v4 = der(1, 1);
+
+					// MoMo_Start
+					if (pSeg->nSeeds == 0) {
+						dsNew = dS;
+					} else {
+						dsNew = min(dS, min(pSeg->realdL, min(pSeg->realdLBefore, pSeg->realdLNext)));
+					}
+					dSclU = dsNew / dSclPU;
+					dSclV = dsNew / dSclPV;
+					// MoMo_End
+
+					der.DeleteAll();
+					// end local scale factor
+					vD.x = pSeg->pt[0]->PP.y - pSeg->pt[1]->PP.y;
+					vD.y = pSeg->pt[1]->PP.x - pSeg->pt[0]->PP.x;
+					vD.Normalize();
+
+					vD.x *= dSclU;
+					vD.y *= dSclV;
+
+					pTmp.x = pSeg->MpT.x + vD.x;
+					pTmp.y = pSeg->MpT.y + vD.y;
+					pTmp.Clamp(0, 1);
+					RR = CirCircle2d(pSeg, pTmp, pC, dSclPU, dSclPV);
+					C3dVector vCC = pS->GetPt(pC.x, pC.y);
+					// Need to check the new node is acceptable
+					// for now lets say it is
+					isNewNd = TRUE;
+					// Need to check this point pTmp is deluany and away from front and non intersecting.
+					// p3d = pS->GetPt(pTmp.x, pTmp.y);  //Just for visualisation
+					// pRealPt = AddPt(p3d, 111, TRUE);
+					// pRealPt->iLabel = iNodeLab; iNodeLab++;
+					pCandidateSegs->iNo = 0;
+					pFrontNodes->iNo = 0;
+					GetCandiatesSeg2d(pSeg, Segs, pC, 2 * RR, pCandidateSegs, dSclPU, dSclPV);
+					GetCandiatesNodes2d(pSeg, pCandidateSegs, pC, 2 * RR, pFrontNodes, dSclPU, dSclPV);
+					// Get Best node from boundary short list
+					dMinR = RR;
+					pbFNd = NULL;
+					pPtN->PP.x = pTmp.x;
+					pPtN->PP.y = pTmp.y;
+					dMinDst = ProximityChk2d(pCandidateSegs, pPtN, dSclPU, dSclPV);
+					if (dMinDst > 0.5 * RR) {
+						if (CheckInt(pCandidateSegs, pSeg, pPtN)) {
+							RR = 10000000000;
+							dMinR = RR;
+						}
+					} else {
+						RR = 10000000000;
+						dMinR = RR;
+					}
+					if (pFrontNodes->iNo == 0)
+						outtext1("WARNING: No Cnadidate Nodes.");
+					for (i = 0; i < pFrontNodes->iNo; i++) {
+						pPt = (c2dParPt*) pFrontNodes->Objs[i];
+						if (!CheckInt(pCandidateSegs, pSeg, pPt)) {
+							BOOL bNoGood = FALSE;
+							RRF = CirCircle2d(pSeg, pPt->PP, pC, dSclPU, dSclPV);
+							// Check no other nodes fall in circumcirle
+							bIs = isNodeInCircle2d(pFrontNodes, i, RRF, pC, dSclPU, dSclPV);
+							if (!bIs) {
+								// if seg[0],pPt and seg[1],pPt are in seg list
+								// it must form an element
+								if (RRF < dMinR) {
+									iID = pPt->iLabel;
+									pbFNd = pPt;
+									dMinR = RRF;
+								}
+								if ((isSegIn(pCandidateSegs, pSeg->pt[1], pPt)) &&
+								    (isSegIn(pCandidateSegs, pPt, pSeg->pt[0]))) {
+									iID = pPt->iLabel;
+									pbFNd = pPt;
+									dMinR = RRF;
+									break;
+								}
+							} else {
+								// outtext1("ERROR: Node in Circumcircle.");
+								// bExitFail = TRUE;
+							}
+						}
+					}
+					// if an acceptable node from the boundary is available use it
+					// else create the new a new point at pTmp
+					// SHOULD do a quality check to decide which is the best option
+					if (dMinR == 10000000000) {
+						bExitFail = TRUE; // Need to swap
+						outtext1("ERROR: Meshing Failed.");
+					} else
+						UpdateFront(pS, iNodeLab, iSegLab, isNewNd, pSeg, Pts, Segs, pbFNd, pTmp, pEls);
+				}
+				// if (j>1)
+
+				j++;
+				// if (j==155)
+				//    bExitFail = TRUE;
+			} while ((Segs->iCnt > 0) && (!bExitFail));
+		}
+		// Smoothing Cycle
+		// MoMo// outtext1("Performing 1 Smoothing Cycle");
+		// PrintTime("TIME: ");
+		if (!bExitFail)
+			Smooth(Pts, pEls);
+		// Generate Faces from pEls
+		iNoEls = pEls->iNo / 3;
+		pTesselation = GenTesselation(Pts, pEls);
+
+		Pts->DeleteAll();
+		Segs->DeleteAll();
+		pEls->Clear();
+		// MoMo// S1.Format(_T("Number off Tri Elements Generated: %i"), iNoEls);
+		// MoMo// outtext1(S1);
+	}
+	InvalidateOGL();
+	ReGen();
+	delete (Pts);
+	delete (pEls);
+	Dsp_Rem(Segs);
+	RemTempGraphics(Segs);
+	RemObj(Segs);
+	PrintTime(_T("END TIME: "));
+	outtext1("**** END AFM GEN 2D ****");
+
+	// Need to delete these too
+	// pFrontNodes
+	// pCandidateSegs
+	// pEls
+}
+// MoMo_End
+
+// MoMo_Start
 void DBase::CreateBSegs_EXP04(ObjList* pP, cLinkedList* pS, double dS, NSurf* pSf) {
 	int i, j, k;
 	double dL, dSInc, dSp;
@@ -24915,7 +25243,7 @@ void DBase::ViewCurveSeeds(const char* sMode, int tempSeedId, NCurve* curveIn) {
 	//	}
 	//}
 	// if (nNewSeeds > 0) {
-	//	outtextSprintf("Added Seed Points = %i", nNewSeeds, 0.0, true, 1);
+	//	outtextSprintf("Added Seed Points = %i", nNewSeeds, 0.0, _T(""), 1, 1);
 	//	ReDraw();
 	//}
 }

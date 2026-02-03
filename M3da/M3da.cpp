@@ -113,6 +113,11 @@ bool ModelFileNameChanged = false;
 bool DatFileOverwritePrompt = true;
 CString TextViewerExe = _T("");
 // momo
+// momo
+bool EntitySaved = true;
+CString EntityName = _T("Entity");
+int EntityKind = 1;
+// momo
 
 // CM3daApp
 
@@ -123,7 +128,6 @@ ON_COMMAND(ID_HELP_TYPEID, &CM3daApp::OnShowInfoDialog)
 // momo add type id form
 // momo
 ON_COMMAND(ID_HELP_SOLUTION_SETUP, &CM3daApp::OnShowInfoDialog)
-ON_COMMAND(ID_HELP_SHORTCUT_KEYS, &CM3daApp::OnShowInfoDialog)
 ON_COMMAND(ID_HELP_PROPERTY, &CM3daApp::OnShowInfoDialog)
 ON_COMMAND(ID_HELP_ELEMENTMODIFIY, &CM3daApp::OnShowInfoDialog)
 ON_COMMAND(ID_HELP_OVERALL_PROCESS, &CM3daApp::OnShowInfoDialog)
@@ -140,6 +144,7 @@ ON_COMMAND(ID_HELP_IGES_IMPORT, &CM3daApp::OnShowInfoDialog)
 ON_COMMAND(ID_HELP_SOLVER_OPTIONS, &CM3daApp::OnShowInfoDialog)
 ON_COMMAND(ID_HELP_WORKPLANE, &CM3daApp::OnShowInfoDialog)
 ON_COMMAND(ID_HELP_MESHMANAGEMENT, &CM3daApp::OnShowInfoDialog)
+ON_COMMAND(ID_HELP_SHORTCUT_KEYS, &CM3daApp::OnShowInfoDialogShortcutKeys)
 // momo
 // Standard file based document commands
 // momo
@@ -462,7 +467,7 @@ void CM3daApp::OnFileSaveMain() {
 	if (SavedOk) {
 		pDoc->DoSave(dlgPath);
 		int iVERInner = VERSIONS[FileFormatIndex - 1];
-		outtextSprintf(_T("File Saved successfully. (Version = %.1f)"), 0, abs(iVERInner / 10.0), false, 1);
+		outtextSprintf(_T("File Saved successfully. (Version = %.1f)"), 0, abs(iVERInner / 10.0), _T(""), 2, 1);
 		if (!ModelFileNameChanged) {
 			CString strPureFileName = dlgPath;
 			int nSlashPos = strPureFileName.ReverseFind('\\');
@@ -517,7 +522,7 @@ void CM3daApp::OnFileSaveAsMain() {
 	if (SavedOk) {
 		pDoc->DoSave(dlgPath);
 		int iVERInner = VERSIONS[FileFormatIndex - 1];
-		outtextSprintf(_T("File Saved successfully. (Version = %.1f)"), 0, abs(iVERInner / 10.0), false, 1);
+		outtextSprintf(_T("File Saved successfully. (Version = %.1f)"), 0, abs(iVERInner / 10.0), _T(""), 2, 1);
 		if (!ModelFileNameChanged) {
 			CString strPureFileName = dlgPath;
 			int nSlashPos = strPureFileName.ReverseFind('\\');
@@ -1583,8 +1588,6 @@ void CM3daApp::OnShowInfoDialog() {
 		dlgInfo.formKind = 2;
 	} else if (nID == ID_HELP_ELEMENTMODIFIY) {
 		dlgInfo.formKind = 3;
-	} else if (nID == ID_HELP_SHORTCUT_KEYS) {
-		dlgInfo.formKind = 4;
 	} else if (nID == ID_HELP_SOLUTION_SETUP) {
 		dlgInfo.formKind = 5;
 	} else if (nID == ID_HELP_OVERALL_PROCESS) {
@@ -1616,8 +1619,15 @@ void CM3daApp::OnShowInfoDialog() {
 	} else if (nID == ID_HELP_MESHMANAGEMENT) {
 		dlgInfo.formKind = 19;
 	} else {
-		dlgInfo.formKind = -1;
+		// not loaded from menu:
+		return;
 	}
+	dlgInfo.DoModal();
+}
+
+void CM3daApp::OnShowInfoDialogShortcutKeys() {
+	InfoDialog dlgInfo;
+	dlgInfo.formKind = 4;
 	dlgInfo.DoModal();
 }
 

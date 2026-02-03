@@ -14484,7 +14484,7 @@ void E_Object3::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		// momo
 		// momo// if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
 		if (DspFlagsIn.DSP_MATERIALDIRECTION) {
-		// momo
+			// momo
 			C3dMatrix mS = GetElSys();
 			C3dMatrix mR;
 			C3dVector vD;
@@ -19143,7 +19143,7 @@ void E_Object4::OglDrawW(DisplayFlags DspFlagsIn, double dS1, double dS2) {
 		// momo
 		// momo// if (!DspFlagsIn.DSP_MATERIALDIRECTION) {
 		if (DspFlagsIn.DSP_MATERIALDIRECTION) {
-		// momo
+			// momo
 			C3dMatrix mS = GetElSys();
 			C3dMatrix mR;
 			C3dVector vD;
@@ -22128,7 +22128,10 @@ CString ME_Object::GetName() {
 }
 
 int ME_Object::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "Name";
+	// momo
+	// momo// sVar[0] = "Name";
+	sVar[0] = "ME Object";
+	// momo
 	return (1);
 }
 
@@ -23583,7 +23586,7 @@ void ME_Object::ExportNAS_SETS(FILE* pFile, SecTable* pS, int iFileNo, bool prev
 				fprintf(pFile, "$\n");
 				fprintf(pFile, "$*******************************************************************************\n");
 				fprintf(pFile, "$*********** LOADS - FORCE, MOMENT, PLOAD (Pressure), GRAV (Gravity) ***********\n");
-				//fprintf(pFile, "$***********         ACCELERATION, ROTATIONAL ACCELERATION *********************\n");
+				// fprintf(pFile, "$***********         ACCELERATION, ROTATIONAL ACCELERATION *********************\n");
 				fprintf(pFile, "$*******************************************************************************\n");
 				fprintf(pFile, "$\n");
 				// momo
@@ -34823,6 +34826,9 @@ void Prop::Add(pRecord* inRec) {
 IMPLEMENT_DYNAMIC(Entity, CObject)
 
 Entity::Entity() {
+	// momo
+	sSecType = "";
+	// momo
 	iFile = -1;
 	sTitle = "";
 	iID = -1;
@@ -34853,7 +34859,7 @@ void Entity::ListShort(int iRow)
 	CString S1;
 	// MoMo_Material_SaveBugV1_05_20_2025_Start
 	// MoMo// S1.Format(_T("%s %i %s %i %s %i  %s"), _T("FNO"), iFile, _T("ID"), iID, _T("TYPE"), iType, this->sTitle);
-	S1.Format(_T("%i >> %s %i %s %i %s %i  %s"), iRow, _T("FNO"), iFile, _T("Material ID"), iID, _T("TYPE"), iType, this->sTitle);
+	S1.Format(_T("%i >> %s %i %s %i %s %i  %s"), iRow, _T("FNO"), iFile, _T("ID"), iID, _T("TYPE"), iType, this->sTitle);
 	// MoMo_Material_SaveBugV1_05_20_2025_End
 	outtext1(S1);
 }
@@ -34994,7 +35000,7 @@ void PMASS::Serialize(CArchive& ar, int iV) {
 void PMASS::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("LUMPED MASS"));
 	OutT = S1;
 	outtext1(OutT);
@@ -35007,7 +35013,7 @@ void PMASS::List() {
 }
 
 int PMASS::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
+	sVar[0] = "Include File No (Optional)";
 	sVar[1] = "Point Mass (M)";
 	return (2);
 }
@@ -35070,7 +35076,7 @@ void PSPRINGT::Serialize(CArchive& ar, int iV) {
 void PSPRINGT::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("TRANSLATION SPRING"));
 	OutT = S1;
 	outtext1(OutT);
@@ -35092,7 +35098,7 @@ void PSPRINGT::List() {
 }
 
 int PSPRINGT::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
+	sVar[0] = "Include File No (Optional)";
 	sVar[1] = "Translational Stiffness in X (Kx)";
 	sVar[2] = "Translational Stiffness in Y (Ky)";
 	sVar[3] = "Translational Stiffness in Z (Kz)";
@@ -35149,7 +35155,7 @@ PSPRINGR::PSPRINGR() {
 void PSPRINGR::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("ROTATION SPRING"));
 	OutT = S1;
 	outtext1(OutT);
@@ -35171,7 +35177,7 @@ void PSPRINGR::List() {
 }
 
 int PSPRINGR::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
+	sVar[0] = "Include File No (Optional)";
 	sVar[1] = "Rotational Stiffness in X (Rx)";
 	sVar[2] = "Rotational Stiffness in Y (Ry)";
 	sVar[3] = "Rotational Stiffness in Z (Rz)";
@@ -35245,7 +35251,7 @@ void PBUSH::Serialize(CArchive& ar, int iV) {
 void PBUSH::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("CBUSH SPRING"));
 	OutT = S1;
 	outtext1(OutT);
@@ -35273,7 +35279,7 @@ void PBUSH::List() {
 }
 
 int PBUSH::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
+	sVar[0] = "Include File No (Optional)";
 	sVar[1] = "Flag";
 	sVar[2] = "K1";
 	sVar[3] = "K2";
@@ -35337,6 +35343,9 @@ void PBUSH::ExportNAS(FILE* pFile) {
 IMPLEMENT_DYNAMIC(PSOLID, CObject)
 
 PSOLID::PSOLID() {
+	// momo
+	sSecType = "PSOLID";
+	// momo
 	sTitle = "";
 	iID = -1;
 	iType = 3;
@@ -35371,7 +35380,7 @@ void PSOLID::Serialize(CArchive& ar, int iV) {
 void PSOLID::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("SOLID"));
 	OutT = S1;
 	outtext1(OutT);
@@ -35428,7 +35437,7 @@ PSOLID* PSOLID::Copy() {
 }
 
 int PSOLID::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
+	sVar[0] = "Include File No (Optional)";
 	sVar[1] = "Material ID (MID)";
 	sVar[2] = "Material coord system (MCID) ";
 	return (3);
@@ -35535,13 +35544,21 @@ void PBAR::ChangeMat(int thisMat, int inMID) {
 }
 
 int PBAR::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
-	sVar[1] = "Material ID (MID)";
-	sVar[2] = "Area (A)";
-	sVar[3] = "Second Moment of Inertia (I1 (Izz))";
-	sVar[4] = "Second Moment of Inertia (I2 (Iyy))";
-	sVar[5] = "Torsional Constant (J)";
-	sVar[6] = "Non Strut Mass";
+	sVar[0] = "Include File No (Optional)";
+	// momo
+	// sVar[1] = "Material ID (MID)";
+	// sVar[2] = "Area (A)";
+	// sVar[3] = "Second Moment of Inertia (I1 (Izz))";
+	// sVar[4] = "Second Moment of Inertia (I2 (Iyy))";
+	// sVar[5] = "Torsional Constant (J)";
+	// sVar[6] = "Non Strut Mass";
+	sVar[1] = "Material ID (MID) - Field 3";
+	sVar[2] = "Area (A) - Field 4";
+	sVar[3] = "Second Moment of Inertia - I1 (Izz) - Field 5";
+	sVar[4] = "Second Moment of Inertia - I2 (Iyy) - Field 6";
+	sVar[5] = "Torsional Constant (J) - Field 7";
+	sVar[6] = "Mass Per Unit Length (MPL) - Field 8";
+	// momo
 	return (7);
 }
 
@@ -35909,7 +35926,7 @@ int PBARL::GetVarHeaders(CString sVar[]) {
 	int iNo = 0;
 	int i;
 	CString S1;
-	sVar[iNo] = "File No";
+	sVar[iNo] = "Include File No (Optional)";
 	iNo++;
 	sVar[iNo] = "Material ID (MID)";
 	iNo++;
@@ -35996,7 +36013,7 @@ void PBARL::Serialize(CArchive& ar, int iV) {
 void PBARL::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("BEAM"));
 	OutT = S1;
 	outtext1(OutT);
@@ -36340,7 +36357,7 @@ PROD* PROD::Copy() {
 void PROD::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("ROD"));
 	OutT = S1;
 	outtext1(OutT);
@@ -36388,10 +36405,15 @@ void PROD::ExportNAS(FILE* pFile) {
 //***************************************************
 
 int PROD::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
-	sVar[1] = "Material ID (MID)";
-	sVar[2] = "Secton area (A)";
-	sVar[3] = "Torsional constant (J)";
+	sVar[0] = "Include File No (Optional)";
+	// momo
+	// sVar[1] = "Material ID (MID)";
+	// sVar[2] = "Secton area (A)";
+	// sVar[3] = "Torsional constant (J)";
+	sVar[1] = "Material ID (MID) - Field 3";
+	sVar[2] = "Rod Cross Section Area (A) - Field 4";
+	sVar[3] = "Torsional Constant (J) - (Optional) - Field 5";
+	// momo
 	return (4);
 }
 
@@ -36466,7 +36488,7 @@ BOOL PSHELL::HasMat(int inMID) {
 void PSHELL::List() {
 	CString S1;
 	CString OutT;
-	outtext1("PROPERTY LISTING:-");
+	outtext1("PROPERTY LISTING:");
 	S1.Format(_T("%s %i %s %s"), _T("PID"), iID, _T("TYPE "), _T("SHELL"));
 	OutT = S1;
 	outtext1(OutT);
@@ -36597,6 +36619,9 @@ CString PSHELL::ToString() {
 }
 
 PSHELL::PSHELL() {
+	// momo
+	sSecType = "PSHELL";
+	// momo
 	sTitle = "";
 	iID = -1;
 	iType = 1;
@@ -36613,7 +36638,7 @@ PSHELL::PSHELL() {
 }
 
 int PSHELL::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
+	sVar[0] = "Include File No (Optional)";
 	sVar[1] = "Material ID 1 (MID)";
 	sVar[2] = "Thickness (T)";
 	sVar[3] = "Material ID 2 (MID2)";
@@ -36746,14 +36771,23 @@ void MAT1::Info() {
 }
 
 int MAT1::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
-	sVar[1] = "Young Modulus (E)";
-	sVar[2] = "Shear Modulus (G)";
-	sVar[3] = "Poisions Ratio (NU)";
-	sVar[4] = "Density (RHO)";
-	sVar[5] = "Coeff Thermal Expansion (CTE)";
-	sVar[6] = "Reference Temperatue (TREF)";
-	sVar[7] = "Material Coordinate Sys (MCID)";
+	sVar[0] = "Include File No (Optional)";
+	// momo
+	// sVar[1] = "Young Modulus (E)";
+	// sVar[2] = "Shear Modulus (G)";
+	// sVar[3] = "Poisions Ratio (NU)";
+	// sVar[4] = "Density (RHO)";
+	// sVar[5] = "Coeff Thermal Expansion (CTE)";
+	// sVar[6] = "Reference Temperatue (TREF)";
+	// sVar[7] = "Material Coordinate Sys (MCID)";
+	sVar[1] = "Young's Modulus (E) - Field 3";
+	sVar[2] = "Shear Modulus (G) - Field 4";
+	sVar[3] = "Poisson's Ratio (NU) - Field 5";
+	sVar[4] = "Density (RHO) - Field 6";
+	sVar[5] = "Coeff of Thermal Expansion (CTE) - Field 7";
+	sVar[6] = "Reference Temperature (TREF) - Field 8";
+	sVar[7] = "Material Coord System (MCID) - FIeld 9";
+	// momo
 	sVar[8] = "Thermal Conductivity (k)";
 	return (9);
 }
@@ -37095,9 +37129,9 @@ MAT8::MAT8() {
 }
 
 int MAT8::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "File No";
-	sVar[1] = "Young Modulus longitudinal (E1)";
-	sVar[2] = "Young Modulus lateral (E2)";
+	sVar[0] = "Include File No (Optional)";
+	sVar[1] = "Young's Modulus longitudinal (E1)";
+	sVar[2] = "Young's Modulus lateral (E2)";
 	sVar[3] = "Poisions ratio (NU12)";
 	sVar[4] = "In-plane shear modulus(G12)";
 	sVar[5] = "Transverse shear modulus 1-Z plane.(G1Z)";
@@ -37623,6 +37657,9 @@ void PCOMP::AddLayer(int inMID, double inT, double inThe, BOOL inSo) {
 }
 
 PCOMP::PCOMP() {
+	// momo
+	sSecType = "PCOMP";
+	// momo
 	sTitle = "";
 	iID = -1;
 	iType = 2;
@@ -37640,7 +37677,7 @@ int PCOMP::GetVarHeaders(CString sVar[]) {
 	int iNo = 0;
 	int i;
 	CString S1;
-	sVar[iNo] = "File No";
+	sVar[iNo] = "Include File No (Optional)";
 	iNo++;
 	sVar[iNo] = "Dist to bottom surf (Z0)";
 	iNo++;
@@ -44673,7 +44710,10 @@ G_ObjectD Part::SelDist(CPoint InPT, Filter FIL) {
 }
 
 int Part::GetVarHeaders(CString sVar[]) {
-	sVar[0] = "Name";
+	// momo
+	// momo// sVar[0] = "Name";
+	sVar[0] = "Part";
+	// momo
 	sVar[1] = "Colour ID";
 	sVar[2] = "Translucency";
 	return (3);
@@ -52186,9 +52226,6 @@ IMPLEMENT_DYNAMIC(Table, CObject)
 
 Table::Table() {
 	iNo = 0;
-	// momo
-	isTemp = FALSE;
-	// momo
 }
 
 Table::~Table() {
@@ -54165,10 +54202,61 @@ BOOL CEntEditDialog::OnInitDialog() {
 	CDialog::OnInitDialog();
 	// MoMo_Material_FormKeysBugV1_05_22_2025_Start
 	// MoMo// this->SetWindowText("Entity Editor");
-	if (FormCaption == "") {
-		this->SetWindowText(_T("Entity Editor"));
+	CString sType2 = pEnt->sSecType;
+	int idType = 3;
+	if (pEnt->iType == 1 && sType2 == "PSHELL") {
+		this->SetWindowText(_T("Shell - PSHELL Property"));
+	} else if (pEnt->iType == 2 && sType2 == "PCOMP") {
+		this->SetWindowText(_T("Shell - PCOMP (Composite) Property"));
+	} else if (pEnt->iType == 3 && sType2 == "PSOLID") {
+		this->SetWindowText(_T("Solid (PSOLID) Property"));
+	} else if (pEnt->iType == 1) {
+		this->SetWindowText(_T("Isotropic Material - MAT1"));
+		idType = 2;
+	} else if (pEnt->iType == 8) {
+		this->SetWindowText(_T("2D Orthotropic Material - MAT8"));
+		idType = 2;
+	} else if (pEnt->iType == 161) {
+		this->SetWindowText(_T("Lumped Mass - CONM2 Property"));
+	} else if (pEnt->iType == 11) {
+		this->SetWindowText(_T("Rod - PROD Property"));
+	} else if (pEnt->iType == 4) {
+		this->SetWindowText(_T("Beam - PBAR - Basic Property"));
+	} else if (pEnt->iType == 5) {
+		if (sType2 == "ROD") {
+			this->SetWindowText(_T("Beam - PBARL - ROD Property"));
+		} else if (sType2 == "BAR") {
+			this->SetWindowText(_T("Beam - PBARL - BAR Property"));
+		} else if (sType2 == "TUBE") {
+			this->SetWindowText(_T("Beam - PBARL - TUBE Property"));
+		} else if (sType2 == "BOX") {
+			this->SetWindowText(_T("Beam - PBARL - BOX Property"));
+		} else if (sType2 == "T2") {
+			this->SetWindowText(_T("Beam - PBARL - T2 Property"));
+		} else if (sType2 == "CHAN2") {
+			this->SetWindowText(_T("Beam - PBARL - CHAN2 Property"));
+		} else if (sType2 == "I ") {
+			this->SetWindowText(_T("Beam - PBARL - I2 Property"));
+		} else if (sType2 == "L ") {
+			this->SetWindowText(_T("Beam - PBARL - L Property"));
+		}
+	} else if (pEnt->iType == 136) {
+		this->SetWindowText(_T("Spring - Translational - as PBUSH Property"));
+	} else if (pEnt->iType == 137) {
+		this->SetWindowText(_T("Spring - Rotational - as PBUSH Property"));
+	} else if (pEnt->iType == 138) {
+		this->SetWindowText(_T("PBUSH - General 6 DOF Spring Property"));
 	} else {
-		this->SetWindowText(FormCaption);
+		this->SetWindowText(_T("Entity Editor"));
+		idType = 1;
+	}
+	CStatic* sIDLabel = (CStatic*) GetDlgItem(IDC_PID);
+	if(idType == 1){
+		sIDLabel->SetWindowText(_T("                                      ID:"));
+	}else if(idType == 2){
+		sIDLabel->SetWindowText(_T("MID (Material ID) - Field 2:"));
+	}else if(idType == 3){
+		sIDLabel->SetWindowText(_T("PID (Property ID) - Field 2:"));
 	}
 	// MoMo_Material_FormKeysBugV1_05_22_2025_End
 	eEdit = (CEdit*) GetDlgItem(IDC_EDIT_FLOAT);
@@ -54688,7 +54776,12 @@ void CEntEditDialog::OnBnClickedOk() {
 			// MoMo// pEnt->iID = _ttoi(sID); //Need to check we can no id conflics
 			int textID = _ttoi(sID);
 			if (textID != pEnt->iID) {
-				int newID = MatT->OfferedID(_ttoi(sID), false, 0);
+				int newID;
+				if(EntityKind==1){
+					newID = MatT->OfferedID(_ttoi(sID), false, 0);
+				}else{
+					newID = PropsT->OfferedID(_ttoi(sID), false, 0);
+				}
 				if (textID > pEnt->iID) {
 					if (newID < pEnt->iID) {
 						newID = pEnt->iID;
@@ -54699,8 +54792,8 @@ void CEntEditDialog::OnBnClickedOk() {
 					}
 				}
 				pEnt->iID = newID;
-				if (!MatT->isTemp) {
-					outtextSprintf(_T("\r\nMaterial ID changed to %i"), pEnt->iID, 0.0, true, 1);
+				if (EntitySaved) {
+					outtextSprintf(_T("\r\n%s ID changed to %i"), pEnt->iID, 0.0, EntityName, 31, 1);
 				}
 				if (pEnt->iID != _ttoi(sID)) {
 					sID = std::to_string(pEnt->iID).c_str();
@@ -54726,11 +54819,11 @@ void CEntEditDialog::OnBnClickedOk() {
 		if (pO != NULL)
 			pO->PutVarValues(PT, iNo, sVVals);
 		// MoMo_Material_SaveBugV1_05_20_2025_Start
-		if (MatT->isTemp == true) {
-			outtextSprintf(_T("\r\nMaterial ID %i Created."), MatT->pEnts[MatT->iNo - 1]->iID, 0.0, true, 1);
-			MatT->isTemp = false;
+		if (EntitySaved == false) {
+			outtextSprintf(_T("\r\n%s ID %i Created."), pEnt->iID, 0.0, EntityName, 31, 1);
+			EntitySaved = true;
 		} else {
-			outtext1("Material Changes Applied.");
+			outtextSprintf(_T("%s Changes Applied."),0, 0.0, EntityName, 3, 1);
 		}
 		// MoMo_Material_SaveBugV1_05_20_2025_End
 	}
@@ -55290,9 +55383,6 @@ void CEntEditDialog::OnBnClickedCdelete() {
 
 void CEntEditDialog::OnBnClickedCancel() {
 	// TODO: Add your control notification handler code here
-	// MoMo_Material_FormKeysBugV1_05_22_2025_Start
-	CEntEditDialog::FormCaption = "";
-	// MoMo_Material_FormKeysBugV1_05_22_2025_End
 	CDialog::OnCancel();
 }
 

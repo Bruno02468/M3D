@@ -56,6 +56,7 @@ class CM3daApp: public CWinAppEx {
 		afx_msg void OnAppAbout();
 		// momo add type id form
 		afx_msg void OnShowInfoDialog();
+		afx_msg void OnShowInfoDialogShortcutKeys();
 		// momo add type id form
 		DECLARE_MESSAGE_MAP()
 		afx_msg void OnFileRunscriptfile();
@@ -76,7 +77,7 @@ void outtext2(const CString& AAA);
 void outtext2(const char* AAA);
 // momo
 // MoMo_Material_SaveBugV1_05_20_2025_Start
-void outtextSprintf(const CString& formatString, int intValue, double floatValue, bool IsInt, int nText);
+void outtextSprintf(const CString& formatString, int intValue, double floatValue, CString stringValue, int valueNumber, int nText);
 void outtextMultiLine(const CString& AAA, int nText);
 void outtextMultiLine(const char* AAA, int nText);
 // MoMo_Material_SaveBugV1_05_20_2025_End

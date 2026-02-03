@@ -903,12 +903,29 @@ void outtext1(const char* AAA) {
 // momo
 
 // MoMo_Material_SaveBugV1_05_20_2025_Start
-void outtextSprintf(const CString& formatString, int intValue, double floatValue, bool IsInt, int nText) {
+void outtextSprintf(const CString& formatString, int intValue, double floatValue, CString stringValue, int valueNumber, int nText) {
 	CString StOut;
-	if (IsInt)
+	if (valueNumber == 1) {
 		StOut.Format(formatString, intValue);
-	else
+	} else if (valueNumber == 2) {
 		StOut.Format(formatString, floatValue);
+	} else if (valueNumber == 3) {
+		StOut.Format(formatString, stringValue);
+	} else if (valueNumber == 12) {
+		StOut.Format(formatString, intValue, floatValue);
+	} else if (valueNumber == 21) {
+		StOut.Format(formatString, floatValue, intValue);
+	} else if (valueNumber == 13) {
+		StOut.Format(formatString, intValue, stringValue);
+	} else if (valueNumber == 31) {
+		StOut.Format(formatString, stringValue, intValue);
+	} else if (valueNumber == 23) {
+		StOut.Format(formatString, floatValue, stringValue);
+	} else if (valueNumber == 32) {
+		StOut.Format(formatString, stringValue, floatValue);
+	} else if (valueNumber == 123) {
+		StOut.Format(formatString, intValue, floatValue, stringValue);
+	}
 	outtextMultiLine(StOut, nText);
 }
 // MoMo_Material_SaveBugV1_05_20_2025_End

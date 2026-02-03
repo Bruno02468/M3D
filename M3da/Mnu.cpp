@@ -2763,6 +2763,7 @@ int zEXP04_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		// ======================================================================
 		if (iStat == 4 || iStat == 5) { // input seed number  (first || after first)
 			SeedVals.SelectLock = true;
+			cDBase->FILTER.Clear();
 			if (cDBase->S_Count > 0) {
 				if (iStat == 4) { // first entrance
 					outtext1("3 >>");
@@ -2779,7 +2780,7 @@ int zEXP04_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 					iResumePos = 7;
 				}
 				iCancelPos = 100;
-				SeedVals.SelectLock = true;
+				//SeedVals.SelectLock = true;
 				pNext = new zKEY_EXP04_Mnu();
 				pNext->Init(cDBase, 1);
 				DoNext(&CInMsg, Pt);
@@ -2823,7 +2824,7 @@ int zEXP04_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		if (iStat == 100) // cancel
 		{
 			cDBase->SaveOrResetTempSeeds_EXP04("Cancel");
-			outtextSprintf(_T("%i >>"), nCancel + 1, 0.0, true, 1);
+			outtextSprintf(_T("%i >>"), nCancel + 1, 0.0, _T(""), 1, 1);
 			outtextMultiLine(_T("EXP04 Canceled successfully.\r\n"), 1);
 			outtext2("EXP04 Canceled successfully.");
 		}
@@ -2894,7 +2895,7 @@ int zEXP05_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 				nCancel = 2;
 				outtext1("Input Element Size Of Mesh >> Press Enter");
 				double minElementSize = cDBase->GetdTol();
-				outtextSprintf(_T("Minimum Element Size value = %.6g"), 0, minElementSize, false, 1);
+				outtextSprintf(_T("Minimum Element Size value = %.6g"), 0, minElementSize, _T(""), 2, 1);
 				cDBase->SaveOrResetTempSeeds_EXP04("Reset");
 				SeedVals.InputedSeedNumbers = 0;
 				cDBase->AddOrRemoveTempSeeds_EXP04();
@@ -2932,7 +2933,8 @@ int zEXP05_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		// ======================================================================
 		// (show meshing)
 		if (iStat == 6) { // do mesh
-			cDBase->MeshSurfAF_EXP04();
+			//cDBase->MeshSurfAF_EXP04();
+			cDBase->MeshSurfAF2_EXP04();
 			cDBase->OTemp->Clear();
 			cDBase->SaveOrResetTempSeeds_EXP04("Cancel");
 			outtext1("4 >>");
@@ -2943,7 +2945,7 @@ int zEXP05_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 		if (iStat == 100) // cancel
 		{
 			cDBase->SaveOrResetTempSeeds_EXP04("Cancel");
-			outtextSprintf(_T("%i >>"), nCancel + 1, 0.0, true, 1);
+			outtextSprintf(_T("%i >>"), nCancel + 1, 0.0, _T(""), 1, 1);
 			outtextMultiLine(_T("EXP05 Canceled successfully.\r\n"), 1);
 			outtext2("EXP05 Canceled successfully.");
 		}
@@ -5291,7 +5293,7 @@ int zKEY_EXP04_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 						iStat = 2;
 						RetVal = 1; // ------ done or yes
 					} else {
-						outtextSprintf(_T("\r\nERROR >>> Element Size value >= %.6g [!!!]"), 0, minElementSize, false, 2);
+						outtextSprintf(_T("\r\nERROR >>> Element Size value >= %.6g [!!!]"), 0, minElementSize, _T(""), 2, 2);
 						outtext2("Please input again.");
 						outtextMultiLine(LastRequest, 2);
 						SetFocus(); // ------ error
@@ -15902,17 +15904,16 @@ int zMATEDIT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			SetFocus();
 		}
 		if (iStat == 1) {
-			// MoMo_Material_SaveBugV1_05_20_2025_Start
-			bool materialIDFound;
-			// MoMo_Material_SaveBugV1_05_20_2025_End
 			if ((CInMsg != "MouseInp") && (CInMsg != "D") && (CInMsg != "NULL")) {
 				C3dVector GetPt;
 				int iPt = ExtractPt(CInMsg, &GetPt);
 				// MoMo_Material_SaveBugV1_05_20_2025_Start
-				// MoMo// cDBase->EditMat((int)GetPt.x, FALSE);
-				cDBase->EditMat((int) GetPt.x, FALSE, materialIDFound);
+				// MoMo// cDBase->EditMaterial((int)GetPt.x, FALSE);
+				EntitySaved = true;
+				bool materialIDFound;
+				cDBase->EditMaterial((int) GetPt.x, FALSE, materialIDFound);
 				if (!materialIDFound) {
-					outtextSprintf(_T("\r\nERROR >>> Material ID %i Not found. [!!!]"), (int) GetPt.x, 0.0, true, 2);
+					outtextSprintf(_T("\r\nERROR >>> Material ID %i Not found. [!!!]"), (int) GetPt.x, 0.0, _T(""), 1, 2);
 				}
 				// MoMo_Material_SaveBugV1_05_20_2025_End
 				RetVal = 1;
@@ -15921,8 +15922,10 @@ int zMATEDIT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 					if (cDBase->S_Buff[cDBase->S_Count - 1]->iObjType == 3) {
 						E_Object* pE = (E_Object*) cDBase->S_Buff[cDBase->S_Count - 1];
 						// MoMo_Material_SaveBugV1_05_20_2025_Start
-						// MoMo// cDBase->EditMat(pE->PID, TRUE);
-						cDBase->EditMat(pE->PID, TRUE, materialIDFound);
+						// MoMo// cDBase->EditMaterial(pE->PID, TRUE);
+						EntitySaved = true;
+						bool materialIDFound;
+						cDBase->EditMaterial(pE->PID, TRUE, materialIDFound);
 						// MoMo_Material_SaveBugV1_05_20_2025_End
 					}
 					RetVal = 1;
@@ -15959,13 +15962,26 @@ int zPREDIT_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			if ((CInMsg != "MouseInp") && (CInMsg != "D") && (CInMsg != "NULL")) {
 				C3dVector GetPt;
 				int iPt = ExtractPt(CInMsg, &GetPt);
-				cDBase->EditProp((int) GetPt.x);
+				// momo
+				// momo// cDBase->EditProperty((int) GetPt.x);
+				EntitySaved = true;
+				bool propertyIDFound;
+				cDBase->EditProperty((int) GetPt.x, propertyIDFound);
+				if (!propertyIDFound) {
+					outtextSprintf(_T("\r\nERROR >>> Property ID %i Not found. [!!!]"), (int) GetPt.x, 0.0, _T(""), 1, 2);
+				}
+				// momo
 				RetVal = 1;
 			} else if (CInMsg == "MouseInp") {
 				if (cDBase->S_Count == S_initCnt + 1) {
 					if (cDBase->S_Buff[cDBase->S_Count - 1]->iObjType == 3) {
 						E_Object* pE = (E_Object*) cDBase->S_Buff[cDBase->S_Count - 1];
-						cDBase->EditProp(pE->PID);
+						// momo
+						// momo// cDBase->EditProperty(pE->PID);
+						EntitySaved = true;
+						bool propertyIDFound;
+						cDBase->EditProperty(pE->PID, propertyIDFound);
+						// momo
 					}
 					RetVal = 1;
 				}
@@ -16029,13 +16045,13 @@ int zMATLIST_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			if ((CInMsg != "MouseInp") && (CInMsg != "D") && (CInMsg != "NULL")) {
 				C3dVector GetPt;
 				int iPt = ExtractPt(CInMsg, &GetPt);
-				cDBase->ListMat((int) GetPt.x, FALSE);
+				cDBase->ListMaterial((int) GetPt.x, FALSE);
 				RetVal = 1;
 			} else if (CInMsg == "MouseInp") {
 				if (cDBase->S_Count == S_initCnt + 1) {
 					if (cDBase->S_Buff[cDBase->S_Count - 1]->iObjType = 3) {
 						E_Object* pE = (E_Object*) cDBase->S_Buff[cDBase->S_Count - 1];
-						cDBase->ListMat(pE->PID, TRUE);
+						cDBase->ListMaterial(pE->PID, TRUE);
 					}
 					RetVal = 1;
 				}
@@ -16068,13 +16084,13 @@ int zPRLIST_Mnu::DoMenu(CString CInMsg, CPoint Pt) {
 			if ((CInMsg != "MouseInp") && (CInMsg != "D") && (CInMsg != "NULL")) {
 				C3dVector GetPt;
 				int iPt = ExtractPt(CInMsg, &GetPt);
-				cDBase->ListProp((int) GetPt.x);
+				cDBase->ListProperty((int) GetPt.x);
 				RetVal = 1;
 			} else if (CInMsg == "MouseInp") {
 				if (cDBase->S_Count == S_initCnt + 1) {
 					if (cDBase->S_Buff[cDBase->S_Count - 1]->iObjType = 3) {
 						E_Object* pE = (E_Object*) cDBase->S_Buff[cDBase->S_Count - 1];
-						cDBase->ListProp(pE->PID);
+						cDBase->ListProperty(pE->PID);
 					}
 					RetVal = 1;
 				}

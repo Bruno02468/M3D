@@ -178,7 +178,7 @@ ON_COMMAND(ID_LINE_LINE, &CM3daDoc::OnLineLine)
 ON_COMMAND(ID_TOOLS_LISTALLPROPERTIES, &CM3daDoc::OnToolsListallproperties)
 ON_COMMAND(ID_EXPORT_CURRENTMESTTONAS, &CM3daDoc::OnExportCurrentMesToNastran)
 // momo
-ON_COMMAND(ID_EXPORT_CURRENTMESTTONAS_PREVIEW, &CM3daDoc::OnExportCurrentMesToNastranPreview)
+ON_COMMAND(ID_EXPORT_CURRENTMESHTONAS_PREVIEW, &CM3daDoc::OnExportCurrentMesToNastranPreview)
 // momo
 ON_COMMAND(ID_NODEMODIFY_DEFINITIONCOORDSYS, &CM3daDoc::OnNodemodifyDefinitioncoordsys)
 ON_COMMAND(ID_ELEMENTTYPE_RIGID, &CM3daDoc::OnElementtypeRigid)
@@ -192,9 +192,9 @@ ON_COMMAND(ID_ELEMENTTYPE_BEAM, &CM3daDoc::OnElementtypeBeam)
 ON_COMMAND(ID_ELEMENTMODIFIY_BEAMOFFSET, &CM3daDoc::OnElementmodifiyBeamoffset)
 ON_COMMAND(ID_ELEMENTMODIFIY_BEAMUPVECTORS, &CM3daDoc::OnElementmodifiyBeamupvectors)
 ON_COMMAND(ID_PROPERTY_BEAM_ROD, &CM3daDoc::OnPropertyBeam)
-ON_COMMAND(ID_PROPERTY_BEAM_BAR, &CM3daDoc::OnPropertyBeambar)
-ON_COMMAND(ID_PROPERTY_BEAM_TUBE, &CM3daDoc::OnPropertyBeamtube)
-ON_COMMAND(ID_PROPERTY_BEAM_BOX, &CM3daDoc::OnPropertyBeambox)
+ON_COMMAND(ID_PROPERTY_BEAM_BAR, &CM3daDoc::OnPropertyBeamBar)
+ON_COMMAND(ID_PROPERTY_BEAM_TUBE, &CM3daDoc::OnPropertyBeamTube)
+ON_COMMAND(ID_PROPERTY_BEAM_BOX, &CM3daDoc::OnPropertyBeamBox)
 ON_COMMAND(ID_PROPERTY_SHELL, &CM3daDoc::OnPropertyShell)
 ON_COMMAND(ID_ELEMENTMODIFIY_SHELLOFFSET, &CM3daDoc::OnElementmodifiyShelloffset)
 ON_COMMAND(ID_MATERIAL_ISENTROPIC, &CM3daDoc::OnMaterialIsentropic)
@@ -346,7 +346,7 @@ ON_COMMAND(ID_POST_DEFORMEDRESULTS, &CM3daDoc::OnPostDeformedResults)
 ON_COMMAND(ID_POST_SELECTDEFORMEDRESULTS, &CM3daDoc::OnPostSelectdeformedresults)
 ON_COMMAND(ID_PROPERTY_SOLID, &CM3daDoc::OnPropertySolid)
 ON_COMMAND(ID_OPTIONS_DEFORMATIONSCALE, &CM3daDoc::OnOptionsDeformationscale)
-ON_COMMAND(ID_PROPERTY_2D_PLAIN_STRESS, &CM3daDoc::OnProperty2dplainstress)
+ON_COMMAND(ID_PROPERTY_2D_PLAIN_STRESS, &CM3daDoc::OnProperty2DPlainStress)
 ON_COMMAND(ID_ELEMENTTYPE_ROD, &CM3daDoc::OnElementtypeRod)
 ON_COMMAND(ID_PROPERTY_ROD, &CM3daDoc::OnPropertyRod)
 ON_COMMAND(ID_VIEW_DISPLAYELEMENTCOORDSYS, &CM3daDoc::OnViewDisplayElementCoordSys)
@@ -422,13 +422,13 @@ ON_UPDATE_COMMAND_UI(ID_INDICATOR_TS, &CM3daDoc::OnUpdateTC)
 // momo
 ON_UPDATE_COMMAND_UI(ID_INDICATOR_MODEL_NAME, &CM3daDoc::OnUpdateModelName)
 // momo
-ON_COMMAND(ID_PROPERTY_ROTATIONAL_SPRING, &CM3daDoc::OnPropertyRotationalspring)
-ON_COMMAND(ID_PROPERTY_TRANSLATIONAL_SPRING, &CM3daDoc::OnPropertyTranslationalspring)
+ON_COMMAND(ID_PROPERTY_ROTATIONAL_SPRING, &CM3daDoc::OnPropertyRotationalSpring)
+ON_COMMAND(ID_PROPERTY_TRANSLATIONAL_SPRING, &CM3daDoc::OnPropertyTranslationalSpring)
 ON_COMMAND(ID_CHECKS_NEGATIVEVOLUMEELEMENTS, &CM3daDoc::OnChecksNegativevolumeelements)
 ON_COMMAND(ID_CHECKS_CHECKSHELLELEMENTASPECTRATION, &CM3daDoc::OnChecksCheckshellelementaspectration)
 ON_COMMAND(ID_CHECKS_CHECKTETCOLLAPSE, &CM3daDoc::OnChecksChecktetcollapse)
 ON_COMMAND(ID_ELEMENTTYPE_MASS, &CM3daDoc::OnElementtypeMass)
-ON_COMMAND(ID_PROPERTY_LUMPEDMASS, &CM3daDoc::OnPropertyLumpedmass)
+ON_COMMAND(ID_PROPERTY_LUMPEDMASS, &CM3daDoc::OnPropertyLumpedMass)
 ON_COMMAND(ID_VISABILITY_WORKPLANE, &CM3daDoc::OnVisabilityWorkPlane)
 ON_COMMAND(ID_TOOLS_MEASUREANGLE, &CM3daDoc::OnToolsMeasureangle)
 ON_COMMAND(ID_LOADSBC_CREATEROTATIONALBODYLOAD, &CM3daDoc::OnLoadsbcCreaterotationalbodyload)
@@ -476,10 +476,10 @@ ON_COMMAND(ID_FEMTOOLS_MESHSIZEONCURVES, &CM3daDoc::OnFemtoolsMeshsizeoncurves)
 // ON_UPDATE_COMMAND_UI(ID_EDIT_REDO, &CM3daDoc::OnUpdateEditRedo)
 // ON_COMMAND(ID_FILE_OPEN, &CM3daDoc::OnFileOpen)
 ON_COMMAND(ID_CURVETOOLS_TEXT, &CM3daDoc::OnCurvetoolsText)
-ON_COMMAND(ID_PROPERTY_PCOMP, &CM3daDoc::OnPropertyPcomp)
+ON_COMMAND(ID_PROPERTY_PCOMP, &CM3daDoc::OnPropertyPComp)
 ON_COMMAND(ID_MATERIAL_ORTHOTROPIC, &CM3daDoc::OnMaterialOrthotropic)
 ON_COMMAND(ID_PROPERTY_DISPLAY_LAMINATE_STACK, &CM3daDoc::OnPropertyDisplaylaminatestack)
-ON_COMMAND(ID_PROPERTY_PBUSH, &CM3daDoc::OnPropertyPbush)
+ON_COMMAND(ID_PROPERTY_PBUSH, &CM3daDoc::OnPropertyPBush)
 ON_COMMAND(ID_MANIPULATION_DIVIDEINTO, &CM3daDoc::OnManipulationDivideinto)
 ON_COMMAND(ID_MANIPULATION_ENVELOPEMAXIMUM, &CM3daDoc::OnManipulationEnvelopemaximum)
 ON_COMMAND(ID_MANIPULATION_ENVELOPEMINIMUM, &CM3daDoc::OnManipulationEnvelopeminimum)
@@ -504,7 +504,7 @@ ON_COMMAND(ID_POST_GRAPHRESPONSEDATA, &CM3daDoc::OnPostGraphresponsedata)
 // ON_COMMAND(ID_FEMTOOLS_SWEEPNODESTOSHELLS33362, &CM3daDoc::OnFemtoolsSweepnodestoshells33362)
 ON_COMMAND(ID_FEMTOOLS_SWEEPNODESTOBEAMS33361, &CM3daDoc::OnFemtoolsSweepnodestobeams33361)
 ON_COMMAND(ID_FEMTOOLS_SWEEPNODESTOSHELLS33362, &CM3daDoc::OnFemtoolsSweepnodestoshells33362)
-ON_COMMAND(ID_VIEW_HIGHLIGHTLIMIT, &CM3daDoc::OnViewHighlightlimit)
+ON_COMMAND(ID_VIEW_HIGHLIGHTLIMIT, &CM3daDoc::OnViewHighlightLimit)
 ON_COMMAND(ID_SELECTION_RBECENTRENODES, &CM3daDoc::OnSelectionRbecentrenodes)
 ON_COMMAND(ID_CHECKS_COUNTF, &CM3daDoc::OnChecksCountf)
 ON_COMMAND(ID_CURVEMODIFY_SPLITATPOINT, &CM3daDoc::OnCurvemodifySplitatpoint)
@@ -703,13 +703,13 @@ BOOL CM3daDoc::OnNewDocument() {
 	if (bOnFirst == FALSE) {
 		InitDoc();
 		// MoMo_Start
-		outtextSprintf(_T("\r\n\r\nVersion of New File = %.1f"), 0, abs(iVERInner / 10.0), false, 1);
+		outtextSprintf(_T("\r\n\r\nVersion of New File = %.1f"), 0, abs(iVERInner / 10.0), _T(""), 2, 1);
 		// MoMo_End
 	} else {
 		bOnFirst = FALSE;
 		// MoMo_Start
 		outtext1("If you experience display problems, change the BUFFER option in the VIEW menu.");
-		outtextSprintf(_T("Version of Files = %.1f\r\n\r\n"), 0, abs(iVERInner / 10.0), false, 1);
+		outtextSprintf(_T("Version of Files = %.1f\r\n\r\n"), 0, abs(iVERInner / 10.0), _T(""), 2, 1);
 		// MoMo_End
 	}
 	ReSet();
@@ -2047,7 +2047,9 @@ void CM3daDoc::OnExportCurrentMesToNastranPreview() {
 		CWnd* pMain = AfxGetMainWnd();
 		if (pMain) {
 			TemporaryDeckFilePath = tempFilePath;
-			pMain->SendMessage(WM_COMMAND, ID_HELP_TYPEID);
+			InfoDialog dlgInfo;
+			dlgInfo.formKind = -1;
+			dlgInfo.DoModal();
 		}
 		if (!DeleteFile(tempFilePath)) {
 			DWORD err = GetLastError();
@@ -3291,121 +3293,184 @@ void CM3daDoc::OnElementmodifiyBeamupvectors() {
 }
 
 void CM3daDoc::OnPropertySolid() {
-	// TODO: Add your command handler code here
-
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRSOLID");
 		// sLastcmd="PRSOLID"; RR
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Solid Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRSOLID\" command.");
+		// momo
 		cDBase->CreatePrSolid(_T("Solid Property"), iNLab, -1);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
 void CM3daDoc::OnPropertyBeam() {
-	// TODO: Add your command handler code here
-
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBROD");
 		// sLastcmd="PRBROD";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("ROD Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBROD\" command.");
+		// momo
 		cDBase->CreatePrRod(_T("ROD Beam Property"), iNLab, -1, 0.015);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
 void CM3daDoc::OnPropertyRod() {
-	// TODO: Add your command handler code here
-
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRROD");
 		// sLastcmd="PRROD";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Rod Element");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRROD\" command.");
+		// momo
 		cDBase->CreatePRod(_T("Rod Element"), iNLab, -1, 0.0000785398, 4.90874e-10 + 4.90874e-10);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
-void CM3daDoc::OnPropertyBeambar() {
-	// TODO: Add your command handler code here
-
+void CM3daDoc::OnPropertyBeamBar() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBBAR");
 		// sLastcmd="PRBBAR";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("BAR Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBBAR\" command.");
+		// momo
 		cDBase->CreatePrBar(_T("BAR Beam Property"), iNLab, -1, 0.010, 0.015);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
-void CM3daDoc::OnPropertyBeamtube() {
-	// TODO: Add your command handler code here
-
+void CM3daDoc::OnPropertyBeamTube() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
-		outtextMSG2("PRBTUBE");
-		sLastcmd = "PRBTUBE";
-		int iNLab = PropsT->NextID();
+		// momo
+		// outtextMSG2("PRBTUBE");
+		// sLastcmd = "PRBTUBE";
+		// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("TUBE Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBTUBE\" command.");
+		// momo
 		cDBase->CreatePrTube(_T("TUBE Beam Property"), iNLab, -1, 0.015, 0.01);
-		cDBase->EditProp(iNLab);
-
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
-void CM3daDoc::OnPropertyBeambox() {
-	// TODO: Add your command handler code here
-
+void CM3daDoc::OnPropertyBeamBox() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBBOX");
 		// sLastcmd="PRBBOX";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("BOX Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBBOX\" command.");
+		// momo
 		cDBase->CreatePrBox(_T("BOX Beam Property"), iNLab, -1, 0.01, 0.015, 0.005, 0.0025);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
 void CM3daDoc::OnPropertyShell() {
-	// TODO: Add your command handler code here
-
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRSHELL");
 		// sLastcmd="PRSHELL";
-		int iNLab = PropsT->NextID();
-		cDBase->CreatePrShell(_T("NAME"), iNLab, -1, 1, 0);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Shell Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRSHELL\" command.");
+		// momo
 
+		// momo
+		// cDBase->CreatePrShell(_T("NAME"), iNLab, -1, 1, 0);
+		// cDBase->EditProperty(iNLab);
+		cDBase->CreatePrShell(_T("Shell Property"), iNLab, -1, 1, 0);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -3426,8 +3491,6 @@ void CM3daDoc::OnElementmodifiyShelloffset() {
 }
 
 void CM3daDoc::OnMaterialIsentropic() {
-	// TODO: Add your command handler code here
-
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
@@ -3437,14 +3500,17 @@ void CM3daDoc::OnMaterialIsentropic() {
 		// MoMo_Material_SaveBugV1_05_20_2025_Start
 		// MoMo// int iNLab = MatT->NextID();
 		int iNLab = MatT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
-		bool materialIDFound;
-		MatT->isTemp = true;
+		EntitySaved = false;
+		EntityName = _T("Isotropic Material");
+		EntityKind = 1;
+		outtext1("Also you can use \"MMAT1\" command.");
 		// MoMo_Material_SaveBugV1_05_20_2025_End
 		cDBase->CreateMat1(_T("Al Material"), iNLab, gDEF_E, gDEF_V, gDEF_DEN, gDEF_CTE, gDEF_COND);
 		// MoMo_Material_SaveBugV1_05_20_2025_Start
-		// MoMo// cDBase->EditMat(iNLab,FALSE);
-		cDBase->EditMat(iNLab, FALSE, materialIDFound);
-		MatT->isTemp = false;
+		// MoMo// cDBase->EditMaterial(iNLab,FALSE);
+		bool materialIDFound;
+		cDBase->EditMaterial(iNLab, FALSE, materialIDFound);
+		EntitySaved = true;
 		// MoMo_Material_SaveBugV1_05_20_2025_End
 	} else {
 		outtext1("Finish Current Operation.");
@@ -4315,15 +4381,25 @@ void CM3daDoc::OnOptionsDeformationscale() {
 	}
 }
 
-void CM3daDoc::OnProperty2dplainstress() {
-	// TODO: Add your command handler code here
-
+void CM3daDoc::OnProperty2DPlainStress() {
 	if (pMnu->isNULL()) {
-		SetModifiedFlag();
-		CheckPoint();
-		bFinalChkPt = FALSE;
-		outtextMSG2("PRSHELL");
-		sLastcmd = "PRSHELL";
+		// momo
+		//SetModifiedFlag();
+		//CheckPoint();
+		//bFinalChkPt = FALSE;
+		//outtextMSG2("PRSHELL");
+		//sLastcmd = "PRSHELL";
+
+		outtext1("There is currently no code for this.");
+		//int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		//EntitySaved = false;
+		//EntityName = _T("2D Plain Stress Property");
+		//EntityKind = 2;
+		//cDBase->Create...(_T("2D Plain Stress Property"), iNLab, 0.1);
+		//bool propertyIDFound;
+		//cDBase->EditProperty(iNLab, propertyIDFound);
+		//EntitySaved = true;
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -5228,33 +5304,53 @@ void CM3daDoc::OnElementmodifiySpringcoordsystem() {
 	}
 }
 
-void CM3daDoc::OnPropertyRotationalspring() {
-	// TODO: Add your command handler code here
+void CM3daDoc::OnPropertyRotationalSpring() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRSPGR");
 		// sLastcmd="PRSPGR";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Rotational Spring");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRSPGR\" command.");
+		// momo
 		cDBase->CreatePrSpringR(_T("Rotational Spring"), iNLab, 1.0e5, 1.0e5, 1.0e5, 1000);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
-void CM3daDoc::OnPropertyTranslationalspring() {
-	// TODO: Add your command handler code here
+void CM3daDoc::OnPropertyTranslationalSpring() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRSPGT");
 		// sLastcmd="PRSPGT";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Translational Spring");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRSPGT\" command.");
+		// momo
 		cDBase->CreatePrSpringT(_T("Translational Spring"), iNLab, 1.0e7, 1.0e7, 1.0e7, 1000);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -5309,16 +5405,28 @@ void CM3daDoc::OnElementtypeMass() {
 	outtextMSG2("SCALAR");
 }
 
-void CM3daDoc::OnPropertyLumpedmass() {
+void CM3daDoc::OnPropertyLumpedMass() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRMASS");
 		// sLastcmd = "PRMASS";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Lumped Mass Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRMASS\" command.");
+		// momo
 		cDBase->CreatePrLumpedMass(_T("Lumped Mass Property"), iNLab, 0.1);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		EntitySaved = true;
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -5453,16 +5561,26 @@ void CM3daDoc::OnPropertyEditmaterialvalues() {
 }
 
 void CM3daDoc::OnPropertyBeamBasic() {
-	// TODO: Add your command handler code here
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBAR2");
 		// sLastcmd = "PRBAR2";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("Bar Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBAR2\" command.");
+		// momo
 		cDBase->CreatePRBar2(_T("Bar Property"), iNLab, -1, 0.0000785398, 4.90874e-10, 4.90874e-10, 4.90874e-10 + 4.90874e-10);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -5852,26 +5970,36 @@ void CM3daDoc::OnCurvetoolsText() {
 	}
 }
 
-void CM3daDoc::OnPropertyPcomp() {
-	// TODO: Add your command handler code here
+void CM3daDoc::OnPropertyPComp() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRPCOMP");
 		// sLastcmd = "PRPCOMP";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("PComp Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRPCOMP\" command.");
+		// momo
 		CString sLay[50];
 		sLay[0] = "1,1,0";
-		cDBase->CreatePrPCOMP(_T("NAME"), iNLab, 0.0, 1, sLay);
-		cDBase->EditProp(iNLab);
+		// momo
+		// cDBase->CreatePrPCOMP(_T("NAME"), iNLab, 0.0, 1, sLay);
+		// cDBase->EditProperty(iNLab);
+		cDBase->CreatePrPCOMP(_T("PComp Property"), iNLab, 0.0, 1, sLay);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
 }
 
 void CM3daDoc::OnMaterialOrthotropic() {
-	// TODO: Add your command handler code here
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
@@ -5881,15 +6009,17 @@ void CM3daDoc::OnMaterialOrthotropic() {
 		// MoMo_Material_FormKeysBugV1_05_22_2025_Start
 		// MoMo// int iNLab = MatT->NextID();
 		int iNLab = MatT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
-		bool materialIDFound;
-		MatT->isTemp = true;
+		EntitySaved = false;
+		EntityName = _T("Orthotropic Material");
+		EntityKind = 1;
+		outtext1("Also you can use \"MMAT8\" command.");
 		// MoMo_Material_FormKeysBugV1_05_22_2025_End
-		cDBase->CreateMat8(_T("NASTRAN MAT8 Property"), iNLab, 0, 0, 0,
-		                   0, 0, 0, 0,
-		                   0, 0, 0);
+		cDBase->CreateMat8(_T("NASTRAN MAT8 Property"), iNLab, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		// MoMo_Material_FormKeysBugV1_05_22_2025_Start
-		// MoMo// cDBase->EditMat(iNLab, FALSE);
-		cDBase->EditMat(iNLab, FALSE, materialIDFound);
+		// MoMo// cDBase->EditMaterial(iNLab, FALSE);
+		bool materialIDFound;
+		cDBase->EditMaterial(iNLab, FALSE, materialIDFound);
+		EntitySaved = true;
 		// MoMo_Material_FormKeysBugV1_05_22_2025_End
 	} else {
 		outtext1("Finish Current Operation.");
@@ -5909,18 +6039,27 @@ void CM3daDoc::OnPropertyDisplaylaminatestack() {
 	}
 }
 
-void CM3daDoc::OnPropertyPbush() {
-	// TODO: Add your command handler code here
+void CM3daDoc::OnPropertyPBush() {
 	if (pMnu->isNULL()) {
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBUSH");
 		// sLastcmd="PRBUSH";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("NASTRAN PBUSH Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBUSH\" command.");
+		// momo
 		cDBase->CreatePrBUSH(_T("NASTRAN PBUSH Property"), iNLab, 1.0e7, 1.0e7, 1.0e7, 1.0e4, 1.0e4, 1.0e4);
-		cDBase->EditProp(iNLab);
-
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -6003,9 +6142,20 @@ void CM3daDoc::OnPropertyBeamT2() {
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBBAR");
 		// sLastcmd="PRBBAR";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("T2 Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBT2\" command.");
+		// momo
 		cDBase->CreatePrT2(_T("T2 Beam Property"), iNLab, -1, 1.0, 2.0, 0.5, 0.2);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -6018,9 +6168,20 @@ void CM3daDoc::OnPropertyBeamChan2() {
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBBAR");
 		// sLastcmd="PRBBAR";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("CHAN2 Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBCHAN2\" command.");
+		// momo
 		cDBase->CreatePrCHAN2(_T("CHAN2 Beam Property"), iNLab, -1, 2, 1, 0.5, 0.2);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -6028,15 +6189,25 @@ void CM3daDoc::OnPropertyBeamChan2() {
 
 void CM3daDoc::OnPropertyBeamI2() {
 	if (pMnu->isNULL()) {
-		// TODO: Add your command handler code here
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
 		// outtextMSG2("PRBBAR");
 		// sLastcmd="PRBBAR";
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("I2 Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBI2\" command.");
+		// momo
 		cDBase->CreatePrI2(_T("I2 Beam Property"), iNLab, -1, 0.6, 0.4, 0.2, 0.1, 0.05, 0.05);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -6044,13 +6215,23 @@ void CM3daDoc::OnPropertyBeamI2() {
 
 void CM3daDoc::OnPropertyBeamL() {
 	if (pMnu->isNULL()) {
-		// TODO: Add your command handler code here
 		SetModifiedFlag();
 		CheckPoint();
 		bFinalChkPt = FALSE;
-		int iNLab = PropsT->NextID();
+		// momo
+		// momo// int iNLab = PropsT->NextID();
+		int iNLab = PropsT->OfferedID(0, true, 1); // newIdMode: 1>> Max of current list + 1 2>>Smallest empty room
+		EntitySaved = false;
+		EntityName = _T("L Beam Property");
+		EntityKind = 2;
+		outtext1("Also you can use \"PRBL\" command.");
+		// momo
 		cDBase->CreatePrL(_T("L Beam Property"), iNLab, -1, 0.07, 0.07, 0.008, 0.008);
-		cDBase->EditProp(iNLab);
+		// momo
+		// momo// cDBase->EditProperty(iNLab);
+		bool propertyIDFound;
+		cDBase->EditProperty(iNLab, propertyIDFound);
+		// momo
 	} else {
 		outtext1("Finish Current Operation.");
 	}
@@ -6180,7 +6361,7 @@ void CM3daDoc::OnFemtoolsSweepnodestoshells33362() {
 	}
 }
 
-void CM3daDoc::OnViewHighlightlimit() {
+void CM3daDoc::OnViewHighlightLimit() {
 	// TODO: Add your command handler code here
 	if (pMnu->isNULL()) {
 		outtextMSG2("HLIMIT");
@@ -7323,7 +7504,6 @@ void CM3daDoc::OnUpdateAxisOriginShow(CCmdUI* pCmdUI) {
 void CM3daDoc::OnUpdateAxisCornerShow(CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck(AxisCorner);
 }
-
 
 void OnViewAxisMode(int iMode, bool newAxisOrigin, bool newAxisCorner) {
 	if ((iMode == 1 && newAxisOrigin != AxisOrigin) || (iMode == 2 && newAxisCorner != AxisCorner)) {
