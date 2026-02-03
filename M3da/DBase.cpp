@@ -15736,6 +15736,9 @@ void DBase::ExportMeshNAS(FILE* pFile2, int iFile, bool previewMode) {
 					fprintf(pFile2, "$\n");
 					fprintf(pFile2, "$The following line was added via the M3D Solution Type Eigen Entry\n");
 					fprintf(pFile2, "%S\n", pSOL->sEigenCard);
+					fprintf(pFile2, "$Reference: The following entries (partial) may be used (comma separated):\n");
+					fprintf(pFile2, "$EIGRL, SET ID, LOW, HIGH, NO. EIGENS,   ,   , SHIFT VALUE, NORMALIZATION\n");
+					fprintf(pFile2, "$EIGR, SET ID, METH=INV/GIV/MGIV, LOW, HIGH, EST NO. EIGENS, DESIRED NO. EIGENS\n")
 				}
 				bool parametersShowed = false;
 				if (DeckModsParamBailout == -1 || DeckModsParamAutoSpc == 0 || DeckModsParamPost == -1 || DeckModsParamFiles == 1 || DeckModsParamQuad4typ == 1) {

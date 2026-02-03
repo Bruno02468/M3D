@@ -28,27 +28,27 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -287,6 +287,7 @@
     <Image Include="res\bmp00011.bmp" />
     <Image Include="res\CreateToolbar.bmp" />
     <Image Include="res\DimensionToolbar.bmp" />
+    <Image Include="res\DimensionToolsToolbar.bmp" />
     <Image Include="res\DrawToolbar.bmp" />
     <Image Include="res\EditToolbar.bmp" />
     <Image Include="res\ElementVisibilityToolbar.bmp" />
@@ -301,11 +302,15 @@
     <Image Include="res\M3daDoc.ico" />
     <Image Include="res\MenuCommandsToolbar.bmp" />
     <Image Include="res\OrientationToolbar.bmp" />
+    <Image Include="res\PointCurveToolsToolbar.bmp" />
     <Image Include="res\PostToolbar.bmp" />
     <Image Include="res\SelectFilterQuickToolbar.bmp" />
+    <Image Include="res\SelectFilterToolbar.bmp" />
+    <Image Include="res\SelectOptionsToolbar.bmp" />
     <Image Include="res\SelectToolbar.bmp" />
     <Image Include="res\SetElementToolbar.bmp" />
     <Image Include="res\ShowHideToolbar.bmp" />
+    <Image Include="res\SurfaceToolsToolbar.bmp" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\toolbar1.bmp" />
     <Image Include="res\Toolbar1IconTest3.BMP" />
@@ -316,7 +321,9 @@
     <Image Include="res\ToolbarSelectionTest.bmp" />
     <Image Include="res\ToolbarShowHide.bmp" />
     <Image Include="res\ToolbarView.bmp" />
+    <Image Include="res\ToolsToolbar.bmp" />
     <Image Include="res\UtilitiesToolbar.bmp" />
+    <Image Include="res\ViewToolbar.bmp" />
     <Image Include="UserImages.bmp" />
   </ItemGroup>
   <ItemGroup>

@@ -1437,8 +1437,8 @@ BOOL InfoDialog::OnInitDialog() {
 		strCaption = _T("Mesh Management Help");
 		kWidth = 0.5;
 		kHeight = 0.304;
-		strText = _T("• Most general FE model only require a single mesh (typical). The Mesh Management menu will typically not be needed.\r\n")
-		          _T("• However, M3D can read in multiple DAT/BDF files, each with their own mesh. These can used as include files, which is a Nastran/MYSTRAN feature. Note that Materials and Properties have a \"File No.\", which is the include file number.\r\n")
+		strText = _T("• Most general FE model only require a single mesh (typical). The Mesh Management menu will typically not be needed.\r\n\r\n")
+		          _T("• However, M3D can read in multiple DAT/BDF files, each with their own mesh. These can used as include files, which is a Nastran/MYSTRAN feature. Note that Materials and Properties have a \"File No.\", which is the include file number.\r\n\r\n")
 		          _T("• The meshes can be combined via \"Build Assembly Mesh\" and double clicking the meshes.");
 	} else if (formKind == -1) {
 		strCaption = _T("Deck Preview");
